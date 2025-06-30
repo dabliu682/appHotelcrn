@@ -1,0 +1,3 @@
+app_inicio:
+  path: /inicio
+  defaults: {_controller: App\Controller\InicioController::index}
