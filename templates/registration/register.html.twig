@@ -1,0 +1,42 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Register{% endblock %}
+
+{% block body %}
+{% include 'menu.html.twig' %}
+<div style="min-height: 100vh; width: 100vw; background: #f4f6fb;" class="d-flex flex-column justify-content-center align-items-center">
+    <div class="card shadow-lg p-4" style="max-width: 600px; width: 100%;">
+        <div class="text-center mb-4">
+            <i class="fas fa-user-circle fa-3x text-primary mb-2"></i>
+            <h2 class="h4 mb-2 fw-bold">Registro de usuarios</h2>
+        </div>
+        {{ form_start(registrationForm) }}
+            <div class="row mb-3">
+                <div class="col-6">
+                    {{ form_label(registrationForm.name) }}
+                    {{ form_widget(registrationForm.name, {'attr': {'class': 'form-control'}}) }}
+                    {{ form_errors(registrationForm.name) }}
+                </div>
+                <div class="col-6">
+                    {{ form_label(registrationForm.roles) }}
+                    {{ form_widget(registrationForm.roles, {'attr': {'class': 'form-select'}}) }}
+                    {{ form_errors(registrationForm.roles) }}
+                </div>
+            </div>
+            <div class="row mb-3">
+                <div class="col-6">
+                    {{ form_label(registrationForm.username) }}
+                    {{ form_widget(registrationForm.username, {'attr': {'class': 'form-control'}}) }}
+                    {{ form_errors(registrationForm.username) }}
+                </div>
+                <div class="col-6">
+                    {{ form_label(registrationForm.plainPassword) }}
+                    {{ form_widget(registrationForm.plainPassword, {'attr': {'class': 'form-control'}}) }}
+                    {{ form_errors(registrationForm.plainPassword) }}
+                </div>
+            </div>
+            <button type="submit" class="btn btn-primary w-100">Registrarse</button>
+        {{ form_end(registrationForm) }}
+    </div>
+</div>
+{% endblock %}

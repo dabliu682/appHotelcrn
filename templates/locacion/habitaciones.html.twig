@@ -1,0 +1,127 @@
+<turbo-frame id="frame-habitaciones">
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+            <div class="card shadow-sm border-0 rounded-4">
+                <div class="card-body">
+                    <h5 class="card-title mb-3">Listado de Habitaciones</h5>
+                    <div class="mb-3">
+                        <input type="text" class="form-control" placeholder="Filtrar Habitaciones..." id="filtroHabitaciones">
+                    </div>
+                    <div class="table-responsive">
+                        <table class="table table-striped table-hover align-middle mb-0">
+                            <thead class="table-dark">
+                                <tr>
+                                    <th>Piso</th>
+                                    <th>Nombre</th>
+                                    <th>Numero de cama</th>
+                                    <th>Aire Acondicionado</th>
+                                    <th>Ventilador</th>
+                                    <th>Estado</th>
+                                    <th colspan=2 >Acciones</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for room in rooms %}
+                                    <tr>
+                                        <td>{{ room.floor.name }}</td>
+                                        <td>{{ room.name }}</td>
+                                        <td>{{ room.bedNumber }}</td>
+                                        <td>{{ room.airCond ? 'Sí' : 'No' }}</td>
+                                        <td>{{ room.fan ? 'Sí' : 'No' }}</td>
+                                        <td>
+                                            {% if room.status == 1 %}
+                                                <span class="badge bg-success">Disponible</span>
+                                            {% elseif room.status == 2 %}
+                                                <span class="badge bg-danger">Ocupada</span>
+                                            {% else %}
+                                                <span class="badge bg-warning">Mantenimiento</span>
+                                            {% endif %}
+                                        </td>
+                                        <td style="text-align:center; width: 20px;">
+                                          {% if room.status == 1 %}
+                                            <i class="far fa-window-maximize text-primary" style="cursor:pointer" data-action="click->sistema--app#abrirModalNuevaHab" data-accion = '2'  data-id = {{ room.id }} data-name = "{{ room.name}}" data-piso = {{ room.floor.id }} data-bedmunber = {{ room.bedNumber }} data-aircond = {{ room.airCond }} data-fan = {{ room.fan }} ></i>
+                                          {% else %}
+                                            <i class="far fa-window-maximize text-secondary" style="cursor:not-allowed"></i>
+                                          {% endif %}
+                                        </td>
+                                        <td style="text-align:center; width: 20px;">
+                                          {% if room.status == 1 %}
+                                            <i class="fas fa-trash-alt text-danger" style="cursor:pointer" data-action="click->sistema--app#eliminarHabitacion" data-id = {{ room.id }}></i>
+                                          {% else %}
+                                            <i class="fas fa-trash-alt text-secondary" style="cursor:not-allowed"></i>
+                                          {% endif %}
+                                        </td>
+                                    </tr>
+                                {% else %}
+                                    <tr>
+                                        <td colspan="7" class="text-center">No hay habitaciones registradas.</td>
+                                    </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+                <div class="mt-3 d-flex justify-content-space-between" style="margin:20px">
+                    <button type="button" class="btn btn-primary" style="margin-right:10px" data-action="sistema--app#abrirModalNuevaHab" data-accion = '1' data-id = '0'>Nuevo</button>
+                    <a href="{{ path('app_inicio') }}" class="btn btn-danger">Regresar</a>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- Modal para crear habitación -->
+    <div class="modal fade" data-sistema--app-target="modalNuevaHabitacion" tabindex="-1" aria-labelledby="modalNuevaHabitacionLabel" aria-hidden="true">
+      <div class="modal-dialog">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title" id="modalNuevaHabitacionLabel"><span data-sistema--app-target="labelModalHab"></span></h5>
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+          </div>
+          <div class="modal-body">
+            <form data-sistema--app-target="formNuevaHab">
+              <input type="hidden" name="id" data-sistema--app-target="idHabitacion" value="0">
+              <div class="mb-3">
+                <label for="pisoHabitacion" class="form-label fw-bold">Piso</label>
+                <select class="form-select" id="pisoHabitacion" name="pisoHabitacion" data-sistema--app-target="selectPisos"  data-action="change->sistema--app#validaBtnGuardarHab">
+                  <option value="">Seleccione un piso</option>
+                  {% for piso in pisos %}
+                    <option value="{{ piso.id }}">{{ piso.name }}</option>
+                  {% endfor %}
+                  
+                </select>
+              </div>
+              <div class="mb-3">
+                <label for="nombreHabitacion" class="form-label fw-bold">Nombre de la Habitación</label>
+                <input type="text" class="form-control" id="nombreHabitacion" name="nombreHabitacion" placeholder="Nombre de la Habitación" data-sistema--app-target="nombreHabitacion"  data-action="blur->sistema--app#validaBtnGuardarHab">
+              </div>
+              <div class="mb-3">
+                <label for="numeroCama" class="form-label fw-bold">Número de Cama</label>
+                <input type="number" class="form-control" id="numeroCama" name="numeroCama" placeholder="Número de Cama" data-sistema--app-target="numeroCama"  data-action="blur->sistema--app#validaBtnGuardarHab">
+              </div>
+              <div class="mb-3 row">
+                <div class="col-6">
+                  <label for="aireAcondicionado" class="form-label fw-bold">Aire Acondicionado</label>
+                  <select class="form-select" id="aireAcondicionado" name="aireAcondicionado" data-sistema--app-target="aireAcondicionado"  data-action="change->sistema--app#validaBtnGuardarHab">
+                    <option value="">Seleccione</option>
+                    <option value="si">Sí</option>
+                    <option value="no">No</option>
+                  </select>
+                </div>
+                <div class="col-6">
+                  <label for="ventilador" class="form-label fw-bold">Ventilador</label>
+                  <select class="form-select" id="ventilador" name="ventilador" data-sistema--app-target="ventilador"  data-action="change->sistema--app#validaBtnGuardarHab">
+                    <option value="">Seleccione</option>
+                    <option value="si">Sí</option>
+                    <option value="no">No</option>
+                  </select>
+                </div>
+              </div>
+            </form>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-primary" data-sistema--app-target="btnGuardarHab" data-action="click->sistema--app#guardarHabitacion" disabled>Guardar</button>
+            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+          </div>
+        </div>
+      </div>
+    </div>
+</turbo-frame>
