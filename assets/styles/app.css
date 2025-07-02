@@ -1,3 +1,19 @@
 body {
-    background-color: lightgray;
+    background: linear-gradient(135deg, #232526 0%, #2A4A8D 100%);
+}
+
+.flash-message {
+    transform: translateX(120%);
+    opacity: 0;
+    transition: transform 0.5s cubic-bezier(.77, 0, .18, 1), opacity 0.5s;
+}
+
+.flash-message.show-slide {
+    transform: translateX(0);
+    opacity: 1;
+}
+
+.flash-message.hide-slide {
+    transform: translateX(120%);
+    opacity: 0;
 }
