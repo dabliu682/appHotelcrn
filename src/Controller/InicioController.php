@@ -5,6 +5,7 @@ namespace App\Controller;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Response;
 use App\Entity\Rooms;
+use App\Entity\Persons;
 
 class InicioController extends AbstractController
 {
@@ -26,7 +27,9 @@ class InicioController extends AbstractController
             $porcentaje = 0;
         }
 
+        $clientes = count($bd->getRepository(Persons::class)->findBy([]));
 
-        return $this->render('inicio/index.html.twig', ['pantalla' => $pantalla, 'habTot' => $habTot, 'habDis' => $habDis, 'porcentaje' => $porcentaje]);
+
+        return $this->render('inicio/index.html.twig', ['pantalla' => $pantalla, 'habTot' => $habTot, 'habDis' => $habDis, 'porcentaje' => $porcentaje, 'clientes' => $clientes]);
     }
 }

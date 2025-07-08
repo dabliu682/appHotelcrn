@@ -60,10 +60,28 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
      */
     private $rooms;
 
+    /**
+     * @ORM\OneToMany(targetEntity=Documents::class, mappedBy="usucrea")
+     */
+    private $documents;
+
+    /**
+     * @ORM\OneToMany(targetEntity=Companys::class, mappedBy="usuariocrea")
+     */
+    private $companys;
+
+    /**
+     * @ORM\OneToMany(targetEntity=Persons::class, mappedBy="usucrea")
+     */
+    private $persons;
+
     public function __construct()
     {
         $this->floors = new ArrayCollection();
         $this->rooms = new ArrayCollection();
+        $this->documents = new ArrayCollection();
+        $this->companys = new ArrayCollection();
+        $this->persons = new ArrayCollection();
     }
 
     /**
@@ -211,6 +229,96 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
             // set the owning side to null (unless already changed)
             if ($room->getUsucrea() === $this) {
                 $room->setUsucrea(null);
+            }
+        }
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, Documents>
+     */
+    public function getDocuments(): Collection
+    {
+        return $this->documents;
+    }
+
+    public function addDocument(Documents $document): self
+    {
+        if (!$this->documents->contains($document)) {
+            $this->documents[] = $document;
+            $document->setUsucrea($this);
+        }
+
+        return $this;
+    }
+
+    public function removeDocument(Documents $document): self
+    {
+        if ($this->documents->removeElement($document)) {
+            // set the owning side to null (unless already changed)
+            if ($document->getUsucrea() === $this) {
+                $document->setUsucrea(null);
+            }
+        }
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, Companys>
+     */
+    public function getCompanys(): Collection
+    {
+        return $this->companys;
+    }
+
+    public function addCompany(Companys $company): self
+    {
+        if (!$this->companys->contains($company)) {
+            $this->companys[] = $company;
+            $company->setUsuariocrea($this);
+        }
+
+        return $this;
+    }
+
+    public function removeCompany(Companys $company): self
+    {
+        if ($this->companys->removeElement($company)) {
+            // set the owning side to null (unless already changed)
+            if ($company->getUsuariocrea() === $this) {
+                $company->setUsuariocrea(null);
+            }
+        }
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, Persons>
+     */
+    public function getPersons(): Collection
+    {
+        return $this->persons;
+    }
+
+    public function addPerson(Persons $person): self
+    {
+        if (!$this->persons->contains($person)) {
+            $this->persons[] = $person;
+            $person->setUsucrea($this);
+        }
+
+        return $this;
+    }
+
+    public function removePerson(Persons $person): self
+    {
+        if ($this->persons->removeElement($person)) {
+            // set the owning side to null (unless already changed)
+            if ($person->getUsucrea() === $this) {
+                $person->setUsucrea(null);
             }
         }
 

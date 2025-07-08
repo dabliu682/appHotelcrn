@@ -6,12 +6,22 @@
     {% include 'menu.html.twig' %}
     <div class="container-fluid" style="background: #fff; width: 100%;  min-height: 100vh;" data-turbo="true" {{ stimulus_controller('sistema--app',
         {
-            'rutaEliminarPiso' : path('app_eliminarPiso', {'id' : 'var1' }),
-            'rutaNuevaHabitacion' : path('app_nuevaHabitacion'),
+            'rutaEliminarTipodoc' : path('app_eliminarTipodoc', {'id' : 'var1' }),
             'rutaEliminarHab' : path('app_eliminarHabitacion', {'id' : 'var1' }),
+            'rutaEliminarPiso' : path('app_eliminarPiso', {'id' : 'var1' }),
+            'rutaEliminarCompania' : path('app_eliminarCompania', {'id' : 'var1' }),
+            'rutaEliminarClientes' : path('app_eliminarClientes', {'id' : 'var1' }),
+            'rutaNuevaHabitacion' : path('app_nuevaHabitacion'),
+            'rutaGuardarClientes' : path('app_guardarClientes'),
+            'rutaGuardarTipodoc' : path('app_guardarTipodoc'),
+            'rutaNuevaCompania' : path('app_nuevaCompania'),
             'rutaHabitaciones' : path('app_habitaciones'),
+            'rutaCompanias' : path('app_companias'),
             'rutaNuevoPiso' : path('app_nuevoPiso'),
+            'rutaClientes' : path('app_clientes'),
             'rutaPisos' : path('app_pisos'),
+            'rutaDocs' : path('app_tipodoc'),
+
         }
 
     )}}>
@@ -24,7 +34,7 @@
                                 <i class="fas fa-users fa-2x"></i>
                             </div>
                             <div class="flex-grow-1">
-                                <div class="h2 fw-bold mb-1">{{ cantidadClientes is defined ? cantidadClientes : '0' }}</div>
+                                <div class="h2 fw-bold mb-1">{{ clientes is defined ? clientes : '0' }}</div>
                                 <div class="card-title mb-1 fs-6">Clientes</div>
                             </div>
                         </div>
@@ -124,7 +134,11 @@
         {% elseif pantalla == 1 %}
             pantalla de reservas
         {% elseif pantalla == 2 %}
-            pantalla de Clientes
+            <div class="row w-100 gx-4" style="padding-top: 75px;">
+                <turbo-frame id="frame-clientes" data-sistema--app-target="frameClientes" src="{{ path('app_clientes') }}" >
+                    <p align="center"><i class="fas fa-cog fa-spin mt-5"></i> Cargando lista de clientes</p>
+                </turbo-frame>
+            </div>
         {% elseif pantalla == 3 %}
             <div class="row w-100 gx-4" style="padding-top: 75px;">
                 <turbo-frame id="frame-pisos" data-sistema--app-target="framePisos" src="{{ path('app_pisos') }}" >
@@ -135,6 +149,18 @@
             <div class="row w-100 gx-4" style="padding-top: 75px;">
                 <turbo-frame id="frame-habitaciones" data-sistema--app-target="frameHabitaciones" src="{{ path('app_habitaciones') }}" >
                     <p align="center"><i class="fas fa-cog fa-spin mt-5"></i> Cargando lista de habitaciones</p>
+                </turbo-frame>
+            </div>
+        {% elseif pantalla == 5 %}
+            <div class="row w-100 gx-4" style="padding-top: 75px;">
+                <turbo-frame id="frame-Companias" data-sistema--app-target="frameCompanias" src="{{ path('app_companias') }}" >
+                    <p align="center"><i class="fas fa-cog fa-spin mt-5"></i> Cargando lista Compañias</p>
+                </turbo-frame>
+            </div>
+        {% elseif pantalla == 6 %}
+            <div class="row w-100 gx-4" style="padding-top: 75px;">
+                <turbo-frame id="frame-tipoDoc" data-sistema--app-target="frameTipoDoc" src="{{ path('app_tipodoc') }}" >
+                    <p align="center"><i class="fas fa-cog fa-spin mt-5"></i> Cargando lista de tipos de documentos</p>
                 </turbo-frame>
             </div>
         {% endif %}
