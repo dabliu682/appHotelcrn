@@ -22,6 +22,10 @@ export default class extends Controller {
         'rutaVistas': String,
         'rutaPisos': String,
         'rutaDocs' : String,
+        'rutaAbrirTurno' : String,
+        'rutaObtenerDatosClienteReserva' : String,
+        'rutaGuardarReserva': String,
+        'rutaReservas': String,
     };
     static targets = [
         'numeroVehiculoCliente',
@@ -70,6 +74,22 @@ export default class extends Controller {
         'idTipoDoc',
         'idCliente',
         'idPiso',
+        'modalNuevaReserva',
+        'cellCienteRev',
+        'numeroVehiculoClienteRev',
+        'companiaClienteRev',
+        'modalNuevaReserva',
+        'modalReservaLabel',
+        'idReserva',
+        'clienteRev',
+        'fechaLlegClienteRev',
+        'horaLlegClienteRev',
+        'selectAireRev',
+        'cantHabClienteRev',
+        'observacionesRev',
+        'btnGuardarReserva',
+        'formNuevaReserva',
+        'frameReservas'
     ];
 
     connect() {
@@ -552,6 +572,97 @@ export default class extends Controller {
             this.frameClientesTarget.innerHTML = await respuesta.text();
         }
     }
+
+    async abrirTurno(event) {
+
+        let urlAbrirTurno = this.rutaAbrirTurnoValue;
+
+        var consulta = await fetch(urlAbrirTurno);
+        var result = await consulta.json();
+
+        if (result.response == 'Ok') 
+        {
+            FlashMessage.show('Turno abierto correctamente', 'success');
+        }
+    }
+
+    abrirModalNuevaReserva(event) {
+        let accion = event.currentTarget.dataset.accion;
+        //$('.selectpicker').selectpicker('refresh');
+
+        if (accion == '2') {
+            this.modalReservaLabelTarget.innerHTML = 'Editar Reserva';
+            // Aquí puedes agregar la lógica para cargar los datos de la reserva si es necesario
+        } else {
+            this.modalReservaLabelTarget.innerHTML = 'Registrar Nueva Reserva';
+            // Aquí puedes limpiar los campos del formulario si es necesario
+        }
+
+        this.modal = new Modal(this.modalNuevaReservaTarget);
+        this.modal.show();
+    }
+
+    async obtenerDatosClienteReserva(event) {
+        let clienteId = event.currentTarget.value;
+
+        let ruta = this.rutaObtenerDatosClienteReservaValue.replace('var1', clienteId);
+
+        var consulta = await fetch(ruta);
+        var result = await consulta.json();
+
+        this.cellCienteRevTarget.value = result.phone;
+        this.numeroVehiculoClienteRevTarget.value = result.numberBus;
+        this.companiaClienteRevTarget.value = result.company;       
+    }
+
+    validaBtnGuardarReserva(event) 
+    {
+        let fechaLlegada = this.fechaLlegClienteRevTarget.value;
+        let horaLlegada = this.horaLlegClienteRevTarget.value;
+        let selectAire = this.selectAireRevTarget.value;
+        let cantHab = this.cantHabClienteRevTarget.value;
+        let cliente = this.clienteRevTarget.value;
+
+        console.log('selectAire: '+selectAire);
+
+        if (fechaLlegada != '' && horaLlegada != '' && selectAire != '' && cantHab != '' && cliente != '') 
+        {
+            this.btnGuardarReservaTarget.disabled = false;
+        } else 
+        {
+            this.btnGuardarReservaTarget.disabled = true;
+        }
+    }
+
+    async guardarReserva(event) {
+
+        this.btnGuardarReservaTarget.disabled = true;
+
+        let urlGuardar = this.rutaGuardarReservaValue;
+        let ruta = this.rutaReservasValue;
+
+        let formulario = '';
+
+        formulario = this.formNuevaReservaTarget;
+
+        var parametros = new FormData(formulario);
+
+        var consulta = await fetch(urlGuardar, { 'method': 'POST', 'body': parametros });
+        var result = await consulta.json();
+
+        if (result.response == 'Ok') {
+
+            const modalInstance = Modal.getInstance(this.modalNuevaReservaTarget);
+
+            if (modalInstance) { modalInstance.hide(); }
+
+            FlashMessage.show('Reserva guardada correctamente', 'success');
+
+            const respuesta = await fetch(ruta);
+            this.frameReservasTarget.innerHTML = await respuesta.text();
+        }
+    }
+
 
 
 }

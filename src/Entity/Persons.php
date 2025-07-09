@@ -3,6 +3,8 @@
 namespace App\Entity;
 
 use App\Repository\PersonsRepository;
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 
 /**
@@ -68,6 +70,16 @@ class Persons
      * @ORM\Column(type="string", length=255, nullable=true)
      */
     private $number_bus;
+
+    /**
+     * @ORM\OneToMany(targetEntity=Booking::class, mappedBy="person")
+     */
+    private $bookings;
+
+    public function __construct()
+    {
+        $this->bookings = new ArrayCollection();
+    }
 
     public function getId(): ?int
     {
@@ -190,6 +202,36 @@ class Persons
     public function setNumberBus(?string $number_bus): self
     {
         $this->number_bus = $number_bus;
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, Booking>
+     */
+    public function getBookings(): Collection
+    {
+        return $this->bookings;
+    }
+
+    public function addBooking(Booking $booking): self
+    {
+        if (!$this->bookings->contains($booking)) {
+            $this->bookings[] = $booking;
+            $booking->setPerson($this);
+        }
+
+        return $this;
+    }
+
+    public function removeBooking(Booking $booking): self
+    {
+        if ($this->bookings->removeElement($booking)) {
+            // set the owning side to null (unless already changed)
+            if ($booking->getPerson() === $this) {
+                $booking->setPerson(null);
+            }
+        }
 
         return $this;
     }

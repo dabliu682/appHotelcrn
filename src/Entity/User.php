@@ -75,6 +75,11 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
      */
     private $persons;
 
+    /**
+     * @ORM\OneToMany(targetEntity=Turnos::class, mappedBy="usuario")
+     */
+    private $turnos;
+
     public function __construct()
     {
         $this->floors = new ArrayCollection();
@@ -82,6 +87,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
         $this->documents = new ArrayCollection();
         $this->companys = new ArrayCollection();
         $this->persons = new ArrayCollection();
+        $this->turnos = new ArrayCollection();
     }
 
     /**
@@ -319,6 +325,36 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
             // set the owning side to null (unless already changed)
             if ($person->getUsucrea() === $this) {
                 $person->setUsucrea(null);
+            }
+        }
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, Turnos>
+     */
+    public function getTurnos(): Collection
+    {
+        return $this->turnos;
+    }
+
+    public function addTurno(Turnos $turno): self
+    {
+        if (!$this->turnos->contains($turno)) {
+            $this->turnos[] = $turno;
+            $turno->setUsuario($this);
+        }
+
+        return $this;
+    }
+
+    public function removeTurno(Turnos $turno): self
+    {
+        if ($this->turnos->removeElement($turno)) {
+            // set the owning side to null (unless already changed)
+            if ($turno->getUsuario() === $this) {
+                $turno->setUsuario(null);
             }
         }
 
