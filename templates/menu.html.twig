@@ -6,26 +6,34 @@
 
 <nav class="navbar navbar-expand-lg navbar-dark fixed-top w-100" style="background: #1a237e; max-width: 100vw; z-index: 1050;">
   <div class="container-fluid" data-turbo="true" {{ stimulus_controller('sistema--app',{'rutaVistas' : path('app_inicio', {'pantalla' : 'var1' }) })}} >
-    <a class="navbar-brand fw-bold" href="#">HOTEL Ciudad Real Norte</a>
+    <a class="navbar-brand fw-bold" href="#">HOTEL CIUDAD REAL NORTE</a>
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
       <span class="navbar-toggler-icon"></span>
     </button>
     <div class="collapse navbar-collapse" id="navbarNav">
       <ul class="navbar-nav ms-auto">
         <li class="nav-item">
-          <a class="nav-link active" aria-current="page" href="{{ path('app_inicio') }}"><i class="fas fa-home me-2"></i>Inicio</a>
+          <a class="nav-link" href="#" data-action="sistema--app#cambiarVista" data-vista = '0' ><i class="fas fa-home me-2"></i>Inicio</a>
         </li>
         <li class="nav-item">
           <a class="nav-link" href="#" data-action="sistema--app#cambiarVista" data-vista = '1' ><i class="fas fa-calendar-check me-2"></i>Reservas</a>
         </li>
         <li class="nav-item">
+          <a class="nav-link" href="#" data-action="sistema--app#cambiarVista" data-vista = '1' ><i class="fas fa-calendar-check me-2"></i>Chekings</a>
+        </li>
+        <li class="nav-item">
           <a class="nav-link" href="#" data-action="sistema--app#cambiarVista" data-vista = '2'><i class="fas fa-users me-2"></i>Clientes</a>
         </li>
-        <li class="nav-item">
-          <a class="nav-link" href="#" data-action="sistema--app#cambiarVista" data-vista = '3'><i class="fas fa-layer-group me-2"></i>Pisos</a>
-        </li>
-        <li class="nav-item">
-          <a class="nav-link" href="#" data-action="sistema--app#cambiarVista" data-vista = '4'><i class="fas fa-door-open me-2"></i>Habitaciones</a>
+        <li class="nav-item dropdown">
+          <a class="nav-link dropdown-toggle" href="#" id="configuracionesDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+            <i class="fas fa-cogs me-2"></i>Configuraciones
+          </a>
+          <ul class="dropdown-menu" aria-labelledby="configuracionesDropdown">
+            <li><a class="dropdown-item" href="#" data-action="sistema--app#cambiarVista" data-vista="3"><i class="fas fa-layer-group me-2"></i>Pisos</a></li>
+            <li><a class="dropdown-item" href="#" data-action="sistema--app#cambiarVista" data-vista="4"><i class="fas fa-door-open me-2"></i>Habitaciones</a></li>
+            <li><a class="dropdown-item" href="#" data-action="sistema--app#cambiarVista" data-vista="5"><i class="fas fa-building me-2"></i>Compañias</a></li>
+            <li><a class="dropdown-item" href="#" data-action="sistema--app#cambiarVista" data-vista="6"><i class="fas fa-id-card me-2"></i>Tipos de documentos</a></li>
+          </ul>
         </li>
         <li class="nav-item">
           <a class="nav-link" href="{{ path('app_logout') }}"><i class="fas fa-sign-out-alt me-2"></i>Cerrar sesión</a>
@@ -37,6 +45,7 @@
 <footer class="footer mt-auto fixed-bottom border-top" style="background: #1a237e; color: #fff; padding: 0.1rem 0; font-size: 0.85rem; opacity: 0.75; min-height: 28px;">
     <div class="container text-center">
         <span class="fs-6">Bienvenido: {{ app.user ? app.user.name : 'Invitado' }}</span>
+        <span class="fs-6 ms-3"> Turno actual: {{ turnoActual is defined ? turnoActual : 'Sin turno' }}</span>
     </div>
 </footer>
 {% endblock %}

@@ -1,0 +1,129 @@
+<turbo-frame id="frame-nuevaReserva">
+
+  <div class="row mb-3">
+    <div class="col-md-12 ">
+      <div class="card shadow border-0 rounded-4">
+        <div class="card-header bg-primary text-white fw-bold">Registrar nueva reserva</div>
+        <div class="card-body">
+            <form data-sistema--app-target="formNuevoCliente">
+                <input type="hidden" name="id" data-sistema--app-target="idCliente" value="0">
+                <div class="row mb-3">
+                    <div class="col-12 mb-2 d-flex align-items-center justify-content-center gap-4">
+                        <div class="form-check">
+                            <input class="form-check-input" type="radio" name="tipoOperacion" id="reservaRadio" value="reserva" checked>
+                            <label class="form-check-label text-primary fw-bold" for="reservaRadio">Reserva</label>
+                        </div>
+                        <div class="form-check">
+                            <input class="form-check-input" type="radio" name="tipoOperacion" id="checkingRadio" value="checking">
+                            <label class="form-check-label text-success fw-bold" for="checkingRadio">Checking</label>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <label for="clienteSelect" class="form-label" style="font-weight: bold;">Cliente</label>
+                        <select class="form-control" data-action="change->sistema--app#obtenerDatosClienteReserva">
+                        <option value="">Seleccione cliente</option>
+                        {% for cliente in clientes %}
+                            <option value="{{ cliente.id }}">{{ cliente.documentNumber }} - {{ cliente.name }} {{ cliente.lastname }}</option>
+                        {% endfor %}
+                        </select>
+                    </div>
+                    <div class="col-md-3">
+                        <label for="cellCienteRev" class="form-label" style="font-weight: bold;">Numero de celular</label>
+                        <input type="text" name="cellCienteRev" class="form-control" id="cellCienteRev" data-sistema--app-target="cellCienteRev" readonly>
+                    </div>
+                    <div class="col-md-3">
+                        <label for="numeroCelCliente" class="form-label" style="font-weight: bold;">Fecha de llegada</label>
+                        <input type="date" name="numeroCelCliente" class="form-control" id="numeroCelCliente" data-sistema--app-target="numeroCelCliente" placeholder="Ingrese el numero de celular" data-action="blur->sistema--app#validaBtnGuardarCliente">
+                    </div>               
+                    <div class="col-md-2">
+                        <label for="placaCliente" class="form-label" style="font-weight: bold;">Hora de llegada</label>
+                        <input type="time" name="placaCliente" class="form-control" id="placaCliente" data-sistema--app-target="placaCliente" placeholder="Ingrese el numero de la placa" data-action="blur->sistema--app#validaBtnGuardarCliente">
+                    </div>
+                </div>
+                <div class="row mb-3">
+                    <div class="col-md-4">
+                        <label for="habitacionSelect" class="form-label" style="font-weight: bold;">Habitación</label>
+                        <select class="form-select" id="habitacionSelect" name="habitacionSelect" data-sistema--app-target="selectHabitacionCliente" data-action="change->sistema--app#validaBtnGuardarCliente">
+                        <option value="">Seleccione habitación</option>
+                        {% for habitacion in habitaciones %}
+                            <option value="{{ habitacion.id }}">
+                            {{ habitacion.floor.name }} - {{ habitacion.name }}
+                            </option>
+                        {% endfor %}
+                        </select>
+                    </div>                    
+                    <div class="col-md-3">
+                        <label for="habitacionAire" class="form-label" style="font-weight: bold;">Aire</label>
+                        <select class="form-select" id="habitacionAire" name="habitacionAire" data-sistema--app-target="selectAireCliente" data-action="change->sistema--app#validaBtnGuardarCliente">
+                        <option value="">Seleccione aire</option>
+                        <option value="Aire acondicionado">Aire acondicionado</option>
+                        <option value="Ventilador">Ventilador</option>
+                        <option value="Sin aire">Sin aire</option>
+                        </select>
+                    </div>
+                    <div class="col-md-3">
+                        <label for="companiaClienteRev" class="form-label" style="font-weight: bold;">Compañia</label>
+                        <input type="text" name="companiaClienteRev" class="form-control" id="companiaClienteRev" data-sistema--app-target="companiaClienteRev" readonly>
+                    </div>
+                    <div class="col-md-2">
+                        <label for="numeroVehiculoClienteRev" class="form-label" style="font-weight: bold;">Numero de vehiculo</label>
+                        <input type="text" name="numeroVehiculoClienteRev" class="form-control" id="numeroVehiculoClienteRev" data-sistema--app-target="numeroVehiculoClienteRev" readonly>
+                    </div>
+                </div>
+                <div class="row mb-3">
+                <div class="col-md-12">
+                    <label for="numeroVehiculoCliente" class="form-label" style="font-weight: bold;">Observaciones</label>
+                    <textarea id="observaciones" name="observaciones" class="form-control" rows="2" placeholder="Ingrese sus observaciones aquí"></textarea>
+                </div>
+                </div>
+                <div class="d-flex justify-content-end gap-2">
+                <button type="button" class="btn btn-primary" data-sistema--app-target="btnGuardarCliente" data-action="sistema--app#guardarCliente" disabled>Guardar</button>
+                <a href="{{ path('app_inicio') }}" class="btn btn-danger">Cancelar</a>
+                </div>
+            </form>
+        </div>
+      </div>
+    </div>
+</div>
+
+<div class="row mb-5">
+    <div class="col-md-12">
+      <div class="card shadow border-0 rounded-4 h-100">
+        <div class="card-header bg-success text-white fw-bold">Servicios</div>
+        <div class="card-body p-2">
+          <div class="table-responsive mb-3">
+            <table class="table table-bordered table-hover align-middle mb-0">
+              <thead class="table-light">
+                <tr>
+                  <th>Servicio</th>
+                  <th>Descripción</th>
+                  <th>Precio</th>
+                  <th>Acción</th>
+                </tr>
+              </thead>
+              <tbody>
+                {# Aquí puedes iterar los servicios si tienes la variable servicios #}
+                {% if servicios is defined and servicios|length > 0 %}
+                  {% for servicio in servicios %}
+                    <tr>
+                      <td>{{ servicio.nombre }}</td>
+                      <td>{{ servicio.descripcion }}</td>
+                      <td>{{ servicio.precio|number_format(2, '.', ',') }}</td>
+                      <td><button type="button" class="btn btn-sm btn-outline-danger">Eliminar</button></td>
+                    </tr>
+                  {% endfor %}
+                {% else %}
+                  <tr><td colspan="4" class="text-center text-muted">No hay servicios registrados</td></tr>
+                {% endif %}
+              </tbody>
+            </table>
+          </div>
+          <div class="d-flex justify-content-end">
+            <button type="button" class="btn btn-success">Registrar servicio</button>
+          </div>
+        </div>
+      </div>
+    </div>
+</div>
+
+</turbo-frame>
