@@ -80,6 +80,16 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
      */
     private $turnos;
 
+    /**
+     * @ORM\OneToMany(targetEntity=Services::class, mappedBy="usucrea")
+     */
+    private $services;
+
+    /**
+     * @ORM\OneToMany(targetEntity=Servicetype::class, mappedBy="usucrea")
+     */
+    private $servicetypes;
+
     public function __construct()
     {
         $this->floors = new ArrayCollection();
@@ -88,6 +98,8 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
         $this->companys = new ArrayCollection();
         $this->persons = new ArrayCollection();
         $this->turnos = new ArrayCollection();
+        $this->services = new ArrayCollection();
+        $this->servicetypes = new ArrayCollection();
     }
 
     /**
@@ -355,6 +367,66 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
             // set the owning side to null (unless already changed)
             if ($turno->getUsuario() === $this) {
                 $turno->setUsuario(null);
+            }
+        }
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, Services>
+     */
+    public function getServices(): Collection
+    {
+        return $this->services;
+    }
+
+    public function addService(Services $service): self
+    {
+        if (!$this->services->contains($service)) {
+            $this->services[] = $service;
+            $service->setUsucrea($this);
+        }
+
+        return $this;
+    }
+
+    public function removeService(Services $service): self
+    {
+        if ($this->services->removeElement($service)) {
+            // set the owning side to null (unless already changed)
+            if ($service->getUsucrea() === $this) {
+                $service->setUsucrea(null);
+            }
+        }
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, Servicetype>
+     */
+    public function getServicetypes(): Collection
+    {
+        return $this->servicetypes;
+    }
+
+    public function addServicetype(Servicetype $servicetype): self
+    {
+        if (!$this->servicetypes->contains($servicetype)) {
+            $this->servicetypes[] = $servicetype;
+            $servicetype->setUsucrea($this);
+        }
+
+        return $this;
+    }
+
+    public function removeServicetype(Servicetype $servicetype): self
+    {
+        if ($this->servicetypes->removeElement($servicetype)) {
+            // set the owning side to null (unless already changed)
+            if ($servicetype->getUsucrea() === $this) {
+                $servicetype->setUsucrea(null);
             }
         }
 

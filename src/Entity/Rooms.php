@@ -59,6 +59,11 @@ class Rooms
      */
     private $fechacrea;
 
+    /**
+     * @ORM\Column(type="integer")
+     */
+    private $typeroom;
+
     public function getId(): ?int
     {
         return $this->id;
@@ -156,6 +161,18 @@ class Rooms
     public function setFechacrea(\DateTimeInterface $fechacrea): self
     {
         $this->fechacrea = $fechacrea;
+
+        return $this;
+    }
+
+    public function getTyperoom(): ?int
+    {
+        return $this->typeroom;
+    }
+
+    public function setTyperoom(int $typeroom): self
+    {
+        $this->typeroom = $typeroom;
 
         return $this;
     }

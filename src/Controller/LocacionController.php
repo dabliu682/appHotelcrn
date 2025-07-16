@@ -98,8 +98,9 @@ class LocacionController extends AbstractController
             $habitacion->setFloor($bd->getRepository(Floors::class)->find($piso));
             $habitacion->setUsucrea($usuario);
             $habitacion->setBedNumber($request->get('numeroCama'));
-            $habitacion->setAircond($request->get('aireAcondicionado'));
-            $habitacion->setFan($request->get('ventilador'));
+            ($request->get('aireAcondicionado') == 'no') ? $habitacion->setAircond(false) : $habitacion->setAircond(true);
+            ($request->get('ventilador') == 'no') ? $habitacion->setFan(false) : $habitacion->setFan(true);
+            $habitacion->setTyperoom($request->get('tipoHabitacion'));
             $habitacion->setStatus(1);
             $habitacion->setFechacrea(new \DateTime('now', new \DateTimeZone('America/Bogota'))); 
 
@@ -114,8 +115,9 @@ class LocacionController extends AbstractController
             $habitacion->setFloor($bd->getRepository(Floors::class)->find($piso));
             $habitacion->setUsucrea($usuario);
             $habitacion->setBedNumber($request->get('numeroCama'));
-            $habitacion->setAircond($request->get('aireAcondicionado'));
-            $habitacion->setFan($request->get('ventilador'));
+            ($request->get('aireAcondicionado') == 'no') ? $habitacion->setAircond(false) : $habitacion->setAircond(true);
+            ($request->get('ventilador') == 'no') ? $habitacion->setFan(false) : $habitacion->setFan(true);
+            $habitacion->setTyperoom($request->get('tipoHabitacion'));
             $habitacion->setStatus(1);
             $habitacion->setFechacrea(new \DateTime('now', new \DateTimeZone('America/Bogota'))); 
 

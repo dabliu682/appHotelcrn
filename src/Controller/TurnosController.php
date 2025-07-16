@@ -19,6 +19,7 @@ class TurnosController extends AbstractController
         $turno->setUsuario($usuario);
         $turno->setStartdate(new \DateTime('now', new \DateTimeZone('America/Bogota')));
         $turno->setStatus(1);
+        $turno->setNumero(1);
 
         $bd->persist($turno);
         $bd->flush();
