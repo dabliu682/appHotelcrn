@@ -53,6 +53,22 @@ class Booking
      */
     private $observaciones;
 
+    /**
+     * @ORM\Column(type="integer")
+     */
+    private $status;
+
+    /**
+     * @ORM\Column(type="datetime")
+     */
+    private $fechacrea;
+
+    /**
+     * @ORM\ManyToOne(targetEntity=Turnos::class, inversedBy="bookings")
+     * @ORM\JoinColumn(nullable=false)
+     */
+    private $turno;
+
     public function getId(): ?int
     {
         return $this->id;
@@ -138,6 +154,42 @@ class Booking
     public function setObservaciones(?string $observaciones): self
     {
         $this->observaciones = $observaciones;
+
+        return $this;
+    }
+
+    public function getStatus(): ?int
+    {
+        return $this->status;
+    }
+
+    public function setStatus(int $status): self
+    {
+        $this->status = $status;
+
+        return $this;
+    }
+
+    public function getFechacrea(): ?\DateTimeInterface
+    {
+        return $this->fechacrea;
+    }
+
+    public function setFechacrea(\DateTimeInterface $fechacrea): self
+    {
+        $this->fechacrea = $fechacrea;
+
+        return $this;
+    }
+
+    public function getTurno(): ?Turnos
+    {
+        return $this->turno;
+    }
+
+    public function setTurno(?Turnos $turno): self
+    {
+        $this->turno = $turno;
 
         return $this;
     }

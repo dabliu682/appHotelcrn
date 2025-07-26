@@ -78,6 +78,10 @@ app_eliminarClientes:
   path: /clientes/eliminarClientes/{id}
   defaults: {_controller: App\Controller\ClientesController::eliminarClientes}
 
+app_obtenerClientexCedula:
+  path: /clientes/eliminarClientes/{cedula}
+  defaults: {_controller: App\Controller\ClientesController::obtenerClientexCedula}
+
 app_reservas:
   path: /reservas
   defaults: {_controller: App\Controller\ReservasController::lista}
@@ -97,5 +101,65 @@ app_obtenerDatosClienteReserva:
 app_abrirTurno:
   path: /abrirTurno
   defaults: {_controller: App\Controller\TurnosController::abrirTurno}
+
+app_servicios:
+  path: /servicios
+  defaults: {_controller: App\Controller\ConfiguracionController::servicios}
+
+app_tiposServ:
+  path: /tiposServicios
+  defaults: {_controller: App\Controller\ConfiguracionController::tiposServicios}
+
+app_guardarTiposServ:
+  path: /guardarTiposServ
+  defaults: {_controller: App\Controller\ConfiguracionController::guardarTiposServ}
+
+app_eliminarTiposServ:
+  path: /eliminarTiposServ/{id}
+  defaults: {_controller: App\Controller\ConfiguracionController::eliminarTiposServ}
+
+app_listaServ:
+  path: /listaServicios/{filtro}
+  defaults: {_controller: App\Controller\ConfiguracionController::listaServicios, filtro: '0'}
+
+app_guardarServicio:
+  path: /guardarServicio
+  defaults: {_controller: App\Controller\ConfiguracionController::guardarServicio}
+
+app_cambiaEstadoServicio:
+  path: /cambiaEstadoServicio/{id},{estado}
+  defaults: {_controller: App\Controller\ConfiguracionController::cambiaEstadoServicio}
+
+app_eliminarServicio:
+  path: /eliminarServicio/{id}
+  defaults: {_controller: App\Controller\ConfiguracionController::eliminarServicio}
+
+app_obtenerServicio:
+  path: /obtenerServicio/{id}
+  defaults: {_controller: App\Controller\ConfiguracionController::obtenerServicio}
+
+app_stock:
+  path: /stock
+  defaults: {_controller: App\Controller\StockController::listas}
+
+app_productos:
+  path: /productos
+  defaults: {_controller: App\Controller\StockController::productos}
+
+app_guardarProducto:
+  path: /guardarProducto
+  defaults: {_controller: App\Controller\StockController::guardarProducto}
+
+app_inventario:
+  path: /inventario
+  defaults: {_controller: App\Controller\StockController::inventario}
+
+app_entradas:
+  path: /entradas
+  defaults: {_controller: App\Controller\StockController::entradas}
+
+
+
+
 
 

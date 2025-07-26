@@ -1,23 +1,24 @@
 <turbo-frame id="frame-habitaciones">
     <div class="row justify-content-center">
-        <div class="col-md-8">
+        <div class="col-md-11">
             <div class="card shadow-sm border-0 rounded-4">
                 <div class="card-body">
                     <h5 class="card-title mb-3">Listado de Habitaciones</h5>
                     <div class="mb-3">
                         <input type="text" class="form-control" placeholder="Filtrar Habitaciones..." id="filtroHabitaciones">
                     </div>
-                    <div class="table-responsive">
+                    <div class="table-responsive position-relative" style="overflow-x:auto; max-height: 50vh; overflow-y:auto;">
                         <table class="table table-striped table-hover align-middle mb-0">
-                            <thead class="table-dark">
+                            <thead class="table-dark" style="position: sticky; top: 0; z-index: 2;">
                                 <tr>
-                                    <th>Piso</th>
-                                    <th>Nombre</th>
-                                    <th>Numero de cama</th>
-                                    <th>Aire Acondicionado</th>
-                                    <th>Ventilador</th>
-                                    <th>Estado</th>
-                                    <th colspan=2 >Acciones</th>
+                                    <th style="background: #212529;">Piso</th>
+                                    <th style="background: #212529;">Nombre</th>
+                                    <th style="background: #212529;">Numero de camas</th>
+                                    <th style="background: #212529;">Aire Acondicionado</th>
+                                    <th style="background: #212529;">Ventilador</th>
+                                    <th style="background: #212529;">tipo</th>
+                                    <th style="background: #212529;">Estado</th>
+                                    <th colspan=2 style="background: #212529;">Acciones</th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -28,6 +29,21 @@
                                         <td>{{ room.bedNumber }}</td>
                                         <td>{{ room.airCond ? 'Sí' : 'No' }}</td>
                                         <td>{{ room.fan ? 'Sí' : 'No' }}</td>
+                                        <td>
+                                          {% if room.typeroom == 1 %}
+                                            Habitación sencilla
+                                          {% elseif room.typeroom == 2 %}
+                                            Habitación de dos camas
+                                          {% elseif room.typeroom == 3 %}
+                                            Habitación sencilla con aire acondicionado
+                                          {% elseif room.typeroom == 4 %}
+                                            Habitación de dos camas con aire acondicionado
+                                          {% elseif room.typeroom == 5 %}
+                                            Habitación sencilla ventilador
+                                          {% elseif room.typeroom == 6 %}
+                                            Habitación de dos camas ventilador
+                                          {% endif %}
+                                        </td>
                                         <td>
                                             {% if room.status == 1 %}
                                                 <span class="badge bg-success">Disponible</span>
@@ -54,7 +70,7 @@
                                     </tr>
                                 {% else %}
                                     <tr>
-                                        <td colspan="7" class="text-center">No hay habitaciones registradas.</td>
+                                        <td colspan="8" class="text-center">No hay habitaciones registradas.</td>
                                     </tr>
                                 {% endfor %}
                             </tbody>
@@ -90,12 +106,24 @@
                 </select>
               </div>
               <div class="mb-3">
-                <label for="nombreHabitacion" class="form-label fw-bold">Nombre de la Habitación</label>
+                <label for="nombreHabitacion" class="form-label fw-bold">Nombre</label>
                 <input type="text" class="form-control" id="nombreHabitacion" name="nombreHabitacion" placeholder="Nombre de la Habitación" data-sistema--app-target="nombreHabitacion"  data-action="blur->sistema--app#validaBtnGuardarHab">
               </div>
               <div class="mb-3">
-                <label for="numeroCama" class="form-label fw-bold">Número de Cama</label>
+                <label for="numeroCama" class="form-label fw-bold">Número de Camas</label>
                 <input type="number" class="form-control" id="numeroCama" name="numeroCama" placeholder="Número de Cama" data-sistema--app-target="numeroCama"  data-action="blur->sistema--app#validaBtnGuardarHab">
+              </div>
+              <div class="mb-3">
+                <label for="tipoHabitacion" class="form-label fw-bold">Tipo</label>
+                <select class="form-select" id="tipoHabitacion" name="tipoHabitacion" data-sistema--app-target="selectTipoHabitacion"  data-action="change->sistema--app#validaBtnGuardarHab">
+                  <option value="">Seleccione tipo de habitación</option>
+                  <option value="1">Habitación sencilla</option>
+                  <option value="2">Habitación de dos camas</option>
+                  <option value="3">Habitación sencilla con aire acondicionado</option>
+                  <option value="4">Habitación de dos camas con aire acondicionado</option>
+                  <option value="5">Habitación sencilla ventilador</option>
+                  <option value="6">Habitación de dos camas ventilador</option>                  
+                </select>
               </div>
               <div class="mb-3 row">
                 <div class="col-6">

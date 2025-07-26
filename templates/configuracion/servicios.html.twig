@@ -1,0 +1,21 @@
+<turbo-frame id="frame-servicios">
+    <div class="row justify-content-center">
+        <div class="col-md-12">
+            <div class="card shadow-sm border-0 rounded-4">
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-md-3">
+                        <turbo-frame id="frame-tiposServicios" data-sistema--app-target="frameTiposServicios" src="{{ path('app_tiposServ') }}" >
+                            <p align="center"><i class="fas fa-cog fa-spin mt-5"></i> Cargando lista de tipos de servicios</p>
+                        </turbo-frame>
+                    </div>
+                    <div class="col-md-9">
+                        <turbo-frame id="frame-listaServicios" data-sistema--app-target="frameListaServicioss" src="{{ path('app_listaServ') }}" >
+                            <p align="center"><i class="fas fa-cog fa-spin mt-5"></i> Cargando lista de servicios</p>
+                        </turbo-frame>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</turbo-frame>
