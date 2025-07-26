@@ -7,6 +7,7 @@ use Symfony\Component\HttpFoundation\Response;
 use App\Entity\Rooms;
 use App\Entity\Persons;
 use App\Entity\Booking;
+use App\Entity\Turnos;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 
@@ -51,6 +52,7 @@ class ReservasController extends AbstractController
             $booking = new Booking();
 
             $persona = $bd->getRepository(Persons::class)->find($request->get('clienteRev'));
+            $turno = $bd->getRepository(Turnos::class)->findOneBy(['status' => 1]);
 
             $booking->setPerson($persona);
             $booking->setFechallegada(new \DateTime($request->get('fechaLlegClienteRev')));
@@ -62,6 +64,9 @@ class ReservasController extends AbstractController
             $booking->setAire($request->get('selectAireRev'));
             $booking->setCanthabitaciones($request->get('cantHabClienteRev'));
             $booking->setNumero(1);
+            $booking->setStatus(1);
+            $booking->setTurno($turno);
+            $booking->setFechacrea(new \DateTime('now', new \DateTimeZone('America/Bogota')));
             $booking->setObservaciones($request->get('observacionesReserva'));
 
             $bd->persist($booking);

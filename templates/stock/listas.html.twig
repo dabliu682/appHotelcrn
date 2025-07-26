@@ -1,0 +1,21 @@
+<turbo-frame id="frame-stock">
+    <div class="row justify-content-center">
+        <div class="col-md-12">
+            <div class="card shadow-sm border-0 rounded-4">
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-md-6">
+                        <turbo-frame id="frame-productos" data-sistema--app-target="frameProductos" src="{{ path('app_productos') }}" >
+                            <p align="center"><i class="fas fa-cog fa-spin mt-5"></i> Cargando lista de productos</p>
+                        </turbo-frame>
+                    </div>
+                    <div class="col-md-6">
+                        <turbo-frame id="frame-inventario" data-sistema--app-target="frameInventario" src="{{ path('app_inventario') }}" >
+                            <p align="center"><i class="fas fa-cog fa-spin mt-5"></i> Cargando Stock</p>
+                        </turbo-frame>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</turbo-frame>

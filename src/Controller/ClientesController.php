@@ -72,17 +72,17 @@ class ClientesController extends AbstractController
 
             if($request->get('selectCompaniaCliente') != '')
             {
-                 $cliente->setCompania($bd->getRepository(Companys::class)->find($request->get('selectCompaniaCliente')));
+                $cliente->setCompania($bd->getRepository(Companys::class)->find($request->get('selectCompaniaCliente')));
             }
 
             if($request->get('placaCliente') != '')
             {
-                 $cliente->setPlaca($request->get('placaCliente'));
+                $cliente->setPlaca($request->get('placaCliente'));
             }
 
             if($request->get('numeroVehiculoCliente') != '')
             {
-                 $cliente->setNumberBus($request->get('numeroVehiculoCliente'));
+                $cliente->setNumberBus($request->get('numeroVehiculoCliente'));
             }
 
             $bd->persist($cliente);
@@ -90,7 +90,20 @@ class ClientesController extends AbstractController
 
         $bd->flush();  
 
-        return new JsonResponse(['response' => 'Ok']);
+        $parametros = [
+            'response' => 'Ok',
+            'id' => $cliente->getId(),
+            'name' => $cliente->getName(),
+            'lastname' => $cliente->getLastname(),
+            'documentNumber' => $cliente->getDocumentNumber(),
+            'compania' => $cliente->getCompania(),
+            'placa' => $cliente->getPlaca(),
+            'numberBus' => $cliente->getNumberBus(),
+            'compania' => $cliente->getCompania()->getName(),
+            'cellphone' => $cliente->getCellphone(),
+        ];
+
+        return new JsonResponse($parametros);
     }
 
     public function eliminarClientes($id)
@@ -108,6 +121,28 @@ class ClientesController extends AbstractController
         catch (\Exception $e) 
         {
             return new JsonResponse(['response' => 'Error', 'message' => $e->getMessage()]);
+        }
+    }
+
+    public function obtenerClientexCedula($cedula)
+    {
+        $bd = $this->getDoctrine()->getManager();
+
+        $cliente = $bd->getRepository(Persons::class)->findOneBy(['documentNumber' => $cedula]);
+
+        if ($cliente) {
+            return new JsonResponse([
+
+                'id' => $cliente->getId(),
+                'name' => $cliente->getName(),
+                'lastname' => $cliente->getLastname(),
+                'cellphone' => $cliente->getCellphone(),
+                'documentNumber' => $cliente->getDocumentNumber(),
+                'placa' => $cliente->getPlaca(),
+                'numberBus' => $cliente->getNumberBus()
+            ]);
+        } else {
+            return new JsonResponse(['response' => 'Cliente no encontrado'], 404);
         }
     }
 }

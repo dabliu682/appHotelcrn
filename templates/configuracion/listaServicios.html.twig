@@ -1,0 +1,126 @@
+<turbo-frame id="frame-listaServicios">
+    <h5 class="card-title mb-3">Listado de servicios</h5>
+    <div class="table-responsive" style="overflow-x:auto; max-height: 60vh; overflow-y:auto;">
+        <table class="table table-striped table-hover align-middle mb-0">
+            <thead class="table-dark" style="position: sticky; top: 0; z-index: 2;">
+                <tr>
+                    <th style="background: #212529;">Código</th>
+                    <th style="background: #212529;">Tipo de servicio</th>
+                    <th style="background: #212529;">Tipo de habitación</th>
+                    <th style="background: #212529;">Observación</th>
+                    <th style="background: #212529;">Valor</th>
+                    <th style="background: #212529;">Estado</th>
+                    <th colspan=2 style="background: #212529;">Acciones</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% if servicios is not empty %}
+                    {% for servicio in servicios %}
+                        <tr>
+                            <td>{{ servicio.code }}</td>
+                            <td>{{ servicio.tipo.name }}</td>
+                            <td>
+                                {% if servicio.typeroom == 1 %}
+                                    Habitación sencilla
+                                {% elseif servicio.typeroom == 2 %}
+                                    Habitación de dos camas
+                                {% elseif servicio.typeroom == 3 %}
+                                    Habitación sencilla con aire acondicionado
+                                {% elseif servicio.typeroom == 4 %}
+                                    Habitación de dos camas con aire acondicionado
+                                {% elseif servicio.typeroom == 5 %}
+                                    Habitación sencilla ventilador
+                                {% elseif servicio.typeroom == 6 %}
+                                    Habitación de dos camas ventilador
+                                {% else %}
+                                    No aplica
+                                {% endif %}
+                            </td>
+                            <td>{{ servicio.name }}</td>
+                            <td style="text-align:right" class="text-nowrap">$ {{ servicio.price|number_format(0, ',', '.') }}</td>
+                            <td class="text-center align-middle">
+                                <div class="form-check form-switch d-flex justify-content-center align-items-center m-0" style="height:100%;">
+                                    <input class="form-check-input" type="checkbox" id="flexSwitchCheckChecked" {% if servicio.active %} checked {% endif %} data-action="change->sistema--app#cambiarEstadoServicio" data-id = {{ servicio.id }}>
+                                </div>
+                            </td>
+                            <td style="text-align:center; width: 20px;">
+                                <i class="far fa-window-maximize text-primary" style="cursor:pointer" data-action="click->sistema--app#abrirModalNuevoServicio" data-accion = '2'  data-id = {{ servicio.id }} data-codigo = "{{ servicio.code }}" data-name = "{{ servicio.name }}" data-price = "{{ servicio.price }}" data-tipo = "{{ servicio.tipo.id }}" ></i>
+                            </td>
+                            <td style="text-align:center; width: 20px;">
+                                <i class="fas fa-trash-restore-alt text-danger" style="cursor:pointer" data-action="click->sistema--app#eliminarServicio" data-id = {{ servicio.id }}></i>
+                            </td>
+                        </tr>
+                    {% endfor %}
+                {% else %}
+                    <tr>
+                        <td colspan="7" class="text-center">No hay servicios registrados.</td>
+                    </tr>
+                {% endif %}
+                
+            </tbody>
+        </table>
+    </div>
+    <div class="mt-3 d-flex justify-content-space-between">
+        <button type="button" class="btn btn-primary" data-action="sistema--app#abrirModalNuevoServicio" data-accion = '1' data-id = '0'>Nuevo</button>
+    </div>
+
+    <!-- Modal para registrar servicio -->
+    <div class="modal fade" id="modalNuevoServicio" data-sistema--app-target="modalNuevoServicio" tabindex="-1" aria-labelledby="modalNuevoServicioLabel" aria-hidden="true">
+        <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+            <h5 class="modal-title"><span data-sistema--app-target="modalServicioLabel"></span></h5>
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <form data-sistema--app-target="formNuevoServicio">
+            <input type="hidden" name="id" data-sistema--app-target="idServicio" value="0">
+            <div class="modal-body">
+                <div class="row mb-3">
+                    <div class="col-md-12">
+                        <label for="codigoServ" class="form-label" style="font-weight: bold;">Codigo</label> 
+                        <input type="text" name="codigoServ" class="form-control" id="codigoServ" data-sistema--app-target="codigoServ" placeholder="Ingrese el codigo del servicio" data-action="blur->sistema--app#validaBtnGuardarServicio">
+                    </div>
+                </div>
+                <div class="row mb-3">
+                    <label for="selectTipoServ" class="form-label" style="font-weight: bold;">Tipo de Servicio</label> 
+                    <select class="form-select" id="selectTipoServ" name="selectTipoServ" data-sistema--app-target="selectTipoServ"  data-action="change->sistema--app#validaBtnGuardarServicio">
+                        <option value="">Seleccione tipo de servicio</option>
+                        {% for tipo in TiposServicios %}
+                            <option value="{{ tipo.id }}">{{ tipo.name }}</option>
+                        {% endfor %}                        
+                    </select>
+                </div>
+                <div class="row mb-3">
+                    <label for="tipoHabitacion" class="form-label fw-bold">Tipo de habitación</label>
+                <select class="form-select" id="tipoHabitacion" name="tipoHabitacion" data-sistema--app-target="selectTipoHabitacion"  data-action="change->sistema--app#validaBtnGuardarHab">
+                  <option value="">Seleccione tipo de habitación</option>
+                  <option value="1">Habitación sencilla</option>
+                  <option value="2">Habitación de dos camas</option>
+                  <option value="3">Habitación sencilla con aire acondicionado</option>
+                  <option value="4">Habitación de dos camas con aire acondicionado</option>
+                  <option value="5">Habitación sencilla ventilador</option>
+                  <option value="6">Habitación de dos camas ventilador</option>                  
+                </select>
+                </div>
+                <div class="row mb-3">
+                    <div class="col-md-12">
+                        <label for="nombreServ" class="form-label" style="font-weight: bold;">Nombre</label> 
+                        <input type="text" name="nombreServ" class="form-control" id="nombreServ" data-sistema--app-target="nombreServ" placeholder="Ingrese el nombre del servicio" data-action="blur->sistema--app#validaBtnGuardarServicio">
+                    </div>
+                </div>
+                <div class="row mb-3">
+                    <div class="col-md-12">
+                        <label for="valorServ" class="form-label" style="font-weight: bold;">Valor</label> 
+                        <input type="text" name="valorServ" class="form-control" id="valorServ" data-sistema--app-target="valorServ" placeholder="Ingrese el valor del servicio" data-action="blur->sistema--app#validaBtnGuardarServicio">
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-primary" data-sistema--app-target="btnGuardarServicio" data-action="sistema--app#guardarServicio" disabled>Guardar</button>
+                <button type="button" class="btn btn-danger" data-bs-dismiss="modal">Cancelar</button>
+            </div>
+            </form>
+        </div>
+        </div>
+    </div>
+</turbo-frame>
