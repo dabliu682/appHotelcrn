@@ -90,6 +90,26 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
      */
     private $servicetypes;
 
+    /**
+     * @ORM\OneToMany(targetEntity=Productos::class, mappedBy="usucrea")
+     */
+    private $productos;
+
+    /**
+     * @ORM\OneToMany(targetEntity=Inventario::class, mappedBy="usucrea")
+     */
+    private $inventarios;
+
+    /**
+     * @ORM\OneToMany(targetEntity=Inventario::class, mappedBy="usumodifica")
+     */
+    private $inventario_usumod;
+
+    /**
+     * @ORM\OneToMany(targetEntity=Entradas::class, mappedBy="usucrea")
+     */
+    private $entradas;
+
     public function __construct()
     {
         $this->floors = new ArrayCollection();
@@ -100,6 +120,10 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
         $this->turnos = new ArrayCollection();
         $this->services = new ArrayCollection();
         $this->servicetypes = new ArrayCollection();
+        $this->productos = new ArrayCollection();
+        $this->inventarios = new ArrayCollection();
+        $this->inventario_usumod = new ArrayCollection();
+        $this->entradas = new ArrayCollection();
     }
 
     /**
@@ -427,6 +451,126 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
             // set the owning side to null (unless already changed)
             if ($servicetype->getUsucrea() === $this) {
                 $servicetype->setUsucrea(null);
+            }
+        }
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, Productos>
+     */
+    public function getProductos(): Collection
+    {
+        return $this->productos;
+    }
+
+    public function addProducto(Productos $producto): self
+    {
+        if (!$this->productos->contains($producto)) {
+            $this->productos[] = $producto;
+            $producto->setUsucrea($this);
+        }
+
+        return $this;
+    }
+
+    public function removeProducto(Productos $producto): self
+    {
+        if ($this->productos->removeElement($producto)) {
+            // set the owning side to null (unless already changed)
+            if ($producto->getUsucrea() === $this) {
+                $producto->setUsucrea(null);
+            }
+        }
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, Inventario>
+     */
+    public function getInventarios(): Collection
+    {
+        return $this->inventarios;
+    }
+
+    public function addInventario(Inventario $inventario): self
+    {
+        if (!$this->inventarios->contains($inventario)) {
+            $this->inventarios[] = $inventario;
+            $inventario->setUsucrea($this);
+        }
+
+        return $this;
+    }
+
+    public function removeInventario(Inventario $inventario): self
+    {
+        if ($this->inventarios->removeElement($inventario)) {
+            // set the owning side to null (unless already changed)
+            if ($inventario->getUsucrea() === $this) {
+                $inventario->setUsucrea(null);
+            }
+        }
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, Inventario>
+     */
+    public function getInventarioUsumod(): Collection
+    {
+        return $this->inventario_usumod;
+    }
+
+    public function addInventarioUsumod(Inventario $inventarioUsumod): self
+    {
+        if (!$this->inventario_usumod->contains($inventarioUsumod)) {
+            $this->inventario_usumod[] = $inventarioUsumod;
+            $inventarioUsumod->setUsumodifica($this);
+        }
+
+        return $this;
+    }
+
+    public function removeInventarioUsumod(Inventario $inventarioUsumod): self
+    {
+        if ($this->inventario_usumod->removeElement($inventarioUsumod)) {
+            // set the owning side to null (unless already changed)
+            if ($inventarioUsumod->getUsumodifica() === $this) {
+                $inventarioUsumod->setUsumodifica(null);
+            }
+        }
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, Entradas>
+     */
+    public function getEntradas(): Collection
+    {
+        return $this->entradas;
+    }
+
+    public function addEntrada(Entradas $entrada): self
+    {
+        if (!$this->entradas->contains($entrada)) {
+            $this->entradas[] = $entrada;
+            $entrada->setUsucrea($this);
+        }
+
+        return $this;
+    }
+
+    public function removeEntrada(Entradas $entrada): self
+    {
+        if ($this->entradas->removeElement($entrada)) {
+            // set the owning side to null (unless already changed)
+            if ($entrada->getUsucrea() === $this) {
+                $entrada->setUsucrea(null);
             }
         }
 

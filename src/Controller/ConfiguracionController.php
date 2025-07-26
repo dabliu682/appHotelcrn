@@ -9,6 +9,7 @@ use App\Entity\Documents;
 use App\Entity\Companys;
 use App\Entity\Servicetype;
 use App\Entity\Services;
+use App\Entity\Rooms;
 use Symfony\Component\HttpFoundation\JsonResponse;
 
 class ConfiguracionController extends AbstractController
@@ -289,5 +290,35 @@ class ConfiguracionController extends AbstractController
         $bd->flush();
 
         return new JsonResponse(['response' => 'Ok']);
+    }
+
+    public function obtenerServicio($id)
+    {
+        $bd = $this->getDoctrine()->getManager();
+
+        $servicio = $bd->getRepository(Services::class)->find($id);
+        $habitaciones = $bd->getRepository(Rooms::class)->findBy(['typeroom' => $servicio->getTyperoom()]);
+
+        $habitacionesSelector = [];
+
+        foreach ($habitaciones as $habitacion) {
+
+            $tipo = ($habitacion->getTyperoom() == 1) ? 'Habitación sencilla' : (
+                ($habitacion->getTyperoom() == 2) ? 'Habitación de dos camas' : (
+                    ($habitacion->getTyperoom() == 3) ? 'Habitación sencilla con aire acondicionado' : (
+                        ($habitacion->getTyperoom() == 4) ? 'Habitación de dos camas con aire acondicionado' : (
+                            ($habitacion->getTyperoom() == 5) ? 'Habitación sencilla ventilador' : 'Habitación de dos camas ventilador'
+                        )
+                    )
+                )
+            );
+
+            $habitacionesSelector[] = [
+                'id' => $habitacion->getId(),
+                'name' => $habitacion->getName().' - '.$tipo
+            ];
+        }
+
+        return new JsonResponse([ 'id' => $servicio->getId(), 'name' => $servicio->getName(), 'code' => $servicio->getCode(), 'price' => $servicio->getPrice(), 'tipo' => $servicio->getTipo()->getId(), 'typeroom' => $servicio->getTyperoom(), 'habitacionesSelector' => $habitacionesSelector ]);
     }
 }

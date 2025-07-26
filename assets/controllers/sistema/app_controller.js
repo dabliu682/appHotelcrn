@@ -34,6 +34,9 @@ export default class extends Controller {
         'rutaCambiaEstadoServicio': String,
         'rutaEliminarTiposServ': String,
         'rutaEliminarServicio': String,
+        'rutaObtenerServicio': String,
+        'rutaGuardarProducto': String,
+        'rutaProductos': String,
     };
     static targets = [
         'modalBuscarClienteCheckin',
@@ -121,12 +124,34 @@ export default class extends Controller {
         'nombreTipoServ',
         'idTipoServ',
         'idServicio',
-        'selectTipoHabitacion'
+        'selectTipoHabitacion',
+        'modalNuevoServicioCheckin',
+        'selectServ',
+        'selectHabitacionServ',
+        'valorServCheckin',
+        'valorPagServCheckin',
+        'saldoServCheckin',
+        'selectFormaPagoCheckin',
+        'comprobanteCheckin',
+        'btnGuardarServicioCheckin',
+        'modalNuevoProducto',
+        'modalProductoLabel',
+        'formNuevoProducto',
+        'codigoProducto',
+        'tipoProducto',
+        'nombreProducto',
+        'btnGuardarProducto',
+        'frameProductos',
+        'modalNuevaEntrada'
     ];
 
     connect() {
         // Código que se ejecuta al conectar el controlador
         console.log("AppController conectado");
+    }
+
+    formatearCampo(event) {
+        //new Cleave(event.currentTarget, { numeral: true, numeralPositiveOnly: true, numeralDecimalScale: 3, numeralDecimalMark: ',', delimiter: '.' });
     }
 
     cambiarVista(event) {
@@ -749,41 +774,30 @@ export default class extends Controller {
             const selectId = `clienteSelectCustom-${index}`;
             target += `<div id="checkin-${index}" style="${style}">
                             <form data-sistema--app-target="formCheckin-${index}">
-                                <input type="hidden" name="idCheckin" id="numCheckin"  value="${index}">
                                 <div class="row">
                                     <div class="col-md-4">
-                                        <label for="${selectId}" class="form-label" style="font-weight: bold;">Cliente <i class="fas fa-exclamation-circle text-info" title="Crear cliente" style="" data-action="click->sistema--app#abrirModalNuevoCliente" data-accion="1"></i></label>
-                                        <div class="input-group">
-                                            <select id="${selectId}" class="form-control" name="clienteRev" data-sistema--app-target="clienteRev" data-action="change->sistema--app#obtenerDatosClienteCheckin" data-index="${index}">
+                                        <div class="d-flex justify-content-between align-items-center">
+                                            <label for="${selectId}" class="form-label mb-0" style="font-weight: bold;">Cliente <i class="fas fa-exclamation-circle text-info" title="Crear cliente" style="" data-action="click->sistema--app#abrirModalNuevoCliente" data-accion="1"></i></label>
+                                            <div class="d-flex justify-content-end align-items-center">
+                                                <div class="form-check form-check-inline">
+                                                    <input class="form-check-input" type="radio" name="tipoClienteCheckin-${index}" id="motoristaCheckin-${index}" value="motorista" checked>
+                                                    <label class="form-check-label" for="motoristaCheckin-${index}" style="font-weight: normal;">Motorista</label>
+                                                </div>
+                                                <div class="form-check form-check-inline">
+                                                    <input class="form-check-input" type="radio" name="tipoClienteCheckin-${index}" id="turistaCheckin-${index}" value="turista">
+                                                    <label class="form-check-label" for="turistaCheckin-${index}" style="font-weight: normal;">Turista</label>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="input-group mt-1">
+                                            <select id="${selectId}" class="form-control" name="clienteRev" data-sistema--app-target="clienteRev">
                                                 ${clienteOptions}
                                             </select>
                                             <button type="button" class="btn btn-outline-secondary" tabindex="-1" data-action="click->sistema--app#abrirBusquedaClienteModal" data-index = ${index} title="Buscar cliente" style="border: 1px solid #dee2e6;">
                                                 <i class="fas fa-search"></i>
                                             </button>
                                         </div>
-                                    </div>
-                                    <div class="col-md-2">
-                                        <label for="clienteSelect" class="form-label" style="font-weight: bold;">N° reserva</label>
-                                        <input type="text" name="fechaLlegClienteRev" class="form-control" id="cellClienteCheckin-${index}">
-                                    </div>
-                                    <div class="col-md-2">
-                                        <label for="clienteSelect" class="form-label" style="font-weight: bold;">Celular</label>
-                                        <input type="text" name="fechaLlegClienteRev" class="form-control" id="cellClienteCheckin-${index}">
-                                    </div>
-                                    <div class="col-md-2">
-                                        <label for="clienteSelect" class="form-label" style="font-weight: bold;">N° Vehiculo</label>
-                                        <input type="text" name="fechaLlegClienteRev" class="form-control" id="numeroVehiculoClienteCheckin-${index}">
-                                    </div>
-                                    <div class="col-md-2">
-                                        <label for="clienteSelect" class="form-label" style="font-weight: bold;">Placa</label>
-                                        <input type="text" name="fechaLlegClienteRev" class="form-control" id="numeroVehiculoClienteCheckin-${index}">
-                                    </div>
-                                </div>
-                                <div class="row mt-3">
-                                    <div class="col-md-4">
-                                        <label for="clienteSelect" class="form-label" style="font-weight: bold;">Empresa</label>
-                                        <input type="text" name="fechaLlegClienteRev" class="form-control" id="companiaClienteCheckin-${index}">
-                                    </div>
+                                    </div>                                    
                                     <div class="col-md-2">
                                         <label for="fechaLlegada" class="form-label" style="font-weight: bold;">Fecha llegada</label>
                                         <input type="date" name="fechaLlegClienteRev" class="form-control" value="${fechaActual}" min="">
@@ -799,48 +813,51 @@ export default class extends Controller {
                                     <div class="col-md-2">
                                         <label for="horaSalida" class="form-label" style="font-weight: bold;">Hora salida</label>
                                         <input type="time" name="horaSalidaClienteRev" class="form-control" value="" min="">
+                                    </div>                                
+                                </div>
+                                <div class="row mt-3">
+                                    <div class="col-12">
+                                        <div class="table-responsive">
+                                            <table class="table table-bordered table-sm align-middle mb-0">
+                                                <thead class="table-light">
+                                                    <tr>
+                                                        <th colspan="2" class="text-nowrap"><i class="fas fa-plus-circle text-success" style="cursor:pointer; font-weight: bold; margin-right:10px" data-action="click->sistema--app#abrirModalServicioCheckin"></i> Servicio</th>
+                                                        <th class="text-nowrap">Habitación</th>
+                                                        <th class="text-nowrap">Forma de pago</th>
+                                                        <th class="text-nowrap">Comprobante</th>
+                                                        <th class="text-nowrap">Valor</th>
+                                                        <th class="text-nowrap">Valor pagado</th>
+                                                    </tr>
+                                                </thead>
+                                                <tbody id="serviciosCheckin-${index}">
+                                                    <tr>
+                                                        <td colspan=8 style="text-align:center" >No se han registrado servicios</td>
+                                                    </tr>                                                    
+                                                </tbody>
+                                            </table>
+                                        </div>
                                     </div>
                                 </div>
                                 <div class="row mt-3">
-                                    <div class="col-md-6">
-                                        <label for="servicioSelect" class="form-label" style="font-weight: bold;">Servicio
-                                            <span class="ms-2">
-                                                <input class="form-check-input" type="radio" name="tipoPersonaCheckin-${index}" id="radioMotorista-${index}" value="motorista" checked>
-                                                <label class="form-check-label me-2" for="radioMotorista-${index}">Motorista</label>
-                                                <input class="form-check-input" type="radio" name="tipoPersonaCheckin-${index}" id="radioTurista-${index}" value="turista">
-                                                <label class="form-check-label" for="radioTurista-${index}">Turista</label>
-                                            </span>
-                                        </label>
-                                        <select class="form-control" name="servicioRev" data-sistema--app-target="servicioRev">
-                                            ${servicioOptions}
-                                        </select>
-                                    </div>
-                                    <div class="col-md-2">
-                                        <label for="valorServicio" class="form-label" style="font-weight: bold;">Valor</label>
-                                        <input type="text" name="valorServicio" id="valorServicio" class="form-control">
-                                    </div>
-                                    <div class="col-md-4">
-                                        <label for="habitacionSelect" class="form-label" style="font-weight: bold;">habitación</label>
-                                        <select class="form-control" name="habitacionRev" data-sistema--app-target="habitacionRev">
-                                             ${habitacionOptions}
-                                        </select>
-                                    </div>
-                                    <div class="col-md-2">
-                                        <label for="valorCancelado" class="form-label" style="font-weight: bold;">Valor cancelado</label>
-                                        <input type="text" name="valorCanceladoServicio" id="valorCanceladoServicio" class="form-control">
-                                    </div>
-                                    <div class="col-md-2">
-                                        <label for="saldoServicio" class="form-label" style="font-weight: bold;">Saldo</label>
-                                        <input type="text" name="saldoServicio" id="saldoServicio" class="form-control">
-                                    </div>
-                                    <div class="col-md-2">
-                                        <label for="formaPago" class="form-label" style="font-weight: bold;">Forma de pago</label>
-                                        <select class="form-control" name="formaPagoRev" data-sistema--app-target="formaPagoRev">
-                                            <option value="">Seleccione</option>
-                                            <option value="efectivo">Efectivo</option>
-                                            <option value="bono">Bono</option>
-                                            <option value="transaccion">Transaccion</option>
-                                        </select>
+                                    <div class="col-12">
+                                        <div class="table-responsive">
+                                            <table class="table table-bordered table-sm align-middle mb-0">
+                                                <thead class="table-light">
+                                                    <tr>
+                                                        <th colspan="2" class="text-nowrap"><i class="fas fa-cart-plus text-success" style="cursor:pointer; font-weight: bold; margin-right:10px"></i> Producto</th>
+                                                        <th class="text-nowrap">Forma de pago</th>
+                                                        <th class="text-nowrap">Valor</th>
+                                                        <th class="text-nowrap">Cantidad</th>
+                                                        <th class="text-nowrap">Valor pagado</th>
+                                                    </tr>
+                                                </thead>
+                                                <tbody id="productosCheckin-${index}">
+                                                    <tr>
+                                                        <td colspan=8 style="text-align:center" >No se han registrado productos</td>
+                                                    </tr>                                                    
+                                                </tbody>
+                                            </table>
+                                        </div>
                                     </div>
                                 </div>
                                 <div class="row mt-3">
@@ -889,9 +906,13 @@ export default class extends Controller {
                                             </div>
                                         </div>
                                     </div>
-                                    <div class="col-md-8">
+                                    <div class="col-md-6">
                                         <label for="observacionesCheckin" class="form-label" style="font-weight: bold;">Observaciones</label> 
                                         <textarea id="observacionesCheckin" name="observacionesCheckin" class="form-control" rows="2" data-sistema--app-target="observacionesCheckin" placeholder="Ingrese sus observaciones aquí"></textarea>
+                                    </div>
+                                    <div class="col-md-2">
+                                        <label class="form-label" style="font-weight: bold;">Total a pagar</label> 
+                                        </br><span id="totalPagar-${index}" class="text-success" style=" font-size: 26pt; font-weight: bold;">$ 0</span>
                                     </div>
                                 </div>
                             </form>
@@ -1043,6 +1064,264 @@ export default class extends Controller {
             $("#companiaClienteCheckin-" + index).val(result.compania);
             $("#numeroVehiculoClienteCheckin-" + index).val(result.numberBus);
         }
+    }
+
+    abrirModalServicioCheckin() {
+        this.modal = new Modal(this.modalNuevoServicioCheckinTarget);
+        this.modal.show();
+    }
+
+    async cargarServicioCheckin(event) {
+
+        let ruta = this.rutaObtenerServicioValue.replace('var1', event.currentTarget.value);
+
+        var consulta = await fetch(ruta);
+        var result = await consulta.json();
+
+        let habitaciones = result.habitacionesSelector;
+
+        let selectHabitacion = this.selectHabitacionServTarget;
+
+        selectHabitacion.innerHTML = ''; // Limpiar opciones existentes
+        this.valorServCheckinTarget.value = '';
+        this.valorPagServCheckinTarget.value = '';
+        this.saldoServCheckinTarget.value = '';
+
+        selectHabitacion.innerHTML = '<option value="">Seleccione habitación</option>'; // Agregar opción por defecto
+
+        habitaciones.forEach(habitacion => {
+            let option = document.createElement('option');
+            option.value = habitacion.id;
+            option.textContent = habitacion.name;
+            selectHabitacion.appendChild(option);
+        });
+
+        this.valorServCheckinTarget.value = result.price;
+        this.valorPagServCheckinTarget.value = result.price;
+        this.saldoServCheckinTarget.value = 0;
+
+
+    }
+
+    actualizaSaldoCheckin(event) {
+        let valor = parseFloat(this.valorServCheckinTarget.value);
+        let valorPagado = parseFloat(this.valorPagServCheckinTarget.value);
+
+        if (isNaN(valor) || isNaN(valorPagado)) {
+            this.saldoServCheckinTarget.value = '';
+            return;
+        }
+
+        let saldo = valor - valorPagado;
+        this.saldoServCheckinTarget.value = saldo.toFixed(0);
+    }
+
+    actualizarComprobante(event) {
+
+        let valor = this.selectFormaPagoCheckinTarget.value;
+
+        if (valor == '2') {
+            this.comprobanteCheckinTarget.disabled = false;
+            this.comprobanteCheckinTarget.value = '';
+        }
+        else {
+            this.comprobanteCheckinTarget.disabled = true;
+            this.comprobanteCheckinTarget.value = '';
+        }
+    }
+
+    validaBtnGuardarServicioCheckin() {
+
+        let valida = true
+
+        let selectHabitacionServ = this.selectHabitacionServTarget;
+
+        // Validar si el selector tiene más de 2 opciones (incluyendo la opción por defecto)
+        if (selectHabitacionServ.options.length > 2) {
+            if (selectHabitacionServ.value == '') {
+                valida = false;
+            }
+        }
+
+        if (this.selectFormaPagoCheckinTarget.value == '' || (this.selectFormaPagoCheckinTarget.value == '2' && this.comprobanteCheckinTarget.value == '')) {
+            valida = false;
+        }
+
+        if (this.selectServTarget.value == '' || this.valorServCheckinTarget.value == '' || this.valorPagServCheckinTarget.value == '' || this.saldoServCheckinTarget.value == '') {
+            valida = false;
+        }
+
+        if (valida) {
+            this.btnGuardarServicioCheckinTarget.disabled = false;
+        }
+        else {
+            this.btnGuardarServicioCheckinTarget.disabled = true;
+        }
+
+
+    }
+
+    guardarServicioCheckin() {
+
+        let index = $("#numCheckin").val();
+        let selectServ = this.selectServTarget.value;
+        let selectServText = '';
+
+        if (this.selectServTarget.selectedIndex > -1) {
+            selectServText = this.selectServTarget.options[this.selectServTarget.selectedIndex].text;
+            //selectServText = selectServText.split(' - ')[0]; // Extraer solo el codigo del servicio
+        }
+
+        let selectHabText = '';
+
+        if (this.selectHabitacionServTarget.value != '') {
+            selectHabText = this.selectHabitacionServTarget.options[this.selectHabitacionServTarget.selectedIndex].text;
+            selectHabText = selectHabText.split(' - ')[0]; // Extraer solo el codigo de la habitacion
+        }
+
+        let selectFomaPagoText = '';
+
+        if (this.selectFormaPagoCheckinTarget.selectedIndex > -1) {
+            selectFomaPagoText = this.selectFormaPagoCheckinTarget.options[this.selectFormaPagoCheckinTarget.selectedIndex].text;
+        }
+
+        let selectHabitacionServ = this.selectHabitacionServTarget.value;
+        let valorServCheckin = this.valorServCheckinTarget.value;
+        let valorPagServCheckin = this.valorPagServCheckinTarget.value;
+        let saldoServCheckin = this.saldoServCheckinTarget.value;
+        let selectFormaPagoCheckin = this.selectFormaPagoCheckinTarget.value;
+        let comprobanteCheckin = this.comprobanteCheckinTarget.value;
+
+        // Crear un array con los datos del servicio actual
+        let nuevoServicio = [
+            selectServText,
+            selectHabText,
+            selectFomaPagoText,
+            comprobanteCheckin,
+            valorServCheckin,
+            valorPagServCheckin,
+            saldoServCheckin,
+            selectServ,
+            selectHabitacionServ,
+            selectFormaPagoCheckin,
+        ];
+
+        // Acumular servicios en el array, agregando el nuevo al inicio
+        let key = 'servicioCheckin' + index;
+        let serviciosArray = [];
+        let serviciosGuardados = localStorage.getItem(key);
+        if (serviciosGuardados) {
+            try {
+                serviciosArray = JSON.parse(serviciosGuardados);
+                if (!Array.isArray(serviciosArray)) {
+                    serviciosArray = [];
+                }
+            } catch (e) {
+                serviciosArray = [];
+            }
+        }
+        serviciosArray.unshift(nuevoServicio);
+        localStorage.setItem(key, JSON.stringify(serviciosArray));
+
+        // Limpiar los campos del formulario
+        this.selectServTarget.value = '';
+        this.selectHabitacionServTarget.value = '';
+        this.valorServCheckinTarget.value = '';
+        this.valorPagServCheckinTarget.value = '';
+        this.saldoServCheckinTarget.value = '';
+        this.selectFormaPagoCheckinTarget.value = '';
+        this.comprobanteCheckinTarget.value = '';
+        this.comprobanteCheckinTarget.disabled = true;
+        this.btnGuardarServicioCheckinTarget.disabled = true;
+
+        FlashMessage.show('Servicio agregado correctamente', 'success');
+
+        // Actualizar la tabla de servicios en el modal
+        this.actualizarTablaServiciosCheckin(index);
+
+
+    }
+
+    actualizarTablaServiciosCheckin(index) {
+        let key = 'servicioCheckin' + index;
+        let serviciosArray = [];
+        let serviciosGuardados = localStorage.getItem(key);
+        if (serviciosGuardados) {
+            try {
+                serviciosArray = JSON.parse(serviciosGuardados);
+                if (!Array.isArray(serviciosArray)) {
+                    serviciosArray = [];
+                }
+            } catch (e) {
+                serviciosArray = [];
+            }
+        }
+        let tbody = this.modalBodyCheckinTarget.querySelector(`#serviciosCheckin-${index}`);
+        tbody.innerHTML = ''; // Limpiar el contenido actual
+        let totalPagado = 0;
+        let totalSaldo = 0;
+        if (serviciosArray.length > 0) {
+            serviciosArray.forEach((servicio, i) => {
+                totalPagado += Number(servicio[5]);
+                totalSaldo += Number(servicio[6]);
+                let tr = document.createElement('tr');
+                const valorServicio = Number(servicio[4]).toLocaleString('es-CO');
+                const valorPagado = Number(servicio[5]).toLocaleString('es-CO');
+                tr.innerHTML = `
+                    <td>
+                        <i class="fas fa-trash-alt text-danger" title="Eliminar" data-servicio-index="${i}" data-action="click->sistema--app#eliminarServicioCheckin"></i>
+                    </td>
+                    <td class="text-nowrap">
+                        ${servicio[0]}
+                    </td>
+                    <td class="text-nowrap">${servicio[1]}</td>
+                    <td class="text-nowrap">${servicio[2]}</td>
+                    <td class="text-nowrap">${servicio[3]}</td>
+                    <td class="text-nowrap" style="text-align:right;">$ ${valorServicio}</td>
+                    <td class="text-nowrap" style="text-align:right;">
+                        $ ${valorPagado}
+                    </td>
+                `;
+                tbody.appendChild(tr);
+            });
+
+            // Actualizar el span con el total pagado
+            const totalSpan = document.getElementById("totalPagar-" + index);
+            if (totalSpan) {
+                totalSpan.textContent = "$ " + totalPagado.toLocaleString('es-CO');
+            }
+        } else {
+            tbody.innerHTML = '<tr><td colspan="7" style="text-align:center">No se han registrado servicios</td></tr>';
+            // Si no hay servicios, mostrar $ 0 en el span
+            const totalSpan = document.getElementById("totalPagar-" + index);
+            if (totalSpan) {
+                totalSpan.textContent = "$ 0";
+            }
+        }
+    }
+
+    eliminarServicioCheckin(event) {
+        let index = $("#numCheckin").val();
+        // Obtener el índice del servicio a eliminar
+        const servicioIndex = event.currentTarget.dataset.servicioIndex;
+        let key = 'servicioCheckin' + index;
+        let serviciosArray = [];
+        let serviciosGuardados = localStorage.getItem(key);
+        if (serviciosGuardados) {
+            try {
+                serviciosArray = JSON.parse(serviciosGuardados);
+                if (!Array.isArray(serviciosArray)) {
+                    serviciosArray = [];
+                }
+            } catch (e) {
+                serviciosArray = [];
+            }
+        }
+        // Eliminar el servicio por índice
+        serviciosArray.splice(servicioIndex, 1);
+        localStorage.setItem(key, JSON.stringify(serviciosArray));
+        // Actualizar la tabla
+        this.actualizarTablaServiciosCheckin(index);
     }
 
     abrirModalNuevTipoServicio(event) {
@@ -1251,6 +1530,67 @@ export default class extends Controller {
             const respuesta = await fetch(ruta);
             this.frameListaServiciossTarget.innerHTML = await respuesta.text();
         }
+    }
+
+    abrirModalNuevoProducto(event) {
+
+        if (event.currentTarget.dataset.accion == '2') {
+            this.modalTipoServLabelTarget.innerHTML = 'Editar producto';
+            this.nombreTipoServTarget.value = event.currentTarget.dataset.name;
+            this.idTipoServTarget.value = event.currentTarget.dataset.id;
+        }
+        else {
+            this.modalProductoLabelTarget.innerHTML = 'Nuevo producto';
+            this.nombreProductoTarget.value = '';
+            this.tipoProductoTarget.value = '';
+            this.codigoProductoTarget.value = '';
+        }
+
+        this.modal = new Modal(this.modalNuevoProductoTarget);
+        this.modal.show();
+    }
+
+    validaBtnGuardarProducto() {
+        if (this.nombreProductoTarget.value != '' && this.tipoProductoTarget.value != '' && this.codigoProductoTarget.value) {
+            this.btnGuardarProductoTarget.disabled = false;
+        }
+        else {
+            this.btnGuardarProductoTarget.disabled = true;
+        }
+    }
+
+    async guardarProducto(event) {
+        this.btnGuardarProductoTarget.disabled = true;
+
+        let urlGuardar = this.rutaGuardarProductoValue;
+        let ruta = this.rutaProductosValue;
+        ruta = ruta.replace('var1', '0');
+
+        let formulario = '';
+
+        formulario = this.formNuevoProductoTarget;
+
+        var parametros = new FormData(formulario);
+
+        var consulta = await fetch(urlGuardar, { 'method': 'POST', 'body': parametros });
+        var result = await consulta.json();
+
+        if (result.response == 'Ok') {
+
+            const modalInstance = Modal.getInstance(this.modalNuevoProductoTarget);
+
+            if (modalInstance) { modalInstance.hide(); }
+
+            FlashMessage.show('Producto guardado correctamente', 'success');
+
+            const respuesta = await fetch(ruta);
+            this.frameProductosTarget.innerHTML = await respuesta.text();
+        }
+    }
+
+    abrirModalNuevaEntrada(event) {
+        this.modal = new Modal(this.modalNuevaEntradaTarget);
+        this.modal.show();
     }
 
     cambiocheckin(event) {

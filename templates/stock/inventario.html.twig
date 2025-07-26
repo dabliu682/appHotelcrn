@@ -1,0 +1,46 @@
+<turbo-frame id="frame-inventario">
+    <h5 class="card-title mb-3">Inventario</h5>
+    <div class="table-responsive">
+        <table class="table table-striped table-hover align-middle mb-0">
+            <thead class="table-dark">
+                <tr>
+                    <th>Codigo</th>
+                    <th>Entradas</th>
+                    <th>Salidas</th>
+                    <th>Existencias</th>
+                    <th colspan=2 >Acciones</th>
+                </tr>
+            </thead>
+            <tbody>
+                
+            </tbody>
+        </table>
+    </div>
+
+    <!-- Modal para registrar tipos de servicio -->
+    <div class="modal fade" id="modalNuevoTipoServ" data-sistema--app-target="modalNuevoTipoServ" tabindex="-1" aria-labelledby="modalNuevoTipoServLabel" aria-hidden="true">
+        <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+            <h5 class="modal-title"><span data-sistema--app-target="modalTipoServLabel"></span></h5>
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <form data-sistema--app-target="formNuevoTipoServ">
+            <input type="hidden" name="id" data-sistema--app-target="idTipoServ" value="0">
+            <div class="modal-body">
+                <div class="row mb-3">
+                    <div class="col-md-12">
+                        <label for="nombreTipoServ" class="form-label" style="font-weight: bold;">Nombre</label> 
+                        <input type="text" name="nombre" class="form-control" id="nombreTipoServ" data-sistema--app-target="nombreTipoServ" placeholder="Ingrese el nombre del tipo de servicio" data-action="blur->sistema--app#validaBtnGuardarTipoServ">
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-primary" data-sistema--app-target="btnGuardarTipoServ" data-action="sistema--app#guardarTipoServ" disabled>Guardar</button>
+                <button type="button" class="btn btn-danger" data-bs-dismiss="modal">Cancelar</button>
+            </div>
+            </form>
+        </div>
+        </div>
+    </div>
+</turbo-frame>

@@ -90,11 +90,13 @@ class InicioController extends AbstractController
                 6 => 'Doble con ventilador',
             ];
         
-            $tipo = $tipos[$servicio->getTyperoom()] ?? 'Desconocido';
+            $tipo = $tipos[$servicio->getTyperoom()] ?? '';
+
+            ($tipo != '') ? $tipo = ' - '.$tipo : $tipo = '';
 
             $serviciosSelector[] = [
                 'id' => $servicio->getId(),
-                'name' => $servicio->getCode().' - '.$servicio->getTipo()->getName().' - '.$tipo.' - '.$servicio->getName()
+                'name' => $servicio->getCode().' - '.$servicio->getTipo()->getName().$tipo.' - '.$servicio->getName()
             ];
         }
 
