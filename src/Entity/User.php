@@ -94,21 +94,21 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
      * @ORM\OneToMany(targetEntity=Productos::class, mappedBy="usucrea")
      */
     private $productos;
-
-    /**
-     * @ORM\OneToMany(targetEntity=Inventario::class, mappedBy="usucrea")
-     */
-    private $inventarios;
-
-    /**
-     * @ORM\OneToMany(targetEntity=Inventario::class, mappedBy="usumodifica")
-     */
-    private $inventario_usumod;
-
+    
     /**
      * @ORM\OneToMany(targetEntity=Entradas::class, mappedBy="usucrea")
      */
     private $entradas;
+
+    /**
+     * @ORM\OneToMany(targetEntity=Inventario::class, mappedBy="usucrea")
+     */
+    private $inventario_usucrea;
+
+    /**
+     * @ORM\OneToMany(targetEntity=Inventario::class, mappedBy="usumod")
+     */
+    private $inventario_usumod;
 
     public function __construct()
     {
@@ -121,9 +121,9 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
         $this->services = new ArrayCollection();
         $this->servicetypes = new ArrayCollection();
         $this->productos = new ArrayCollection();
-        $this->inventarios = new ArrayCollection();
-        $this->inventario_usumod = new ArrayCollection();
         $this->entradas = new ArrayCollection();
+        $this->inventario_usucrea = new ArrayCollection();
+        $this->inventario_usumod = new ArrayCollection();
     }
 
     /**
@@ -488,66 +488,6 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     }
 
     /**
-     * @return Collection<int, Inventario>
-     */
-    public function getInventarios(): Collection
-    {
-        return $this->inventarios;
-    }
-
-    public function addInventario(Inventario $inventario): self
-    {
-        if (!$this->inventarios->contains($inventario)) {
-            $this->inventarios[] = $inventario;
-            $inventario->setUsucrea($this);
-        }
-
-        return $this;
-    }
-
-    public function removeInventario(Inventario $inventario): self
-    {
-        if ($this->inventarios->removeElement($inventario)) {
-            // set the owning side to null (unless already changed)
-            if ($inventario->getUsucrea() === $this) {
-                $inventario->setUsucrea(null);
-            }
-        }
-
-        return $this;
-    }
-
-    /**
-     * @return Collection<int, Inventario>
-     */
-    public function getInventarioUsumod(): Collection
-    {
-        return $this->inventario_usumod;
-    }
-
-    public function addInventarioUsumod(Inventario $inventarioUsumod): self
-    {
-        if (!$this->inventario_usumod->contains($inventarioUsumod)) {
-            $this->inventario_usumod[] = $inventarioUsumod;
-            $inventarioUsumod->setUsumodifica($this);
-        }
-
-        return $this;
-    }
-
-    public function removeInventarioUsumod(Inventario $inventarioUsumod): self
-    {
-        if ($this->inventario_usumod->removeElement($inventarioUsumod)) {
-            // set the owning side to null (unless already changed)
-            if ($inventarioUsumod->getUsumodifica() === $this) {
-                $inventarioUsumod->setUsumodifica(null);
-            }
-        }
-
-        return $this;
-    }
-
-    /**
      * @return Collection<int, Entradas>
      */
     public function getEntradas(): Collection
@@ -571,6 +511,66 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
             // set the owning side to null (unless already changed)
             if ($entrada->getUsucrea() === $this) {
                 $entrada->setUsucrea(null);
+            }
+        }
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, Inventario>
+     */
+    public function getInventarioUsucrea(): Collection
+    {
+        return $this->inventario_usucrea;
+    }
+
+    public function addInventarioUsucrea(Inventario $inventarioUsucrea): self
+    {
+        if (!$this->inventario_usucrea->contains($inventarioUsucrea)) {
+            $this->inventario_usucrea[] = $inventarioUsucrea;
+            $inventarioUsucrea->setUsucrea($this);
+        }
+
+        return $this;
+    }
+
+    public function removeInventarioUsucrea(Inventario $inventarioUsucrea): self
+    {
+        if ($this->inventario_usucrea->removeElement($inventarioUsucrea)) {
+            // set the owning side to null (unless already changed)
+            if ($inventarioUsucrea->getUsucrea() === $this) {
+                $inventarioUsucrea->setUsucrea(null);
+            }
+        }
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, Inventario>
+     */
+    public function getInventarioUsumod(): Collection
+    {
+        return $this->inventario_usumod;
+    }
+
+    public function addInventarioUsumod(Inventario $inventarioUsumod): self
+    {
+        if (!$this->inventario_usumod->contains($inventarioUsumod)) {
+            $this->inventario_usumod[] = $inventarioUsumod;
+            $inventarioUsumod->setUsumod($this);
+        }
+
+        return $this;
+    }
+
+    public function removeInventarioUsumod(Inventario $inventarioUsumod): self
+    {
+        if ($this->inventario_usumod->removeElement($inventarioUsumod)) {
+            // set the owning side to null (unless already changed)
+            if ($inventarioUsumod->getUsumod() === $this) {
+                $inventarioUsumod->setUsumod(null);
             }
         }
 

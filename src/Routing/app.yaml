@@ -158,6 +158,10 @@ app_entradas:
   path: /entradas
   defaults: {_controller: App\Controller\StockController::entradas}
 
+app_guardarEntrada:
+  path: /guardarEntrada
+  defaults: {_controller: App\Controller\StockController::guardarEntrada}
+
 
 
 

@@ -8,10 +8,23 @@
                     <th>Entradas</th>
                     <th>Salidas</th>
                     <th>Existencias</th>
-                    <th colspan=2 >Acciones</th>
                 </tr>
             </thead>
             <tbody>
+                {% if inventario is not null %}
+                    {% for item in inventario %}
+                        <tr>
+                            <td title="{{ item.codigo.nombre }}" style="text-align:right">{{ item.codigo.codigo}}</td>
+                            <td style="text-align:right">{{ item.entradas}}</td>
+                            <td style="text-align:right">{{ item.salidas}}</td>
+                            <td style="text-align:right">{{ item.existencias}}</td>
+                        </tr>
+                    {% endfor %}
+                {% else %}
+                    <tr>
+                        <td colspan="6" style="text-align:center">No se encontraron registros</td>
+                    </tr>
+                {% endif %}
                 
             </tbody>
         </table>
