@@ -13,11 +13,25 @@
                     <th>Valor venta</th>
                     <th>Utilidad</th>
                     <th>Descripción</th>
-                    <th colspan=2 >Acciones</th>
+                    <th>Fecha de ingreso</th>
                 </tr>
             </thead>
             <tbody>
                 {% if entradas is not empty %}
+                    {% for item in entradas %}
+                        <tr>
+                            <td title="{{item.codigo.nombre}}">{{ item.codigo.codigo }}</td>
+                            <td style="text-align:right">{{ item.cantidad|number_format(0, ',', '.') }}</td>
+                            <td style="text-align:right">$ {{ item.valor|number_format(0, ',', '.') }}</td>
+                            <td style="text-align:right">$ {{ item.valundent|number_format(0, ',', '.') }}</td>
+                            <td style="text-align:right">{{ item.porcentaje }} %</td>
+                            <td style="text-align:right">$ {{ item.valundsalida|number_format(0, ',', '.') }}</td>
+                            <td style="text-align:right">$ {{ item.valventa|number_format(0, ',', '.') }}</td>
+                            <td style="text-align:right">$ {{ item.utilidad|number_format(0, ',', '.') }}</td>
+                            <td>{{ item.descripcion }}</td>
+                            <td>{{ item.fechacrea|date('d-m-Y H:i') }}</td>
+                        </tr>
+                    {% endfor %}
                 {% else %}
                     <tr>
                         <td colspan="11" style="text-align:center">No se encontraron registros</td>
@@ -35,16 +49,16 @@
         <div class="modal-dialog">
         <div class="modal-content">
             <div class="modal-header">
-            <h5 class="modal-title"><span data-sistema--app-target="modalTipoServLabel"></span></h5>
+            <h5 class="modal-title"><span data-sistema--app-target="modalEntradaLabel"></span></h5>
             <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
-            <form data-sistema--app-target="formNuevoTipoServ">
-            <input type="hidden" name="id" data-sistema--app-target="idTipoServ" value="0">
+            <form data-sistema--app-target="formNuevaEntrada">
+            <input type="hidden" name="id" data-sistema--app-target="idEntrada" value="0">
             <div class="modal-body">
                 <div class="row mb-3">
                     <div class="col-md-12">
                         <label for="codigo" class="form-label" style="font-weight: bold;">Codigo</label> 
-                        <select class="form-select" id="codigo"  name="codigo" data-sistema--app-target="codigo" data-action="sistema--app#validaBtnGuardarProducto" >
+                        <select class="form-select" id="codigo"  name="codigo" data-sistema--app-target="codigoProducto" data-action="sistema--app#validaBtnGuardarEntrada" >
                             <option value="">Seleccione tipo de producto</option>
                             {% for item in productos %}
                                 <option value="{{ item.id }}">{{ item.codigo}} - {{ item.nombre }}</option>
@@ -55,46 +69,46 @@
                 <div class="row mb-3">
                     <div class="col-md-4">
                         <label for="codigoProducto" class="form-label" style="font-weight: bold;">Cantidad</label> 
-                        <input type="text" name="codigo" class="form-control" id="codigoProducto" data-sistema--app-target="codigoProducto" placeholder="" data-action="sistema--app#formatearCampo blur->sistema--app#validaBtnGuardarProducto">
+                        <input type="text" name="cantidad" class="form-control" id="codigoProducto" data-sistema--app-target="cantidadProducto" placeholder="0" style="text-align:right" data-action="sistema--app#formatearCampo blur->sistema--app#calcularValEnt">
                     </div>
                     <div class="col-md-4">
                         <label for="codigoProducto" class="form-label" style="font-weight: bold;">Valor</label> 
-                        <input type="text" name="codigo" class="form-control" id="codigoProducto" data-sistema--app-target="codigoProducto" placeholder="" data-action="sistema--app#formatearCampo blur->sistema--app#validaBtnGuardarProducto">
+                        <input type="text" name="valor" class="form-control" id="codigoProducto" data-sistema--app-target="valorProducto" placeholder="$ 0" style="text-align:right" data-action="sistema--app#formatearCampo blur->sistema--app#calcularValEnt">
                     </div>
                     <div class="col-md-4">
                         <label for="codigoProducto" class="form-label" style="font-weight: bold;">Porcentaje</label> 
-                        <input type="text" name="codigo" class="form-control" id="codigoProducto" data-sistema--app-target="codigoProducto" placeholder="" data-action="sistema--app#formatearCampo blur->sistema--app#validaBtnGuardarProducto">
+                        <input type="text" name="porcentaje" class="form-control" id="codigoProducto" data-sistema--app-target="porcProducto" placeholder="0 %" style="text-align:right" data-action="sistema--app#formatearCampo blur->sistema--app#calcularValEnt">
                     </div>
                 </div>
                 <div class="row mb-3">
                     <div class="col-md-4">
                         <label for="codigoProducto" class="form-label" style="font-weight: bold;">Valor entrada</label> 
-                        <input type="text" name="codigo" class="form-control" id="codigoProducto" data-sistema--app-target="codigoProducto" placeholder="$ 0" style="text-align:right" readonly>
+                        <input type="text" name="valEntProducto" class="form-control" id="codigoProducto" data-sistema--app-target="valEntProducto" placeholder="$ 0" style="text-align:right" readonly>
                     </div>
                     <div class="col-md-4">
                         <label for="codigoProducto" class="form-label" style="font-weight: bold;">Valor salida</label> 
-                        <input type="text" name="codigo" class="form-control" id="codigoProducto" data-sistema--app-target="codigoProducto" placeholder="$ 0" style="text-align:right" readonly>
+                        <input type="text" name="valSalProducto" class="form-control" id="codigoProducto" data-sistema--app-target="valSalProducto" placeholder="$ 0" style="text-align:right" readonly>
                     </div>
                     <div class="col-md-4">
                         <label for="codigoProducto" class="form-label" style="font-weight: bold;">Valor venta</label> 
-                        <input type="text" name="codigo" class="form-control" id="codigoProducto" data-sistema--app-target="codigoProducto" placeholder="$ 0" style="text-align:right" readonly>
+                        <input type="text" name="valVentaProducto" class="form-control" id="codigoProducto" data-sistema--app-target="valVentaProducto" placeholder="$ 0" style="text-align:right" data-action="sistema--app#formatearCampo blur->sistema--app#calcularUtilidad">
                     </div>
                 </div>
                 <div class="row mb-3">
                     <div class="col-md-4">
                         <label for="codigoProducto" class="form-label" style="font-weight: bold;">Utilidad</label> 
                         <div class="text-success" style="font-size: 20pt;border: 1px solid #dee2e6; height: 63px; text-align: center; display: flex; align-items: center; justify-content: center">
-                            <span>$ 0</span>
+                            <span data-sistema--app-target="utilidad">$ 0</span>
                         </div>
                     </div>
                     <div class="col-md-8">
                         <label for="codigoProducto" class="form-label" style="font-weight: bold;">Observaciones</label> 
-                        <textarea id="observacionesCheckin" name="observacionesCheckin" class="form-control" rows="2" data-sistema--app-target="observacionesCheckin" placeholder="Ingrese sus observaciones aquí"></textarea>
+                        <textarea id="observacionesCheckin" name="descripcion" class="form-control" rows="2" data-sistema--app-target="observacionesCheckin" placeholder="Ingrese sus observaciones aquí"></textarea>
                     </div>
                 </div>
             </div>
             <div class="modal-footer">
-                <button type="button" class="btn btn-primary" data-sistema--app-target="btnGuardarTipoServ" data-action="sistema--app#guardarTipoServ" disabled>Guardar</button>
+                <button type="button" class="btn btn-primary" data-sistema--app-target="btnGuardarEntrada" data-action="click->sistema--app#guardarEntrada" disabled>Guardar</button>
                 <button type="button" class="btn btn-danger" data-bs-dismiss="modal">Cancelar</button>
             </div>
             </form>

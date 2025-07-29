@@ -39,26 +39,24 @@ class Inventario
     private $existencias;
 
     /**
-     * @ORM\ManyToOne(targetEntity=User::class, inversedBy="inventarios")
-     * @ORM\JoinColumn(nullable=false)
+     * @ORM\ManyToOne(targetEntity=User::class, inversedBy="inventario_usucrea")
      */
     private $usucrea;
 
     /**
-     * @ORM\Column(type="datetime")
+     * @ORM\Column(type="datetime", nullable=true)
      */
     private $fechacrea;
 
     /**
-     * @ORM\Column(type="datetime")
+     * @ORM\ManyToOne(targetEntity=User::class, inversedBy="inventario_usumod")
      */
-    private $fechamod;
+    private $usumod;
 
     /**
-     * @ORM\ManyToOne(targetEntity=User::class, inversedBy="inventario_usumod")
-     * @ORM\JoinColumn(nullable=false)
+     * @ORM\Column(type="datetime", nullable=true)
      */
-    private $usumodifica;
+    private $fechamod;
 
     public function getId(): ?int
     {
@@ -130,9 +128,21 @@ class Inventario
         return $this->fechacrea;
     }
 
-    public function setFechacrea(\DateTimeInterface $fechacrea): self
+    public function setFechacrea(?\DateTimeInterface $fechacrea): self
     {
         $this->fechacrea = $fechacrea;
+
+        return $this;
+    }
+
+    public function getUsumod(): ?User
+    {
+        return $this->usumod;
+    }
+
+    public function setUsumod(?User $usumod): self
+    {
+        $this->usumod = $usumod;
 
         return $this;
     }
@@ -142,21 +152,9 @@ class Inventario
         return $this->fechamod;
     }
 
-    public function setFechamod(\DateTimeInterface $fechamod): self
+    public function setFechamod(?\DateTimeInterface $fechamod): self
     {
         $this->fechamod = $fechamod;
-
-        return $this;
-    }
-
-    public function getUsumodifica(): ?User
-    {
-        return $this->usumodifica;
-    }
-
-    public function setUsumodifica(?User $usumodifica): self
-    {
-        $this->usumodifica = $usumodifica;
 
         return $this;
     }
