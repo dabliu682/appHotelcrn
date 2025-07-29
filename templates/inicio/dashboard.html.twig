@@ -58,7 +58,7 @@
                     </div>
                     <div class="flex-grow-1">
                         <div class="h6 fw-bold mb-1">{{ turno is not null ? turno.usuario.name : 'Sin turno' }}</div>
-                        <div class="card-title mb-1 fs-6">Turno actual - {{ '%05d'|format(turno.numero) }}</div>                            
+                        <div class="card-title mb-1 fs-6">Turno actual - {{ turno is not null ? '%05d'|format(turno.numero) : 'Sin turno' }}</div>                            
                     </div>
                 </div>
             </div>

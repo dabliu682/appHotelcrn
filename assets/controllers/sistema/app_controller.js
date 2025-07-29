@@ -37,6 +37,8 @@ export default class extends Controller {
         'rutaObtenerServicio': String,
         'rutaGuardarProducto': String,
         'rutaProductos': String,
+        'rutaEntradas' : String,
+        'rutaGuardarEntrada' : String,
     };
     static targets = [
         'modalBuscarClienteCheckin',
@@ -142,7 +144,19 @@ export default class extends Controller {
         'nombreProducto',
         'btnGuardarProducto',
         'frameProductos',
-        'modalNuevaEntrada'
+        'modalNuevaEntrada',
+        'modalEntradaLabel',
+        'codigoProducto',
+        'cantidadProducto',
+        'valorProducto',
+        'porcProducto',
+        'valEntProducto',
+        'valSalProducto',
+        'valVentaProducto',
+        'utilidad',
+        'btnGuardarEntrada',
+        'frameEntradas',
+        'formNuevaEntrada'
     ];
 
     connect() {
@@ -151,7 +165,7 @@ export default class extends Controller {
     }
 
     formatearCampo(event) {
-        //new Cleave(event.currentTarget, { numeral: true, numeralPositiveOnly: true, numeralDecimalScale: 3, numeralDecimalMark: ',', delimiter: '.' });
+        new Cleave(event.currentTarget, { numeral: true, numeralPositiveOnly: true, numeralDecimalScale: 3, numeralDecimalMark: ',', delimiter: '.' });
     }
 
     cambiarVista(event) {
@@ -1589,9 +1603,113 @@ export default class extends Controller {
     }
 
     abrirModalNuevaEntrada(event) {
+
+        if (event.currentTarget.dataset.accion == '2') {
+            this.modalEntradaLabelTarget.innerHTML = 'Editar entrada';
+        }
+        else
+        {
+            this.modalEntradaLabelTarget.innerHTML = 'Nueva entrada';
+        }
+           
         this.modal = new Modal(this.modalNuevaEntradaTarget);
         this.modal.show();
     }
+
+    calcularValEnt(event)
+    {
+        
+        let cantidadProducto = this.cantidadProductoTarget.value.replace(/\.|,/g, '');
+        let valorProducto = this.valorProductoTarget.value.replace(/\.|,/g, '');
+        let porcProducto = this.porcProductoTarget.value.replace(/\.|,/g, '');
+
+        if(cantidadProducto != '' && valorProducto != '')
+        {
+            let total =  parseFloat(valorProducto) /parseFloat(cantidadProducto);
+            this.valEntProductoTarget.value = total.toLocaleString('es-CO');
+        }
+
+        if(cantidadProducto != '' && valorProducto != '' && porcProducto != '' && this.valEntProductoTarget.value != '' )
+        {
+            let porcentaje = Number(porcProducto/100); 
+            let valEntProducto = Number(this.valEntProductoTarget.value.replace(/\.|,/g, ''));
+
+            let utilidad = (valEntProducto*porcentaje)*cantidadProducto;
+            let val = (valEntProducto*porcentaje)+valEntProducto;
+
+            this.valSalProductoTarget.value = val.toLocaleString('es-CO');
+            this.valVentaProductoTarget.value = val.toLocaleString('es-CO');
+            this.utilidadTarget.innerHTML = '$ '+utilidad.toLocaleString('es-CO');        
+
+        }
+    }
+
+    calcularUtilidad()
+    {
+        let valEntProducto = Number(this.valEntProductoTarget.value.replace(/\.|,/g, ''));
+        let valVentaProducto = Number(this.valVentaProductoTarget.value.replace(/\.|,/g, ''));
+        let cantidadProducto = this.cantidadProductoTarget.value.replace(/\.|,/g, '');
+
+        if(valEntProducto != '')
+        {
+            let valor = valVentaProducto-valEntProducto;
+
+            valor = valor*cantidadProducto;
+
+            this.utilidadTarget.innerHTML = '$ '+valor.toLocaleString('es-CO');
+        }
+    }
+
+    validaBtnGuardarEntrada()
+    {
+        let codigoProducto = this.codigoProductoTarget.value;
+        let cantidadProducto = this.cantidadProductoTarget.value;
+        let valorProducto = this.valorProductoTarget.value;
+        let porcProducto = this.porcProductoTarget.value;
+        let valEntProducto = this.valEntProductoTarget.value;
+        let valSalProducto = this.valSalProductoTarget.value;
+        let valVentaProducto = this.valVentaProductoTarget.value;
+
+        if(codigoProducto != '' && cantidadProducto != '' && valorProducto != '' && porcProducto != '' && valEntProducto != '' && valSalProducto != '' && valVentaProducto != '')
+        {
+            this.btnGuardarEntradaTarget.disabled = false;
+        }
+        else
+        {
+            this.btnGuardarEntradaTarget.disabled = true;
+        }
+    }
+
+    async guardarEntrada()
+    {
+        this.btnGuardarEntradaTarget.disabled = true;
+        
+        let urlGuardar = this.rutaGuardarEntradaValue;
+        let ruta = this.rutaEntradasValue;        
+
+        let formulario = '';
+
+        formulario = this.formNuevaEntradaTarget;
+
+        var parametros = new FormData(formulario);
+
+        var consulta = await fetch(urlGuardar, { 'method': 'POST', 'body': parametros });
+        var result = await consulta.json();
+
+        if (result.response == 'Ok') {
+
+            const modalInstance = Modal.getInstance(this.modalNuevaEntradaTarget);
+
+            if (modalInstance) { modalInstance.hide(); }
+
+            FlashMessage.show('Entrada guardada correctamente', 'success');
+
+            const respuesta = await fetch(ruta);
+            this.frameEntradasTarget.innerHTML = await respuesta.text();
+        }
+    }
+
+
 
     cambiocheckin(event) {
         let index = event.currentTarget.dataset.index;
