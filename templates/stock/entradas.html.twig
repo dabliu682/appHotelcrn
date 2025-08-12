@@ -1,8 +1,8 @@
 <turbo-frame id="frame-entradas">
     <h5 class="card-title mb-3">Lista de entradas</h5>
-    <div class="table-responsive">
+    <div class="table-responsive" style="overflow-x:auto; max-height: 60vh; overflow-y:auto;">
         <table class="table table-striped table-hover align-middle mb-0">
-            <thead class="table-dark">
+            <thead class="table-dark" style="position: sticky; top: 0; z-index: 2;">
                 <tr>
                     <th>Codigo</th>
                     <th>Cantidad</th>
@@ -44,7 +44,7 @@
         <button type="button" class="btn btn-primary" data-action="sistema--app#abrirModalNuevaEntrada" data-accion = '1' data-id = '0'>Nuevo</button>
     </div> 
 
-    <!-- Modal para registrar tipos de servicio -->
+    <!-- Modal para registrar entradas -->
     <div class="modal fade" id="modalNuevaEntrada" data-sistema--app-target="modalNuevaEntrada" tabindex="-1" aria-labelledby="modalNuevaEntradaLabel" aria-hidden="true">
         <div class="modal-dialog">
         <div class="modal-content">
@@ -69,15 +69,15 @@
                 <div class="row mb-3">
                     <div class="col-md-4">
                         <label for="codigoProducto" class="form-label" style="font-weight: bold;">Cantidad</label> 
-                        <input type="text" name="cantidad" class="form-control" id="codigoProducto" data-sistema--app-target="cantidadProducto" placeholder="0" style="text-align:right" data-action="sistema--app#formatearCampo blur->sistema--app#calcularValEnt">
+                        <input type="text" name="cantidad" class="form-control" id="codigoProducto" data-sistema--app-target="cantidadProducto" placeholder="0" style="text-align:right" data-action="sistema--app#formatearCampo blur->sistema--app#calcularValEnt blur->sistema--app#validaBtnGuardarEntrada">
                     </div>
                     <div class="col-md-4">
                         <label for="codigoProducto" class="form-label" style="font-weight: bold;">Valor</label> 
-                        <input type="text" name="valor" class="form-control" id="codigoProducto" data-sistema--app-target="valorProducto" placeholder="$ 0" style="text-align:right" data-action="sistema--app#formatearCampo blur->sistema--app#calcularValEnt">
+                        <input type="text" name="valor" class="form-control" id="codigoProducto" data-sistema--app-target="valorProducto" placeholder="$ 0" style="text-align:right" data-action="sistema--app#formatearCampo blur->sistema--app#calcularValEnt blur->sistema--app#validaBtnGuardarEntrada">
                     </div>
                     <div class="col-md-4">
                         <label for="codigoProducto" class="form-label" style="font-weight: bold;">Porcentaje</label> 
-                        <input type="text" name="porcentaje" class="form-control" id="codigoProducto" data-sistema--app-target="porcProducto" placeholder="0 %" style="text-align:right" data-action="sistema--app#formatearCampo blur->sistema--app#calcularValEnt">
+                        <input type="text" name="porcentaje" class="form-control" id="codigoProducto" data-sistema--app-target="porcProducto" placeholder="0 %" style="text-align:right" data-action="sistema--app#formatearCampo blur->sistema--app#calcularValEnt blur->sistema--app#validaBtnGuardarEntrada">
                     </div>
                 </div>
                 <div class="row mb-3">
@@ -91,7 +91,7 @@
                     </div>
                     <div class="col-md-4">
                         <label for="codigoProducto" class="form-label" style="font-weight: bold;">Valor venta</label> 
-                        <input type="text" name="valVentaProducto" class="form-control" id="codigoProducto" data-sistema--app-target="valVentaProducto" placeholder="$ 0" style="text-align:right" data-action="sistema--app#formatearCampo blur->sistema--app#calcularUtilidad">
+                        <input type="text" name="valVentaProducto" class="form-control" id="codigoProducto" data-sistema--app-target="valVentaProducto" placeholder="$ 0" style="text-align:right" data-action="sistema--app#formatearCampo blur->sistema--app#calcularUtilidad blur->sistema--app#validaBtnGuardarEntrada">
                     </div>
                 </div>
                 <div class="row mb-3">
