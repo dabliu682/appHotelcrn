@@ -90,9 +90,17 @@ app_nuevaReserva:
   path: /nuevaReserva
   defaults: {_controller: App\Controller\ReservasController::nuevaReserva}
 
+app_crearCheckin:
+  path: /crearCheckin/{id}
+  defaults: {_controller: App\Controller\ReservasController::crearCheckin}
+
 app_guardarReserva:
   path: /guardarReserva
   defaults: {_controller: App\Controller\ReservasController::guardarReserva}
+
+app_eliminarReserva:
+  path: /eliminarReserva/{id}
+  defaults: {_controller: App\Controller\ReservasController::eliminarReserva}
 
 app_obtenerDatosClienteReserva:
   path: /obtenerDatosClienteReserva/{id}
@@ -161,6 +169,18 @@ app_entradas:
 app_guardarEntrada:
   path: /guardarEntrada
   defaults: {_controller: App\Controller\StockController::guardarEntrada}
+
+app_cargarProductosPlano:
+  path: /cargarProductosPlano
+  defaults: {_controller: App\Controller\StockController::cargarProductosPlano}
+
+app_obtenerProducto:
+  path: /obtenerProducto/{id}
+  defaults: {_controller: App\Controller\StockController::obtenerProducto}
+
+app_updateCantProducto:
+  path: /updateCantProducto/{id},{accion},{cantidad}
+  defaults: {_controller: App\Controller\StockController::updateCantProducto}
 
 
 

@@ -8,6 +8,9 @@ use App\Entity\Rooms;
 use App\Entity\Persons;
 use App\Entity\Booking;
 use App\Entity\Turnos;
+use App\Entity\Checkin;
+use App\Entity\Services;
+use App\Entity\Productos;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 
@@ -16,11 +19,13 @@ class ReservasController extends AbstractController
     public function lista()
     {
         $bd = $this->getDoctrine()->getManager();
-        $bookings = $bd->getRepository(Booking::class)->findBy([],['id' => 'ASC']);
+        $checkins = $bd->getRepository(checkin::class)->findBy([],['id' => 'ASC']);
         $clientes = $bd->getRepository(Persons::class)->findBy([],['id' => 'ASC']);
         $habitaciones = $bd->getRepository(Rooms::class)->findBy([],['id' => 'ASC']);
+        $servicios = $bd->getRepository(Services::class)->findBy(['tipo' => [1,3,4]],['tipo' => 'ASC']);
+        $productos = $bd->getRepository(Productos::class)->findProductos();
 
-        return $this->render('reservas/index.html.twig', ['clientes' => $clientes, 'habitaciones' => $habitaciones, 'bookings' => $bookings]);
+        return $this->render('reservas/index.html.twig', ['clientes' => $clientes, 'habitaciones' => $habitaciones, 'checkins' => $checkins, 'servicios' => $servicios, 'productos' => $productos]);
     }
 
     public function nuevaReserva()
@@ -70,17 +75,70 @@ class ReservasController extends AbstractController
             $booking->setObservaciones($request->get('observacionesReserva'));
 
             $bd->persist($booking);
-        } 
-        else 
-        {
-            $cliente = $bd->getRepository(Persons::class)->find($idCliente);
-          
-            $bd->persist($cliente);
         }
 
         $bd->flush();  
 
         return new JsonResponse(['response' => 'Ok']);
+    }
+
+    public function eliminarReserva($id)
+    {
+        $bd = $this->getDoctrine()->getManager();
+
+        $booking = $bd->getRepository(booking::class)->find($id);
+
+        foreach ($booking->getCheckins() as $checkin) 
+        {
+            $checkin->setEstado(4);
+
+            $bd->persist($checkin);
+        }
+
+        $booking->setStatus(4);
+
+        $bd->persist($booking);
+
+        $bd->flush();  
+
+        return new JsonResponse(['response' => 'Ok']);
+
+
+    }
+
+    public function crearCheckin($id)
+    {
+        $bd = $this->getDoctrine()->getManager();
+
+        $booking = $bd->getRepository(booking::class)->find($id);
+
+        $hab = $booking->getCanthabitaciones();
+
+        for ($i=0; $i < $hab ; $i++) 
+        { 
+            $turno = $bd->getRepository(Turnos::class)->findOneBy(['status' => 1]);
+            
+            $newCheckin = new Checkin();
+                
+            $newCheckin->setReserva($booking);
+            $newCheckin->setCliente($booking->getPerson());
+            $newCheckin->setTurno($turno);
+            $newCheckin->setfechaLlegada($booking->getFechallegada());
+            $newCheckin->setHoraLlegada($booking->getHorallegada());
+            $newCheckin->setEstado(0);
+
+            $bd->persist($newCheckin);
+
+            $booking->setStatus(2);
+
+            $bd->persist($booking);
+
+        }
+
+        $bd->flush();  
+
+        return new JsonResponse(['response' => 'Ok']);
+
     }
 
    

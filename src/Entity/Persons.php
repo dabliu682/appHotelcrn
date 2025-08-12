@@ -76,9 +76,15 @@ class Persons
      */
     private $bookings;
 
+    /**
+     * @ORM\OneToMany(targetEntity=Checkin::class, mappedBy="cliente")
+     */
+    private $checkins;
+
     public function __construct()
     {
         $this->bookings = new ArrayCollection();
+        $this->checkins = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -230,6 +236,36 @@ class Persons
             // set the owning side to null (unless already changed)
             if ($booking->getPerson() === $this) {
                 $booking->setPerson(null);
+            }
+        }
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, Checkin>
+     */
+    public function getCheckins(): Collection
+    {
+        return $this->checkins;
+    }
+
+    public function addCheckin(Checkin $checkin): self
+    {
+        if (!$this->checkins->contains($checkin)) {
+            $this->checkins[] = $checkin;
+            $checkin->setCliente($this);
+        }
+
+        return $this;
+    }
+
+    public function removeCheckin(Checkin $checkin): self
+    {
+        if ($this->checkins->removeElement($checkin)) {
+            // set the owning side to null (unless already changed)
+            if ($checkin->getCliente() === $this) {
+                $checkin->setCliente(null);
             }
         }
 

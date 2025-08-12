@@ -223,11 +223,12 @@ class ConfiguracionController extends AbstractController
             $servicio = new Services();
             $servicio->setName($request->get('nombreServ'));
             $servicio->setCode($request->get('codigoServ'));
-            $servicio->setPrice($request->get('valorServ'));
+            $servicio->setPrice(str_replace('.', '', $request->get('valorServ')));
             $servicio->setTipo($bd->getRepository(Servicetype::class)->find($request->get('selectTipoServ')));
             $servicio->setUsucrea($usuario);
             $servicio->setActive(true);
-            $servicio->setFechacrea(new \DateTime('now', new \DateTimeZone('America/Bogota'))); 
+            $servicio->setFechacrea(new \DateTime('now', new \DateTimeZone('America/Bogota')));
+            ($request->get('horasServ') != '') ? $servicio->setHours($request->get('horasServ')) : '';
 
             if($request->get('tipoHabitacion') != '') { $servicio->setTyperoom($request->get('tipoHabitacion')); }            
 
@@ -239,10 +240,11 @@ class ConfiguracionController extends AbstractController
             $servicio = $bd->getRepository(Services::class)->find($idServicio);
             $servicio->setName($request->get('nombreServ'));
             $servicio->setCode($request->get('codigoServ'));
-            $servicio->setPrice($request->get('valorServ'));
+            $servicio->setPrice(str_replace('.', '', $request->get('valorServ')));
             $servicio->setTipo($bd->getRepository(Servicetype::class)->find($request->get('selectTipoServ')));
             $servicio->setUsucrea($usuario);
             $servicio->setFechacrea(new \DateTime('now', new \DateTimeZone('America/Bogota'))); 
+            $servicio->setHours($request->get('horasServ'));
 
             if($request->get('tipoHabitacion') != '') { $servicio->setTyperoom($request->get('tipoHabitacion')); } 
 
@@ -319,6 +321,6 @@ class ConfiguracionController extends AbstractController
             ];
         }
 
-        return new JsonResponse([ 'id' => $servicio->getId(), 'name' => $servicio->getName(), 'code' => $servicio->getCode(), 'price' => $servicio->getPrice(), 'tipo' => $servicio->getTipo()->getId(), 'typeroom' => $servicio->getTyperoom(), 'habitacionesSelector' => $habitacionesSelector ]);
+        return new JsonResponse([ 'id' => $servicio->getId(), 'name' => $servicio->getName(), 'code' => $servicio->getCode(), 'price' => $servicio->getPrice(), 'tipo' => $servicio->getTipo()->getId(), 'typeroom' => $servicio->getTyperoom(), 'habitacionesSelector' => $habitacionesSelector, 'horas' => $servicio->getHours() ]);
     }
 }

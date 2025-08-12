@@ -8,6 +8,8 @@ use Symfony\Component\HttpFoundation\Request;
 use App\Entity\Inventario;
 use App\Entity\Entradas;
 use App\Entity\Productos;
+use Symfony\Component\Filesystem\Filesystem;
+use PhpOffice\PhpSpreadsheet\IOFactory;
 use Symfony\Component\HttpFoundation\JsonResponse;
 
 class StockController extends AbstractController
@@ -64,6 +66,77 @@ class StockController extends AbstractController
         $bd->flush();
 
         return new JsonResponse(['response' => 'Ok']);
+    }
+
+    public function cargarProductosPlano(Request $request)
+    {
+        $bd = $this->getDoctrine()->getManager();
+
+        $usuario = $this->getUser();
+        
+        $anexo = $request->files->get('archivo');
+
+
+        $fsObject = new Filesystem();
+
+        $datosInsertar = [];
+
+        $nombre = 'archivoProductos_tmp_'.date('his').'.xlsx';
+
+        $ruta = $this->getParameter('documentos');
+
+        $anexo->move($ruta, $nombre);
+        
+        $spreadsheet = IOFactory::load($ruta.$nombre);
+
+        $hojaActual = $spreadsheet->getSheet(0);
+
+        foreach($hojaActual->getRowIterator() as $fila) 
+        {
+            $row = $fila->getRowIndex();
+
+            if($row > 1)
+            {
+                
+                /* Se obtienen los valores de cada fila*/
+                /* ---------------------------------------- */
+
+                $codigo = $hojaActual->getCell('A'.$row)->getValue();
+                $nombrePro = $hojaActual->getCell('B'.$row)->getValue();
+                $tipo = $hojaActual->getCell('C'.$row)->getValue();
+
+                $var = ['codigo' => $codigo, 'nombre' => $nombrePro, 'tipo' => $tipo];
+
+                $datosInsertar[]=$var;
+            }
+        }
+
+        unlink($ruta.'/'.$nombre);
+
+        foreach ($datosInsertar as $datos) 
+        {
+            $producto = new Productos();
+            $producto->setCodigo($datos['codigo']);
+            $producto->setNombre($datos['nombre']);
+            $producto->setTipo($datos['tipo']);
+            $producto->setValor(0);
+            $producto->setUsucrea($usuario);
+            $producto->setFechacrea(new \DateTime('now', new \DateTimeZone('America/Bogota')));       
+
+            $bd->persist($producto);
+        }
+
+        try 
+        {
+            $bd->flush();
+
+            return new Response(json_encode(array("response"=>"Ok")));
+        } 
+        catch (\Exception $e) 
+        {
+            return new Response(json_encode(array("response"=>"Error")));
+        }      
+
     }
 
     public function inventario()
@@ -133,7 +206,7 @@ class StockController extends AbstractController
                 $existencias = $inventario->getExistencias();
 
                 $inventario->setEntradas($entradas+$entrada->getCantidad());
-                $inventario->setExistencias($entradas+$entrada->getCantidad());
+                $inventario->setExistencias($existencias+$entrada->getCantidad());
                 $inventario->setFechamod(new \DateTime('now', new \DateTimeZone('America/Bogota')));
                 $inventario->setUsumod($usuario);
 
@@ -155,6 +228,46 @@ class StockController extends AbstractController
         else 
         {
             
+        }
+
+        $bd->flush();
+
+        return new JsonResponse(['response' => 'Ok']);
+    }
+
+    public function obtenerProducto($id)
+    {
+        $bd = $this->getDoctrine()->getManager();
+        
+        $producto = $bd->getRepository(Productos::class)->find($id);
+
+        $valor = $producto->getInventarios()[0]->getCodigo()->getValor();
+        $existencias = $producto->getInventarios()[0]->getExistencias();
+
+        return new JsonResponse(['valor' => $valor, 'existencias' => $existencias ]);
+    }
+
+    public function updateCantProducto($id, $accion, $cantidad)
+    {
+        $bd = $this->getDoctrine()->getManager();
+        
+        $producto = $bd->getRepository(Productos::class)->find($id);
+        $inventario = $bd->getRepository(Inventario::class)->findOneBy(['codigo' => $producto]);
+
+        $salidas = $inventario->getSalidas();
+        $existencias = $inventario->getExistencias();
+
+        if($accion == 1)
+        {
+            $inventario->setSalidas($salidas+$cantidad);
+            $inventario->setExistencias($existencias-$cantidad);
+            $bd->persist($inventario);
+        }
+        else
+        {
+            $inventario->setSalidas($salidas-$cantidad);
+            $inventario->setExistencias($existencias+$cantidad);
+            $bd->persist($inventario);
         }
 
         $bd->flush();

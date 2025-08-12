@@ -7,7 +7,8 @@
                     <th style="background: #212529;">Código</th>
                     <th style="background: #212529;">Tipo de servicio</th>
                     <th style="background: #212529;">Tipo de habitación</th>
-                    <th style="background: #212529;">Observación</th>
+                    <th style="background: #212529;">Nombre</th>
+                    <th style="background: #212529;">N° Horas</th>
                     <th style="background: #212529;">Valor</th>
                     <th style="background: #212529;">Estado</th>
                     <th colspan=2 style="background: #212529;">Acciones</th>
@@ -37,6 +38,7 @@
                                 {% endif %}
                             </td>
                             <td>{{ servicio.name }}</td>
+                            <td style="text-align:right">{{ servicio.hours }}</td>
                             <td style="text-align:right" class="text-nowrap">$ {{ servicio.price|number_format(0, ',', '.') }}</td>
                             <td class="text-center align-middle">
                                 <div class="form-check form-switch d-flex justify-content-center align-items-center m-0" style="height:100%;">
@@ -66,61 +68,65 @@
 
     <!-- Modal para registrar servicio -->
     <div class="modal fade" id="modalNuevoServicio" data-sistema--app-target="modalNuevoServicio" tabindex="-1" aria-labelledby="modalNuevoServicioLabel" aria-hidden="true">
-        <div class="modal-dialog">
-        <div class="modal-content">
-            <div class="modal-header">
-            <h5 class="modal-title"><span data-sistema--app-target="modalServicioLabel"></span></h5>
-            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-            </div>
-            <form data-sistema--app-target="formNuevoServicio">
-            <input type="hidden" name="id" data-sistema--app-target="idServicio" value="0">
-            <div class="modal-body">
-                <div class="row mb-3">
-                    <div class="col-md-12">
-                        <label for="codigoServ" class="form-label" style="font-weight: bold;">Codigo</label> 
-                        <input type="text" name="codigoServ" class="form-control" id="codigoServ" data-sistema--app-target="codigoServ" placeholder="Ingrese el codigo del servicio" data-action="blur->sistema--app#validaBtnGuardarServicio">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                <h5 class="modal-title"><span data-sistema--app-target="modalServicioLabel"></span></h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <form data-sistema--app-target="formNuevoServicio">
+                <input type="hidden" name="id" data-sistema--app-target="idServicio" value="0">
+                <div class="modal-body">
+                    <div class="row mb-3">
+                        <div class="col-md-6">
+                            <label for="codigoServ" class="form-label" style="font-weight: bold;">Codigo</label> 
+                            <input type="text" name="codigoServ" class="form-control" id="codigoServ" data-sistema--app-target="codigoServ" placeholder="Ingrese el codigo del servicio" data-action="blur->sistema--app#validaBtnGuardarServicio">
+                        </div>
+                        <div class="col-md-6">
+                            <label for="selectTipoServ" class="form-label" style="font-weight: bold;">Tipo de Servicio</label> 
+                            <select class="form-select" id="selectTipoServ" name="selectTipoServ" data-sistema--app-target="selectTipoServ"  data-action="change->sistema--app#validaBtnGuardarServicio">
+                                <option value="">Seleccione tipo de servicio</option>
+                                {% for tipo in TiposServicios %}
+                                    <option value="{{ tipo.id }}">{{ tipo.name }}</option>
+                                {% endfor %}                        
+                            </select>
+                        </div>
+                    </div>
+                    <div class="row mb-3">
+                        <div class="col-md-6">
+                            <label for="tipoHabitacion" class="form-label fw-bold">Tipo de habitación</label>
+                            <select class="form-select" id="tipoHabitacion" name="tipoHabitacion" data-sistema--app-target="selectTipoHabitacion"  data-action="change->sistema--app#validaBtnGuardarHab">
+                                <option value="">Seleccione tipo de habitación</option>
+                                <option value="1">Habitación sencilla</option>
+                                <option value="2">Habitación de dos camas</option>
+                                <option value="3">Habitación sencilla con aire acondicionado</option>
+                                <option value="4">Habitación de dos camas con aire acondicionado</option>
+                                <option value="5">Habitación sencilla ventilador</option>
+                                <option value="6">Habitación de dos camas ventilador</option>                  
+                            </select>
+                        </div>
+                        <div class="col-md-6">
+                            <label for="nombreServ" class="form-label" style="font-weight: bold;">Nombre</label> 
+                            <input type="text" name="nombreServ" class="form-control" id="nombreServ" data-sistema--app-target="nombreServ" placeholder="Ingrese el nombre del servicio" data-action="blur->sistema--app#validaBtnGuardarServicio">
+                        </div>
+                    </div>
+                    <div class="row mb-3">
+                        <div class="col-md-6">
+                            <label for="horasServ" class="form-label" style="font-weight: bold;">N° Horas</label> 
+                            <input type="text" name="horasServ" class="form-control" id="horasServ" data-sistema--app-target="horasServ" placeholder="Ingrese el N° de horas" data-action="blur->sistema--app#validaBtnGuardarServicio">
+                        </div>
+                        <div class="col-md-6">
+                            <label for="valorServ" class="form-label" style="font-weight: bold;">Valor</label> 
+                            <input type="text" name="valorServ" class="form-control" id="valorServ" data-sistema--app-target="valorServ" placeholder="Ingrese el valor del servicio" data-action="sistema--app#formatearCampo blur->sistema--app#validaBtnGuardarServicio">
+                        </div>
                     </div>
                 </div>
-                <div class="row mb-3">
-                    <label for="selectTipoServ" class="form-label" style="font-weight: bold;">Tipo de Servicio</label> 
-                    <select class="form-select" id="selectTipoServ" name="selectTipoServ" data-sistema--app-target="selectTipoServ"  data-action="change->sistema--app#validaBtnGuardarServicio">
-                        <option value="">Seleccione tipo de servicio</option>
-                        {% for tipo in TiposServicios %}
-                            <option value="{{ tipo.id }}">{{ tipo.name }}</option>
-                        {% endfor %}                        
-                    </select>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-primary" data-sistema--app-target="btnGuardarServicio" data-action="sistema--app#guardarServicio" disabled>Guardar</button>
+                    <button type="button" class="btn btn-danger" data-bs-dismiss="modal">Cancelar</button>
                 </div>
-                <div class="row mb-3">
-                    <label for="tipoHabitacion" class="form-label fw-bold">Tipo de habitación</label>
-                <select class="form-select" id="tipoHabitacion" name="tipoHabitacion" data-sistema--app-target="selectTipoHabitacion"  data-action="change->sistema--app#validaBtnGuardarHab">
-                  <option value="">Seleccione tipo de habitación</option>
-                  <option value="1">Habitación sencilla</option>
-                  <option value="2">Habitación de dos camas</option>
-                  <option value="3">Habitación sencilla con aire acondicionado</option>
-                  <option value="4">Habitación de dos camas con aire acondicionado</option>
-                  <option value="5">Habitación sencilla ventilador</option>
-                  <option value="6">Habitación de dos camas ventilador</option>                  
-                </select>
-                </div>
-                <div class="row mb-3">
-                    <div class="col-md-12">
-                        <label for="nombreServ" class="form-label" style="font-weight: bold;">Nombre</label> 
-                        <input type="text" name="nombreServ" class="form-control" id="nombreServ" data-sistema--app-target="nombreServ" placeholder="Ingrese el nombre del servicio" data-action="blur->sistema--app#validaBtnGuardarServicio">
-                    </div>
-                </div>
-                <div class="row mb-3">
-                    <div class="col-md-12">
-                        <label for="valorServ" class="form-label" style="font-weight: bold;">Valor</label> 
-                        <input type="text" name="valorServ" class="form-control" id="valorServ" data-sistema--app-target="valorServ" placeholder="Ingrese el valor del servicio" data-action="blur->sistema--app#validaBtnGuardarServicio">
-                    </div>
-                </div>
+                </form>
             </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-primary" data-sistema--app-target="btnGuardarServicio" data-action="sistema--app#guardarServicio" disabled>Guardar</button>
-                <button type="button" class="btn btn-danger" data-bs-dismiss="modal">Cancelar</button>
-            </div>
-            </form>
-        </div>
         </div>
     </div>
 </turbo-frame>

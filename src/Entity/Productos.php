@@ -60,10 +60,16 @@ class Productos
      */
     private $entradas;
 
+    /**
+     * @ORM\OneToMany(targetEntity=Detallesmov::class, mappedBy="producto")
+     */
+    private $detallesmovs;
+
     public function __construct()
     {
         $this->inventarios = new ArrayCollection();
         $this->entradas = new ArrayCollection();
+        $this->detallesmovs = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -197,6 +203,36 @@ class Productos
             // set the owning side to null (unless already changed)
             if ($entrada->getCodigo() === $this) {
                 $entrada->setCodigo(null);
+            }
+        }
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, Detallesmov>
+     */
+    public function getDetallesmovs(): Collection
+    {
+        return $this->detallesmovs;
+    }
+
+    public function addDetallesmov(Detallesmov $detallesmov): self
+    {
+        if (!$this->detallesmovs->contains($detallesmov)) {
+            $this->detallesmovs[] = $detallesmov;
+            $detallesmov->setProducto($this);
+        }
+
+        return $this;
+    }
+
+    public function removeDetallesmov(Detallesmov $detallesmov): self
+    {
+        if ($this->detallesmovs->removeElement($detallesmov)) {
+            // set the owning side to null (unless already changed)
+            if ($detallesmov->getProducto() === $this) {
+                $detallesmov->setProducto(null);
             }
         }
 
