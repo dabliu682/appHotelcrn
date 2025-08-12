@@ -3,6 +3,8 @@
 namespace App\Entity;
 
 use App\Repository\BookingRepository;
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 
 /**
@@ -68,6 +70,16 @@ class Booking
      * @ORM\JoinColumn(nullable=false)
      */
     private $turno;
+
+    /**
+     * @ORM\OneToMany(targetEntity=Checkin::class, mappedBy="reserva")
+     */
+    private $checkins;
+
+    public function __construct()
+    {
+        $this->checkins = new ArrayCollection();
+    }
 
     public function getId(): ?int
     {
@@ -190,6 +202,36 @@ class Booking
     public function setTurno(?Turnos $turno): self
     {
         $this->turno = $turno;
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, Checkin>
+     */
+    public function getCheckins(): Collection
+    {
+        return $this->checkins;
+    }
+
+    public function addCheckin(Checkin $checkin): self
+    {
+        if (!$this->checkins->contains($checkin)) {
+            $this->checkins[] = $checkin;
+            $checkin->setReserva($this);
+        }
+
+        return $this;
+    }
+
+    public function removeCheckin(Checkin $checkin): self
+    {
+        if ($this->checkins->removeElement($checkin)) {
+            // set the owning side to null (unless already changed)
+            if ($checkin->getReserva() === $this) {
+                $checkin->setReserva(null);
+            }
+        }
 
         return $this;
     }

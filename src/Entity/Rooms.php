@@ -3,6 +3,8 @@
 namespace App\Entity;
 
 use App\Repository\RoomsRepository;
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 
 /**
@@ -63,6 +65,16 @@ class Rooms
      * @ORM\Column(type="integer")
      */
     private $typeroom;
+
+    /**
+     * @ORM\OneToMany(targetEntity=Checkin::class, mappedBy="habitacion")
+     */
+    private $checkins;
+
+    public function __construct()
+    {
+        $this->checkins = new ArrayCollection();
+    }
 
     public function getId(): ?int
     {
@@ -173,6 +185,36 @@ class Rooms
     public function setTyperoom(int $typeroom): self
     {
         $this->typeroom = $typeroom;
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, Checkin>
+     */
+    public function getCheckins(): Collection
+    {
+        return $this->checkins;
+    }
+
+    public function addCheckin(Checkin $checkin): self
+    {
+        if (!$this->checkins->contains($checkin)) {
+            $this->checkins[] = $checkin;
+            $checkin->setHabitacion($this);
+        }
+
+        return $this;
+    }
+
+    public function removeCheckin(Checkin $checkin): self
+    {
+        if ($this->checkins->removeElement($checkin)) {
+            // set the owning side to null (unless already changed)
+            if ($checkin->getHabitacion() === $this) {
+                $checkin->setHabitacion(null);
+            }
+        }
 
         return $this;
     }

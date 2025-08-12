@@ -39,28 +39,14 @@ class ProductosRepository extends ServiceEntityRepository
         }
     }
 
-//    /**
-//     * @return Productos[] Returns an array of Productos objects
-//     */
-//    public function findByExampleField($value): array
-//    {
-//        return $this->createQueryBuilder('p')
-//            ->andWhere('p.exampleField = :val')
-//            ->setParameter('val', $value)
-//            ->orderBy('p.id', 'ASC')
-//            ->setMaxResults(10)
-//            ->getQuery()
-//            ->getResult()
-//        ;
-//    }
-
-//    public function findOneBySomeField($value): ?Productos
-//    {
-//        return $this->createQueryBuilder('p')
-//            ->andWhere('p.exampleField = :val')
-//            ->setParameter('val', $value)
-//            ->getQuery()
-//            ->getOneOrNullResult()
-//        ;
-//    }
+    public function findProductos()
+    {        
+        $conexion = $this->getEntityManager()->getConnection();
+        $sql = "select productos.id, productos.codigo, productos.nombre, inventario.existencias cant from productos
+                left join inventario on inventario.codigo_id = productos.id
+                where inventario.existencias > 0
+                order by productos.nombre";
+        $stm = $conexion->prepare($sql);
+        return $stm->executeQuery()->fetchAll();
+    }
 }

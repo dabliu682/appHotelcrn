@@ -7,16 +7,21 @@
     <div class="container-fluid" style="background: #fff; width: 100%;  min-height: 100vh;" data-turbo="true" {{ stimulus_controller('sistema--app',
         {
             'rutaCambiaEstadoServicio' : path('app_cambiaEstadoServicio', {'id' : 'var1', 'estado' : 'var2' }),
+            'rutaUpdateCantProducto' : path('app_updateCantProducto', {'id' : 'var1', 'accion' : 'var2', 'cantidad' : 'var3' }),
             'rutaObtenerDatosClienteReserva' : path('app_obtenerDatosClienteReserva', {'id' : 'var1' }),
             'rutaEliminarTiposServ' : path('app_eliminarTiposServ', {'id' : 'var1' }),
             'rutaEliminarCompania' : path('app_eliminarCompania', {'id' : 'var1' }),
             'rutaEliminarServicio' : path('app_eliminarServicio', {'id' : 'var1' }),
             'rutaEliminarClientes' : path('app_eliminarClientes', {'id' : 'var1' }),
             'rutaEliminarTipodoc' : path('app_eliminarTipodoc', {'id' : 'var1' }),
+            'rutaEliminarReserva' : path('app_eliminarReserva', {'id' : 'var1' }),
             'rutaEliminarHab' : path('app_eliminarHabitacion', {'id' : 'var1' }),
             'rutaObtenerServicio': path('app_obtenerServicio', {'id' : 'var1'}),
+            'rutaObtenerProducto': path('app_obtenerProducto', {'id' : 'var1'}),
             'rutaEliminarPiso' : path('app_eliminarPiso', {'id' : 'var1' }),
+            'rutaCrearCheckin' : path('app_crearCheckin', {'id' : 'var1' }),
             'rutaListaServ' : path('app_listaServ', {'filtro' : 'var1' }),
+            'rutaCargarProductosPlano' : path('app_cargarProductosPlano'),
             'rutaGuardarTiposServ' : path('app_guardarTiposServ'),
             'rutaGuardarProducto' : path('app_guardarProducto'),
             'rutaNuevaHabitacion' : path('app_nuevaHabitacion'),
@@ -24,22 +29,23 @@
             'rutaGuardarServicio' : path('app_guardarServicio'),
             'rutaGuardarReserva' : path('app_guardarReserva'),
             'rutaGuardarTipodoc' : path('app_guardarTipodoc'),
+            'rutaGuardarEntrada' : path('app_guardarEntrada'),
             'rutaNuevaCompania' : path('app_nuevaCompania'),
             'rutaHabitaciones' : path('app_habitaciones'),
             'rutaNuevaReserva' : path('app_nuevaReserva'),
             'rutaAbrirTurno' : path('app_abrirTurno'),
+            'rutaInventario' : path('app_inventario'),
             'rutaCompanias' : path('app_companias'),
             'rutaNuevoPiso' : path('app_nuevoPiso'),
             'rutaDashboard' : path('app_dashboard'),
             'rutaTiposServ' : path('app_tiposServ'),
+            'rutaProductos' : path('app_productos'),
             'rutaReservas' : path('app_reservas'),
             'rutaClientes' : path('app_clientes'),
+            'rutaEntradas' : path('app_entradas'),
             'rutaInicio' : path('app_inicio'),
             'rutaDocs' : path('app_tipodoc'),
             'rutaPisos' : path('app_pisos'),
-            'rutaEntradas' : path('app_entradas'),
-            'rutaProductos' : path('app_productos'),
-            'rutaGuardarEntrada' : path('app_guardarEntrada'),
             
 
 
@@ -56,7 +62,7 @@
         {% elseif pantalla == 1 %}
             <div class="row w-100 gx-4" style="padding-top: 75px;">
                 <turbo-frame id="frame-reservas" data-sistema--app-target="frameReservas" src="{{ path('app_reservas') }}" >
-                    <p align="center"><i class="fas fa-cog fa-spin mt-5"></i> Cargando Reservas</p>
+                    <p align="center"><i class="fas fa-cog fa-spin mt-5"></i> Cargando checki-in</p>
                 </turbo-frame>
             </div>
         {% elseif pantalla == 2 %}

@@ -50,9 +50,21 @@ class Turnos
      */
     private $bookings;
 
+    /**
+     * @ORM\OneToMany(targetEntity=Checkin::class, mappedBy="turno")
+     */
+    private $checkins;
+
+    /**
+     * @ORM\OneToMany(targetEntity=Detallesmov::class, mappedBy="turno")
+     */
+    private $detallesmovs;
+
     public function __construct()
     {
         $this->bookings = new ArrayCollection();
+        $this->checkins = new ArrayCollection();
+        $this->detallesmovs = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -144,6 +156,66 @@ class Turnos
             // set the owning side to null (unless already changed)
             if ($booking->getTurno() === $this) {
                 $booking->setTurno(null);
+            }
+        }
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, Checkin>
+     */
+    public function getCheckins(): Collection
+    {
+        return $this->checkins;
+    }
+
+    public function addCheckin(Checkin $checkin): self
+    {
+        if (!$this->checkins->contains($checkin)) {
+            $this->checkins[] = $checkin;
+            $checkin->setTurno($this);
+        }
+
+        return $this;
+    }
+
+    public function removeCheckin(Checkin $checkin): self
+    {
+        if ($this->checkins->removeElement($checkin)) {
+            // set the owning side to null (unless already changed)
+            if ($checkin->getTurno() === $this) {
+                $checkin->setTurno(null);
+            }
+        }
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, Detallesmov>
+     */
+    public function getDetallesmovs(): Collection
+    {
+        return $this->detallesmovs;
+    }
+
+    public function addDetallesmov(Detallesmov $detallesmov): self
+    {
+        if (!$this->detallesmovs->contains($detallesmov)) {
+            $this->detallesmovs[] = $detallesmov;
+            $detallesmov->setTurno($this);
+        }
+
+        return $this;
+    }
+
+    public function removeDetallesmov(Detallesmov $detallesmov): self
+    {
+        if ($this->detallesmovs->removeElement($detallesmov)) {
+            // set the owning side to null (unless already changed)
+            if ($detallesmov->getTurno() === $this) {
+                $detallesmov->setTurno(null);
             }
         }
 

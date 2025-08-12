@@ -1,8 +1,14 @@
 <turbo-frame id="frame-productos">
-    <h5 class="card-title mb-3">Listado de productos</h5>
-    <div class="table-responsive">
+    <div class="row mb-3">       
+        <div class="col-12" style="display: flex; align-items: center;">
+            <h5 class="card-title mb-0">Listado de productos</h5>
+            <input class="form-control" type="text" placeholder="Buscar producto..." style="margin-left: 20px;width: 57%;border-radius: 5px 0px 0px 5px;" />
+            <button type="button" class="btn" data-action="sistema--app#abrirModalNuevoProducto" data-accion = '1' data-id = '0' style="border-radius: 0px 5px 5px 0px; background: #dee2e6;"><i class="fa-solid fa-magnifying-glass"></i></button>
+        </div>
+    </div>
+    <div class="table-responsive" style="overflow-x:auto; max-height: 60vh; overflow-y:auto;">
         <table class="table table-striped table-hover align-middle mb-0">
-            <thead class="table-dark">
+            <thead class="table-dark" style="position: sticky; top: 0; z-index: 2;">
                 <tr>
                     <th><i class="fas fa-filter text-white" title="Quitar filtro" style="cursor:pointer" data-action="click->sistema--app#filtrarServicios" data-tipo = '0' ></i></th>
                     <th>Codigo</th>
@@ -21,11 +27,19 @@
                             {% set tipo = 'Tienda' %}
                         {% endif %}
                         <tr>
-                            <td></td>
+                            <td>
+                                <i class="fas fa-filter text-black" title="Filtrar inventario" style="cursor:pointer" data-action="click->sistema--app#filtrarInventario" data-producto = {{ producto.id }} ></i>
+                            </td>
                             <td>{{ producto.codigo }}</td>
                             <td>{{ tipo }}</td>
                             <td>{{ producto.nombre }}</td>
-                            <td style="text-align:right">$ {{ producto.valor }}</td>
+                            <td style="text-align:right">$ {{ producto.valor|number_format(0, ',', '.') }}</td>
+                            <td style="text-align:center; width: 20px;">
+                                <i class="far fa-window-maximize text-primary" style="cursor:pointer" data-action="click->sistema--app#abrirModalNuevoProducto" data-accion = '2'  data-id = {{ producto.id }} data-tipo = "{{producto.tipo}}" data-nombre = "{{ producto.nombre }}" ></i>
+                            </td>
+                            <td style="text-align:center; width: 20px;">
+                                <i class="fas fa-trash-restore-alt text-danger" style="cursor:pointer" data-action="click->sistema--app#eliminarCliente" data-id = {{ producto.id }}></i>
+                            </td>
                         </tr>
                     {% endfor %}
                 {% else %}
@@ -38,7 +52,7 @@
     </div>
     <div class="mt-3 d-flex justify-content-space-between">
         <button type="button" class="btn btn-primary" data-action="sistema--app#abrirModalNuevoProducto" data-accion = '1' data-id = '0'>Nuevo</button>
-        <button type="button" class="btn btn-success" style="margin-left:15px">Cargar</button>
+        <button type="button" class="btn btn-success" data-action="sistema--app#abrirModalCargarProductos"style="margin-left:15px">Cargar</button>
     </div>  
 
     <!-- Modal para registrar productos -->
@@ -55,7 +69,7 @@
                 <div class="row mb-3">
                     <div class="col-md-12">
                         <label for="codigoProducto" class="form-label" style="font-weight: bold;">Codigo</label> 
-                        <input type="text" name="codigo" class="form-control" id="codigoProducto" data-sistema--app-target="codigoProducto" placeholder="Ingrese el codigo del producto" data-action="blur->sistema--app#validaBtnGuardarProducto">
+                        <input type="text" name="codigo" class="form-control" id="codigoProducto" data-sistema--app-target="codigoProd" placeholder="Ingrese el codigo del producto" data-action="blur->sistema--app#validaBtnGuardarProducto">
                     </div>
                 </div>
                 <div class="row mb-3">
@@ -77,6 +91,104 @@
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-primary" data-sistema--app-target="btnGuardarProducto" data-action="sistema--app#guardarProducto" disabled>Guardar</button>
+                <button type="button" class="btn btn-danger" data-bs-dismiss="modal">Cancelar</button>
+            </div>
+            </form>
+        </div>
+        </div>
+    </div>
+
+    <!-- Modal para cargar productos -->
+    <div class="modal fade" id="modalCargarProductos" data-sistema--app-target="modalCargarProductos" tabindex="-1" aria-labelledby="modalCargarProductosLabel" aria-hidden="true">
+        <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+            <h5 class="modal-title">Cargar productos - Archivo plano</h5>
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <form data-sistema--app-target="formCargarProductos" method="post" enctype="multipart/form-data">
+            <div class="modal-body">
+                <div class="row mb-3">
+                    <div class="col-md-12">
+                        <label for="cargarProductos" class="form-label" style="font-weight: bold;">Archivo</label> 
+                        <input type="file" name="archivo" id="cargarProductos" data-sistema--app-target="planoProductos" class="form-control">
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-primary" data-sistema--app-target="btnCargarProductos" data-action="sistema--app#cargarProductos">Cargar plano</button>
+                <button type="button" class="btn btn-danger" data-bs-dismiss="modal">Cancelar</button>
+            </div>
+            </form>
+        </div>
+        </div>
+    </div>
+
+     <!-- Modal para registrar entradas -->
+    <div class="modal fade" id="modalNuevaEntrada" data-sistema--app-target="modalNuevaEntrada" tabindex="-1" aria-labelledby="modalNuevaEntradaLabel" aria-hidden="true">
+        <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+            <h5 class="modal-title"><span data-sistema--app-target="modalEntradaLabel"></span></h5>
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <form data-sistema--app-target="formNuevaEntrada">
+            <input type="hidden" name="id" data-sistema--app-target="idEntrada" value="0">
+            <div class="modal-body">
+                <div class="row mb-3">
+                    <div class="col-md-12">
+                        <label for="codigo" class="form-label" style="font-weight: bold;">Codigo</label> 
+                        <select class="form-select" id="codigo"  name="codigo" data-sistema--app-target="codigoProducto" data-action="sistema--app#validaBtnGuardarEntrada" >
+                            <option value="">Seleccione tipo de producto</option>
+                            {% for item in productos %}
+                                <option value="{{ item.id }}">{{ item.codigo}} - {{ item.nombre }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                </div>
+                <div class="row mb-3">
+                    <div class="col-md-4">
+                        <label for="codigoProducto" class="form-label" style="font-weight: bold;">Cantidad</label> 
+                        <input type="text" name="cantidad" class="form-control" id="codigoProducto" data-sistema--app-target="cantidadProducto" placeholder="0" style="text-align:right" data-action="sistema--app#formatearCampo blur->sistema--app#calcularValEnt blur->sistema--app#validaBtnGuardarEntrada">
+                    </div>
+                    <div class="col-md-4">
+                        <label for="codigoProducto" class="form-label" style="font-weight: bold;">Valor</label> 
+                        <input type="text" name="valor" class="form-control" id="codigoProducto" data-sistema--app-target="valorProducto" placeholder="$ 0" style="text-align:right" data-action="sistema--app#formatearCampo blur->sistema--app#calcularValEnt blur->sistema--app#validaBtnGuardarEntrada">
+                    </div>
+                    <div class="col-md-4">
+                        <label for="codigoProducto" class="form-label" style="font-weight: bold;">Porcentaje</label> 
+                        <input type="text" name="porcentaje" class="form-control" id="codigoProducto" data-sistema--app-target="porcProducto" placeholder="0 %" style="text-align:right" data-action="sistema--app#formatearCampo blur->sistema--app#calcularValEnt blur->sistema--app#validaBtnGuardarEntrada">
+                    </div>
+                </div>
+                <div class="row mb-3">
+                    <div class="col-md-4">
+                        <label for="codigoProducto" class="form-label" style="font-weight: bold;">Valor entrada</label> 
+                        <input type="text" name="valEntProducto" class="form-control" id="codigoProducto" data-sistema--app-target="valEntProducto" placeholder="$ 0" style="text-align:right" readonly>
+                    </div>
+                    <div class="col-md-4">
+                        <label for="codigoProducto" class="form-label" style="font-weight: bold;">Valor salida</label> 
+                        <input type="text" name="valSalProducto" class="form-control" id="codigoProducto" data-sistema--app-target="valSalProducto" placeholder="$ 0" style="text-align:right" readonly>
+                    </div>
+                    <div class="col-md-4">
+                        <label for="codigoProducto" class="form-label" style="font-weight: bold;">Valor venta</label> 
+                        <input type="text" name="valVentaProducto" class="form-control" id="codigoProducto" data-sistema--app-target="valVentaProducto" placeholder="$ 0" style="text-align:right" data-action="sistema--app#formatearCampo blur->sistema--app#calcularUtilidad blur->sistema--app#validaBtnGuardarEntrada">
+                    </div>
+                </div>
+                <div class="row mb-3">
+                    <div class="col-md-4">
+                        <label for="codigoProducto" class="form-label" style="font-weight: bold;">Utilidad</label> 
+                        <div class="text-success" style="font-size: 20pt;border: 1px solid #dee2e6; height: 63px; text-align: center; display: flex; align-items: center; justify-content: center">
+                            <span data-sistema--app-target="utilidad">$ 0</span>
+                        </div>
+                    </div>
+                    <div class="col-md-8">
+                        <label for="codigoProducto" class="form-label" style="font-weight: bold;">Observaciones</label> 
+                        <textarea id="observacionesCheckin" name="descripcion" class="form-control" rows="2" data-sistema--app-target="observacionesCheckin" placeholder="Ingrese sus observaciones aquí"></textarea>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-primary" data-sistema--app-target="btnGuardarEntrada" data-action="click->sistema--app#guardarEntrada" data-pantalla='2' disabled>Guardar</button>
                 <button type="button" class="btn btn-danger" data-bs-dismiss="modal">Cancelar</button>
             </div>
             </form>
