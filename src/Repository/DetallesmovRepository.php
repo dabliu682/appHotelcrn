@@ -7,21 +7,21 @@ use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
 
 /**
- * @extends ServiceEntityRepository<Detatallesmov>
+ * @extends ServiceEntityRepository<Detallesmov>
  *
- * @method Detatallesmov|null find($id, $lockMode = null, $lockVersion = null)
- * @method Detatallesmov|null findOneBy(array $criteria, array $orderBy = null)
- * @method Detatallesmov[]    findAll()
- * @method Detatallesmov[]    findBy(array $criteria, array $orderBy = null, $limit = null, $offset = null)
+ * @method Detallesmov|null find($id, $lockMode = null, $lockVersion = null)
+ * @method Detallesmov|null findOneBy(array $criteria, array $orderBy = null)
+ * @method Detallesmov[]    findAll()
+ * @method Detallesmov[]    findBy(array $criteria, array $orderBy = null, $limit = null, $offset = null)
  */
 class DetallesmovRepository extends ServiceEntityRepository
 {
     public function __construct(ManagerRegistry $registry)
     {
-        parent::__construct($registry, Detatallesmov::class);
+        parent::__construct($registry, Detallesmov::class);
     }
 
-    public function add(Detatallesmov $entity, bool $flush = false): void
+    public function add(Detallesmov $entity, bool $flush = false): void
     {
         $this->getEntityManager()->persist($entity);
 
@@ -30,7 +30,7 @@ class DetallesmovRepository extends ServiceEntityRepository
         }
     }
 
-    public function remove(Detatallesmov $entity, bool $flush = false): void
+    public function remove(Detallesmov $entity, bool $flush = false): void
     {
         $this->getEntityManager()->remove($entity);
 
@@ -40,7 +40,7 @@ class DetallesmovRepository extends ServiceEntityRepository
     }
 
 //    /**
-//     * @return Detatallesmov[] Returns an array of Detatallesmov objects
+//     * @return Detallesmov[] Returns an array of Detallesmov objects
 //     */
 //    public function findByExampleField($value): array
 //    {
@@ -54,7 +54,7 @@ class DetallesmovRepository extends ServiceEntityRepository
 //        ;
 //    }
 
-//    public function findOneBySomeField($value): ?Detatallesmov
+//    public function findOneBySomeField($value): ?Detallesmov
 //    {
 //        return $this->createQueryBuilder('d')
 //            ->andWhere('d.exampleField = :val')

@@ -96,6 +96,21 @@ class Checkin
      */
     private $habitacion;
 
+    /**
+     * @ORM\Column(type="integer")
+     */
+    private $tipocliente;
+
+    /**
+     * @ORM\Column(type="text", nullable=true)
+     */
+    private $observaciones;
+
+    /**
+     * @ORM\ManyToOne(targetEntity=Movimientos::class, inversedBy="checkins")
+     */
+    private $movimiento;
+
     public function __construct()
     {
         $this->movimientos = new ArrayCollection();
@@ -300,6 +315,42 @@ class Checkin
     public function setHabitacion(?rooms $habitacion): self
     {
         $this->habitacion = $habitacion;
+
+        return $this;
+    }
+
+    public function getTipocliente(): ?int
+    {
+        return $this->tipocliente;
+    }
+
+    public function setTipocliente(int $tipocliente): self
+    {
+        $this->tipocliente = $tipocliente;
+
+        return $this;
+    }
+
+    public function getObservaciones(): ?string
+    {
+        return $this->observaciones;
+    }
+
+    public function setObservaciones(?string $observaciones): self
+    {
+        $this->observaciones = $observaciones;
+
+        return $this;
+    }
+
+    public function getMovimiento(): ?Movimientos
+    {
+        return $this->movimiento;
+    }
+
+    public function setMovimiento(?Movimientos $movimiento): self
+    {
+        $this->movimiento = $movimiento;
 
         return $this;
     }

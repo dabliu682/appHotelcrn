@@ -40,7 +40,7 @@ class Productos
     private $valor;
 
     /**
-     * @ORM\ManyToOne(targetEntity=User::class, inversedBy="productos")
+     * @ORM\ManyToOne(targetEntity=User::class, inversedBy="Productos")
      * @ORM\JoinColumn(nullable=false)
      */
     private $usucrea;

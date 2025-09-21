@@ -11,6 +11,9 @@ use App\Entity\Documents;
 use App\Entity\Companys;
 use App\Entity\Booking;
 use App\Entity\Services;
+use App\Entity\Detallesmov;
+use App\Entity\Movimientos;
+use App\Entity\Productos;
 
 class InicioController extends AbstractController
 {
@@ -29,6 +32,7 @@ class InicioController extends AbstractController
         $servicios = $bd->getRepository(Services::class)->findBy(['tipo' => 1]);
         $habOcu = count($bd->getRepository(Rooms::class)->findBy(['status' => 2]));
         $turno = $bd->getRepository(Turnos::class)->findOneBy(['status' => 1]);
+        $mov = $bd->getRepository(Movimientos::class)->findOneBy(['tipo' => 1, 'estado' => 1],['id' => 'desc']);
 
         if($habOcu > 0)
         {
@@ -133,6 +137,103 @@ class InicioController extends AbstractController
             ];
         }
 
+        $productos = $bd->getRepository(Productos::class)->findBy([],['id' => 'ASC']);
+
+        $selectPrtoductos=[];
+
+        foreach ($productos as $producto) 
+        {
+            $existencias = 0;
+
+            foreach ($producto->getInventarios() as $inventario) 
+            {
+                $existencias += $inventario->getExistencias();
+            }
+
+            if($existencias > 0)
+            {
+                $selectPrtoductos[] = $producto;
+            }
+            
+        }
+
+        $detalles = $bd->getRepository(Detallesmov::class)->findBy(['turno' => $turno, 'mov' => $mov ],['id' => 'desc']);
+
+        $tablaVentas = [];
+
+        foreach ($detalles as $det) 
+        {
+            if(!is_null($det->getServicio()))
+            {
+                $producto = $det->getServicio()->getName();
+            }
+            else
+            {
+                $producto = $det->getProducto()->getCodigo().'-'.$det->getProducto()->getNombre();
+            }    
+            
+            $tablaVentas[] = ['producto' => $producto, 'cantidad' => $det->getCantidad(),'valor' => $det->getValor() ];
+        }
+
+
+        $tablaMov = [];
+
+        $detallesMov = $bd->getRepository(Detallesmov::class)->findBy(['turno' => $turno]);
+
+        $agrupaMov = [];
+
+        foreach ($detallesMov as $det) 
+        {
+            if(is_null($det->getServicio()) && is_null($det->getProducto()))
+            {
+                if($det->getMov()->getTipo() == 4)
+                {
+                    $tipoMov = 'Salidas';
+                }
+                else
+                {
+                    $tipoMov = 'Entradas';
+                }
+            }
+            else
+            {
+                if(!is_null($det->getServicio()))
+                {
+                    if($det->getServicio()->getTipo()->getId() == 1 || $det->getServicio()->getTipo()->getId() == 2 || $det->getServicio()->getTipo()->getId() == 3)
+                    {
+                        $tipoMov = 'Hospedaje';
+                    }
+                    elseif($det->getServicio()->getTipo()->getId() == 4)
+                    {
+                        $tipoMov = 'Lavanderia';
+                    }
+                }
+                else
+                {
+                    $tipoMov = 'Tienda';
+                }
+
+            } 
+            
+
+            $agrupaMov[$tipoMov][] = ['recibido' => $det->getValor(), 'pendiente' =>  $det->getSaldo()];
+        }
+
+        foreach ($agrupaMov as $key => $grupos) 
+        {
+            $valor = 0;
+            $pendiente = 0;
+
+            foreach ($grupos as $grupo) 
+            {
+                $valor += $grupo['recibido'];
+                $pendiente += $grupo['pendiente'];
+            }
+
+            $tablaMov[] = ['concepto' => $key, 'valor' => $valor, 'pendiente' => $pendiente];
+        }
+
+
         $parametros = [
                         'habTot' => $habTot, 
                         'habDis' => $habDis, 
@@ -146,7 +247,10 @@ class InicioController extends AbstractController
                         'companias' => $companias,
                         'habitacionesSelector' => $habitacionesSelector,
                         'habitacionesPorPiso' => $habitacionesPorPiso,
-                        'serviciosSelector' => $serviciosSelector
+                        'serviciosSelector' => $serviciosSelector,
+                        'productos' => $selectPrtoductos,
+                        'tablaMov' => $tablaMov,
+                        'tablaVentas' => $tablaVentas,
                     ];
 
 

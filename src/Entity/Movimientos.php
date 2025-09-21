@@ -44,9 +44,20 @@ class Movimientos
      */
     private $detallesmovs;
 
+    /**
+     * @ORM\OneToMany(targetEntity=Checkin::class, mappedBy="movimiento")
+     */
+    private $checkins;
+
+    /**
+     * @ORM\ManyToOne(targetEntity=Turnos::class, inversedBy="movimientos")
+     */
+    private $turno;
+
     public function __construct()
     {
         $this->detallesmovs = new ArrayCollection();
+        $this->checkins = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -128,6 +139,48 @@ class Movimientos
                 $detallesmov->setMov(null);
             }
         }
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, Checkin>
+     */
+    public function getCheckins(): Collection
+    {
+        return $this->checkins;
+    }
+
+    public function addCheckin(Checkin $checkin): self
+    {
+        if (!$this->checkins->contains($checkin)) {
+            $this->checkins[] = $checkin;
+            $checkin->setMovimiento($this);
+        }
+
+        return $this;
+    }
+
+    public function removeCheckin(Checkin $checkin): self
+    {
+        if ($this->checkins->removeElement($checkin)) {
+            // set the owning side to null (unless already changed)
+            if ($checkin->getMovimiento() === $this) {
+                $checkin->setMovimiento(null);
+            }
+        }
+
+        return $this;
+    }
+
+    public function getTurno(): ?Turnos
+    {
+        return $this->turno;
+    }
+
+    public function setTurno(?Turnos $turno): self
+    {
+        $this->turno = $turno;
 
         return $this;
     }

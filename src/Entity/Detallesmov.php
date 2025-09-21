@@ -24,12 +24,12 @@ class Detallesmov
     private $mov;
 
     /**
-     * @ORM\ManyToOne(targetEntity=services::class, inversedBy="detallesmovs")
+     * @ORM\ManyToOne(targetEntity=Services::class, inversedBy="detallesmovs")
      */
     private $servicio;
 
     /**
-     * @ORM\ManyToOne(targetEntity=productos::class, inversedBy="detallesmovs")
+     * @ORM\ManyToOne(targetEntity=Productos::class, inversedBy="detallesmovs")
      */
     private $producto;
 
@@ -59,6 +59,11 @@ class Detallesmov
      */
     private $turno;
 
+    /**
+     * @ORM\Column(type="integer", nullable=true)
+     */
+    private $formapago;
+
     public function getId(): ?int
     {
         return $this->id;
@@ -76,24 +81,24 @@ class Detallesmov
         return $this;
     }
 
-    public function getServicio(): ?services
+    public function getServicio(): ?Services
     {
         return $this->servicio;
     }
 
-    public function setServicio(?services $servicio): self
+    public function setServicio(?Services $servicio): self
     {
         $this->servicio = $servicio;
 
         return $this;
     }
 
-    public function getProducto(): ?productos
+    public function getProducto(): ?Productos
     {
         return $this->producto;
     }
 
-    public function setProducto(?productos $producto): self
+    public function setProducto(?Productos $producto): self
     {
         $this->producto = $producto;
 
@@ -156,6 +161,18 @@ class Detallesmov
     public function setTurno(?turnos $turno): self
     {
         $this->turno = $turno;
+
+        return $this;
+    }
+
+    public function getFormapago(): ?int
+    {
+        return $this->formapago;
+    }
+
+    public function setFormapago(?int $formapago): self
+    {
+        $this->formapago = $formapago;
 
         return $this;
     }

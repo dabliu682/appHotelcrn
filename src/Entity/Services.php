@@ -20,7 +20,7 @@ class Services
     private $id;
 
     /**
-     * @ORM\ManyToOne(targetEntity=Servicetype::class, inversedBy="services")
+     * @ORM\ManyToOne(targetEntity=Servicetype::class, inversedBy="Services")
      * @ORM\JoinColumn(nullable=false)
      */
     private $tipo;
@@ -46,7 +46,7 @@ class Services
     private $active;
 
     /**
-     * @ORM\ManyToOne(targetEntity=User::class, inversedBy="services")
+     * @ORM\ManyToOne(targetEntity=User::class, inversedBy="Services")
      * @ORM\JoinColumn(nullable=false)
      */
     private $usucrea;
