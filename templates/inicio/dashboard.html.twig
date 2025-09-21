@@ -46,10 +46,9 @@
     <div class="row">       
         <div class="col-sm-3 mb-3 d-flex justify-content-center">
             <div class="card text-white bg-info shadow border-0 rounded-4 w-100" style="height: 100px;">
-                <div class="card-body d-flex align-items-center">
-                    
+                <div class="card-body d-flex align-items-center">                    
                         {% if turno is not null %}
-                            <div class="me-3 d-flex align-items-center justify-content-center" style="height: 60px; width: 60px; background: rgba(255,255,255,0.12); border-radius: 50%;">
+                            <div class="me-3 d-flex align-items-center justify-content-center" title="Registrar movimiento" data-action="click->sistema--app#registrarMov" style="height: 60px; width: 60px; background: rgba(255,255,255,0.12); border-radius: 50%;">
                             <i class="fas fa-user-clock fa-2x"></i>
                         {% else %}
                             <div class="me-3 d-flex align-items-center justify-content-center" title="Abrir turno" data-action="click->sistema--app#abrirTurno" style="height: 60px; width: 60px; background: #ffc7c7; border-radius: 50%; cursor:pointer">
@@ -63,7 +62,7 @@
                 </div>
             </div>
         </div>
-        
+
         <div class="col-sm-3 mb-3 d-flex justify-content-center">
             <div class="card text-white bg-primary shadow border-0 rounded-4 w-100" style="height: 100px;">
                 <div class="card-body d-flex align-items-center">
@@ -321,7 +320,7 @@
     </div>
 
     <!-- Modal para hacer check-in -->
-    <div class="modal fade" id="modalCheckin" data-turbo="false" data-sistema--app-target="modalCheckin" tabindex="-1" aria-labelledby="modalCheckinLabel" aria-hidden="true">
+    {#<div class="modal fade" id="modalCheckin" data-turbo="false" data-sistema--app-target="modalCheckin" tabindex="-1" aria-labelledby="modalCheckinLabel" aria-hidden="true">
         <div class="modal-dialog modal-xl">
             <div class="modal-content">
                 <input type="hidden" name="idCheckin" id="numCheckin"  value="1">
@@ -337,9 +336,9 @@
                 </div>
             </div>
         </div>
-    </div>
+    </div>#}
 
-    <div class="modal fade" id="modalBuscarClienteCheckin" data-turbo="false" data-sistema--app-target="modalBuscarClienteCheckin" tabindex="-1" aria-labelledby="modalCheckinLabel" aria-hidden="true">
+    {#<div class="modal fade" id="modalBuscarClienteCheckin" data-turbo="false" data-sistema--app-target="modalBuscarClienteCheckin" tabindex="-1" aria-labelledby="modalCheckinLabel" aria-hidden="true">
         <div class="modal-dialog modal-dialog-centered modal-sm">
             <div class="modal-content shadow-lg" style="box-shadow: 0 0.5rem 2rem rgba(33, 37, 41, 0.95) !important;">
                 <div class="modal-header">
@@ -351,10 +350,10 @@
                 </div>
             </div>
         </div>
-    </div>
+    </div>#}
     
     <!-- Modal para registrar servicios -->
-    <div class="modal fade" id="modalNuevoServicioCheckin" data-sistema--app-target="modalNuevoServicioCheckin" tabindex="-1" aria-labelledby="modalNuevoServicioCheckinLabel" aria-hidden="true" style="margin-top:25px !important;">
+    {#<div class="modal fade" id="modalNuevoServicioCheckin" data-sistema--app-target="modalNuevoServicioCheckin" tabindex="-1" aria-labelledby="modalNuevoServicioCheckinLabel" aria-hidden="true" style="margin-top:25px !important;">
         <div class="modal-dialog modal-lg">
             <div class="modal-content shadow-lg" style="box-shadow: 0 1.5rem 3.5rem 1rem rgba(33,37,41,0.98) !important;">
                 <div class="modal-header">
@@ -417,10 +416,10 @@
                 </div>
             </div>
         </div>
-    </div>
+    </div>#}
 
     <!-- Modal para registrar clientes -->
-    <div class="modal fade" id="modalNuevoCliente" data-sistema--app-target="modalNuevoCliente" tabindex="-1" aria-labelledby="modalNuevoClienteLabel" aria-hidden="true">
+    {#<div class="modal fade" id="modalNuevoCliente" data-sistema--app-target="modalNuevoCliente" tabindex="-1" aria-labelledby="modalNuevoClienteLabel" aria-hidden="true">
         <div class="modal-dialog modal-xl">
         <div class="modal-content">
             <div class="modal-header">
@@ -487,7 +486,131 @@
             </form>
         </div>
         </div>
+    </div>#}
+
+
+    <!-- Modal para registrar movimientos -->
+    <div class="modal fade" id="modalNuevoMov" data-sistema--app-target="modalNuevoMov" tabindex="-1" aria-labelledby="modalNuevoMov" aria-hidden="true" style="margin-top:25px !important;">
+        <div class="modal-dialog modal-xl">
+            <div class="modal-content shadow-lg" style="box-shadow: 0 1.5rem 3.5rem 1rem rgba(33,37,41,0.98) !important;">
+                <div class="modal-header">
+                    <h5 class="modal-title">Registro de Ventas</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>            
+                <div class="modal-body">
+                    <div class="row mb-3">
+                        <div class="col-md-2">
+                            <label for="selectServ" class="form-label" style="font-weight: bold;">Detalle</label> 
+                            <select class="form-select" id="detalleMov" name="selectServ" data-sistema--app-target="selectServ"  data-action="change->sistema--app#cargarSelectProductosMov">
+                                <option value="1">Producto</option>    
+                                <option value="2">Servicio</option>    
+                            </select>
+                        </div>
+                        <div class="col-md-4">
+                            <label for="selectServ" class="form-label" style="font-weight: bold;">Producto</label> 
+                            <select class="form-select" id="productoMov" name="selectServ" data-sistema--app-target="selectServ" data-action="change->sistema--app#cargarproductoMov">
+                                <option value="">Seleccione producto</option>    
+                                {% for producto in productos %}
+                                    <option value="{{ producto.id }}">{{ producto.codigo}} - {{ producto.nombre}}</option>    
+                                {% endfor %}    
+                            </select>
+                        </div>
+                        <div class="col-md-2">
+                            <label for="tipoDoc" class="form-label" style="font-weight: bold;">Valor</label> 
+                            <div class="input-group">
+                                <input type="text" id="valorUndProdMov" name="numeroDocCliente" class="form-control" placeholder='0' disabled>
+                            </div>
+                        </div>
+                        <div class="col-md-2">
+                            <label for="tipoDoc" class="form-label" style="font-weight: bold;">Cantidad</label> 
+                            <input type="text" id="cantProdMov" name="numeroDocCliente" class="form-control" data-action="blur->sistema--app#calculoValProdMov">
+                        </div>
+                        <div class="col-md-2">
+                            <label for="tipoDoc" class="form-label" style="font-weight: bold;">Valor</label> 
+                            <div class="input-group">
+                                <input type="text" id="valorProdMov" name="numeroDocCliente" class="form-control" placeholder='0' disabled>
+                                <button type="button" class="btn btn-success" id="btnRegistroVenta" data-action="click->sistema--app#registrarVenta" disabled><i class="fas fa-plus"></i></button>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row mb-3">
+                        <div class="col-md-6">
+                            <div class="table-responsive" style="overflow-x:auto; max-height: 38vh; overflow-y:auto;">
+                                <table class="table table-bordered table-sm align-middle mb-0">
+                                    <thead class="table-light">
+                                        <tr>
+                                            <th class="text-nowrap">Producto</th>
+                                            <th class="text-nowrap">Cantidad</th>
+                                            <th class="text-nowrap">Valor</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="tablaVentas">
+                                        {% if tablaVentas is not empty %}
+                                            {% for item in tablaVentas %}
+                                                <tr>
+                                                    <td>{{ item.producto }}</td>
+                                                    <td>{{ item.cantidad }}</td>
+                                                    <td style="text-align:right">$ {{ item.valor|number_format(0,'.','.') }}</td>
+                                                </tr>
+                                            {% endfor %}
+                                        {% else %}
+                                            <tr>
+                                                <td colspan= 4 style="text-align:center" >No se han registrado ventas</td>
+                                            </tr>    
+                                        {% endif %}                                                
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="table-responsive">
+                                <table class="table table-bordered table-sm align-middle mb-0">
+                                    <thead class="table-light">
+                                        <tr>
+                                            <th class="text-nowrap">Concepto</th>
+                                            <th class="text-nowrap">Recibido</th>
+                                            <th class="text-nowrap">Pendiente</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="tablaMov">
+                                        {% if tablaMov is not empty %}
+                                            {% set valor = 0 %}
+                                            {% set saldo = 0 %}
+
+                                            {% for mov in tablaMov %}
+                                                <tr>
+                                                    <td>{{ mov.concepto }}</td>
+                                                    <td style="text-align:right">$ {{ mov.valor|number_format(0,'.','.') }}</td>
+                                                    <td style="text-align:right">$ {{ mov.pendiente|number_format(0,'.','.') }}</td>
+                                                </tr>
+
+                                                {% set valor = valor + mov.valor %}
+                                                {% set saldo = saldo + mov.pendiente %}
+                                            {% endfor %}
+                                            <tr class="table-light">
+                                                <td style="text-align:right; font-weight:bold">Totales</td>
+                                                <td style="text-align:right; font-weight:bold">$ {{valor|number_format(0,'.','.')}}</td>
+                                                <td style="text-align:right; font-weight:bold">$ {{saldo|number_format(0,'.','.')}}</td>
+                                            </tr>
+                                        {% else %}
+                                            <tr class="table-light">
+                                                <td colspan= 3 style="text-align:center" >No se han registrado movimientos</td>
+                                            </tr>  
+                                        {% endif %}                                                  
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-warning" data-sistema--app-target="btnGuardarServicioCheckin" data-action="sistema--app#cerrarPeriodo">Cerrar periodo</button>
+                    <button type="button" class="btn btn-danger" data-bs-dismiss="modal">Cancelar</button>
+                </div>
+            </div>
+        </div>
     </div>
+
 
     
 

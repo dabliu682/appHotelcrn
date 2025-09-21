@@ -45,24 +45,56 @@ export default class extends Controller {
         'rutaEliminarReserva': String,
         'rutaObtenerProducto': String,
         'rutaUpdateCantProducto': String,
+        'rutaCheckin': String,
+        'rutaRegistrarVenta': String,
+        'rutaCerrarTurno': String,
+        'rutaObtenerCheckin': String,
     };
     static targets = [
+        'selectFormaPagoProductoCheckin',
+        'comprobanteProductoCheckin',
+        'modalNuevoServicioCheckin',
+        'btnGuardarServicioCheckin',
+        'btnGuardarProductoCheckin',
         'modalBuscarClienteCheckin',
+        'modalNuevoProductoCheckin',
+        'valorPagoProductoCheckin',
         'numeroVehiculoClienteRev',
+        'selectFormaPagoCheckin',
+        'selectProductoCheckin',
+        'valorProductorCheckin',
         'numeroVehiculoCliente',
         'selectCompaniaCliente',
+        'selectTipoHabitacion',
+        'selectHabitacionServ',
+        'frameListaServicioss',
+        'saldoProductoCheckin',
+        'modalCargarProductos',
         'modalNuevaHabitacion',
         'selectTipoDocCliente',
         'fechaLlegClienteRev',
+        'frameTiposServicios',
+        'valorPagServCheckin',
         'botonesModalCheckin',
+        'formCargarProductos',
+        'cantProductoCheckin',
         'modalNuevaCompania',
         'modalCompaniaLabel',
         'btnGuardarCompania',
         'horaLlegClienteRev',
         'modalNuevoTipoServ',
         'companiaClienteRev',
+        'modalServicioLabel',
+        'comprobanteCheckin',
+        'modalNuevoProducto',
+        'modalProductoLabel',
+        'btnGuardarTipoServ',
+        'btnGuardarServicio',
+        'btnGuardarProducto',
         'modalNuevoServicio',
         'modalTipoServLabel',
+        'btnCargarProductos',
+        'btnGuardarEntrada',
         'aireAcondicionado',
         'frameHabitaciones',
         'modalNuevoTipoDoc',
@@ -74,6 +106,11 @@ export default class extends Controller {
         'modalNuevaReserva',
         'btnGuardarCliente',
         'modalNuevaReserva',
+        'formNuevoTipoServ',
+        'formNuevoServicio',
+        'formNuevoProducto',
+        'modalNuevaEntrada',
+        'modalEntradaLabel',
         'modalReservaLabel',
         'cantHabClienteRev',
         'btnGuardarReserva',
@@ -85,99 +122,69 @@ export default class extends Controller {
         'formNuevaReserva',
         'modalBodyCheckin',
         'observacionesRev',
+        'cantidadProducto',
+        'formNuevaEntrada',
+        'valVentaProducto',
+        'valorServCheckin',
+        'saldoServCheckin',
         'numeroCelCliente',
+        'frameInventario',
         'btnGuardarPiso',
         'modalNuevoPiso',
         'nombreCompania',
         'frameCompanias',
         'nombresCliente',
+        'codigoProducto',
+        'selectTipoServ',
+        'nombreTipoServ',
+        'nombreProducto',
+        'valSalProducto',
+        'valEntProducto',
+        'planoProductos',
+        'frameProductos',
+        'codigoProducto',
         'frameDashboard',
         'nombreTipoDoc',
         'labelModalHab',
+        'modalNuevoMov',
         'btnGuardarHab',
         'formNuevoPiso',
         'frameClientes',
+        'modalCheckout',
         'cellCienteRev',
         'selectAireRev',
+        'frameEntradas',
+        'valorProducto',
         'frameReservas',
         'idHabitacion',
         'formNuevaHab',
         'frameTipoDoc',
         'placaCliente',
         'modalCheckin',
+        'tipoProducto',
+        'porcProducto',
         'selectPisos',
+        'formCheckin',
         'nitCompania',
+        'btnServicio',
         'framePisos',
         'numeroCama',
         'idCompania',
         'ventilador',
         'nombrePiso',
         'clienteRev',
-        'idTipoDoc',
-        'idReserva',
-        'idCliente',
-        'idPiso',
-        'btnGuardarTipoServ',
-        'formNuevoTipoServ',
-        'frameTiposServicios',
-        'modalServicioLabel',
         'codigoServ',
-        'selectTipoServ',
-        'nombreServ',
-        'valorServ',
-        'btnServicio',
-        'formNuevoServicio',
-        'btnGuardarServicio',
-        'frameListaServicioss',
-        'nombreTipoServ',
         'idTipoServ',
         'idServicio',
-        'selectTipoHabitacion',
-        'modalNuevoServicioCheckin',
         'selectServ',
-        'selectHabitacionServ',
-        'valorServCheckin',
-        'valorPagServCheckin',
-        'saldoServCheckin',
-        'selectFormaPagoCheckin',
-        'comprobanteCheckin',
-        'btnGuardarServicioCheckin',
-        'modalNuevoProducto',
-        'modalProductoLabel',
-        'formNuevoProducto',
-        'codigoProducto',
-        'tipoProducto',
-        'nombreProducto',
-        'btnGuardarProducto',
-        'frameProductos',
-        'modalNuevaEntrada',
-        'modalEntradaLabel',
-        'codigoProducto',
-        'cantidadProducto',
-        'valorProducto',
-        'porcProducto',
-        'valEntProducto',
-        'valSalProducto',
-        'valVentaProducto',
-        'utilidad',
-        'btnGuardarEntrada',
-        'frameEntradas',
-        'formNuevaEntrada',
-        'modalCargarProductos',
-        'btnCargarProductos',
-        'formCargarProductos',
-        'planoProductos',
+        'nombreServ',
         'codigoProd',
-        'frameInventario',
-        'modalNuevoProductoCheckin',
-        'selectProductoCheckin',
-        'valorProductorCheckin',
-        'cantProductoCheckin',
-        'valorPagoProductoCheckin',
-        'saldoProductoCheckin',
-        'selectFormaPagoProductoCheckin',
-        'comprobanteProductoCheckin',
-        'btnGuardarProductoCheckin'
+        'idReserva',
+        'idTipoDoc',
+        'valorServ',
+        'idCliente',
+        'utilidad',
+        'idPiso',
     ];
 
     connect() {
@@ -813,8 +820,9 @@ export default class extends Controller {
         // Si quieres que el input sea type="time" pero muestre la hora actual, usa:
         let horaActual24 = `${String(hours).padStart(2, '0')}:${String(minutes).padStart(2, '0')}`;
 
-        $("#fechaLlegada-1").val(fechaActual);
-        $("#horallegada-1").val(horaActual24);
+        $("#fechaLlegada").val(fechaActual);
+        $("#horallegada").val(horaActual24);
+        $("#idCheckin").val(event.currentTarget.dataset.id);
 
         // Limpiar el contenido del modal y botones antes de renderizar
         //this.modalBodyCheckinTarget.innerHTML = '';
@@ -1036,17 +1044,19 @@ export default class extends Controller {
         this.valorPagServCheckinTarget.value = Number(result.price).toLocaleString('es-CO');
         this.saldoServCheckinTarget.value = 0;
 
-        let fecha = $("#fechaLlegada-" + index).val();
-        let hora = $("#horallegada-" + index).val();
+        let fecha = $("#fechaLlegada").val();
+        let hora = $("#horallegada").val();
         let diferencia = result.horas;
 
-        this.calcularFechaSalida(fecha, hora, diferencia, index);
+        this.calcularFechaSalida(fecha, hora, diferencia);
 
     }
 
-    calcularFechaSalida(fecha, hora, diferencia, index) {
+    calcularFechaSalida(fecha, hora, diferencia) {
         // Crear objeto Date con fecha y hora combinadas
+
         let fechaHora = new Date(`${fecha}T${hora}:00`);
+
 
         // Sumar 18 horas (en milisegundos)
         fechaHora.setHours(fechaHora.getHours() + diferencia);
@@ -1055,9 +1065,13 @@ export default class extends Controller {
         let fechasalida = fechaHora.toISOString().slice(0, 10);            // YYYY-MM-DD
         let horasalida = fechaHora.toTimeString().slice(0, 5);             // HH:mm
 
-        $("#fechaSalida-" + index).val(fechasalida);
-        $("#horaSalida-" + index).val(horasalida);
+        $("#fechaSalida").val(fechasalida);
+        $("#horaSalida").val(horasalida);
 
+    }
+
+    cargarHab(event) {
+        $("#idHab").val(event.currentTarget.value);
     }
 
     marcarElementos(event) {
@@ -2027,34 +2041,287 @@ export default class extends Controller {
         }
     }
 
+    async hacerCheckin() {
+
+        let ruta = this.rutaReservasValue;
+
+        let serviciosGuardados = localStorage.getItem('servicioCheckin1');
+        let productosGuardados = localStorage.getItem('productoCheckin');
+
+        $("#productos").val(productosGuardados);
+        $("#servicios").val(serviciosGuardados);
+
+        let urlGuardar = this.rutaCheckinValue;
+
+        let formulario = '';
+
+        formulario = this.formCheckinTarget;
+
+        var parametros = new FormData(formulario);
+
+        var consulta = await fetch(urlGuardar, { 'method': 'POST', 'body': parametros });
+        var result = await consulta.json();
+
+        if (result.response == "Ok") {
+            const modalInstance = Modal.getInstance(this.modalCheckinTarget);
+
+            if (modalInstance) { modalInstance.hide(); }
+
+            FlashMessage.show('Check-in realizado correctamente', 'success');
+
+            const respuesta = await fetch(ruta);
+            this.frameReservasTarget.innerHTML = await respuesta.text();
+        }
+    }
+
+    registrarMov() {
+        this.modal = new Modal(this.modalNuevoMovTarget);
+        this.modal.show();
+    }
+
+    async cargarSelectProductosMov(event) {
+        let accion = event.currentTarget.value;
 
 
-    cambiocheckin(event) {
-        let index = event.currentTarget.dataset.index;
+    }
 
-        // Ocultar todos los divs de checkin
-        let allCheckins = this.modalBodyCheckinTarget.querySelectorAll('[id^="checkin-"]');
-        allCheckins.forEach(div => {
-            div.style.display = 'none';
+    async cargarproductoMov(event) {
+        let ruta = this.rutaObtenerProductoValue.replace('var1', event.currentTarget.value);
+
+        var consulta = await fetch(ruta);
+        var result = await consulta.json();
+
+        $("#cantProdMov").val('');
+        $("#cantProdMov").attr('placeholder', result.existencias);
+        $("#valorUndProdMov").val(result.valor.toLocaleString('es-CO'));
+    }
+
+    calculoValProdMov() {
+        let valorUndProdMov = $("#valorUndProdMov").val();
+        valorUndProdMov = Number(valorUndProdMov.replace(/\.|,/g, ''));
+        let cantProdMov = $("#cantProdMov").val();
+        cantProdMov = Number(cantProdMov.replace(/\.|,/g, ''));
+
+        if (valorUndProdMov != '' && cantProdMov != '') {
+            let total = valorUndProdMov * cantProdMov;
+
+            $("#valorProdMov").val(total.toLocaleString('es-CO'));
+        }
+        else {
+            $("#valorProdMov").val(0);
+        }
+    }
+
+    async registrarVenta() {
+
+        let ruta = this.rutaRegistrarVentaValue;
+
+        let detalleMov = $("#detalleMov").val();
+        let productoMov = $("#productoMov").val();
+        let valorProdMov = Number($("#valorProdMov").val().replace(/\.|,/g, ''));
+        let cantProdMov = $("#cantProdMov").val();
+
+        ruta = ruta.replace('var1', detalleMov);
+        ruta = ruta.replace('var2', productoMov);
+        ruta = ruta.replace('var3', cantProdMov);
+        ruta = ruta.replace('var4', valorProdMov);
+
+        var consulta = await fetch(ruta);
+        var result = await consulta.json();
+
+        var ventas = result.tablaVentas;
+        var tablaVentas = document.getElementById("tablaVentas");
+
+        tablaVentas.innerHTML = "";
+
+        ventas.forEach(function (item) {
+            var tr = document.createElement("tr");
+
+            var tdProducto = document.createElement("td");
+            tdProducto.textContent = item.producto;
+            tr.appendChild(tdProducto);
+
+            var tdCantidad = document.createElement("td");
+            tdCantidad.textContent = item.cantidad;
+            tr.appendChild(tdCantidad);
+
+            var tdValor = document.createElement("td");
+            tdValor.textContent = '$ ' + item.valor.toLocaleString('es-CO');
+            tdValor.style.cssText = "text-align: right";
+            tr.appendChild(tdValor);
+
+            tablaVentas.appendChild(tr);
         });
 
-        // Mostrar solo el div correspondiente al índice
-        let currentCheckin = this.modalBodyCheckinTarget.querySelector(`#checkin-${index}`);
-        if (currentCheckin) {
-            currentCheckin.style.display = 'block';
+        var movimientos = result.tablaMov;
+        var tablaMov = document.getElementById("tablaMov");
+
+        tablaMov.innerHTML = "";
+        let totalValor = 0;
+        let totalPendiente = 0;
+
+        movimientos.forEach(function (mov) {
+            var tr = document.createElement("tr");
+
+            var tdConcepto = document.createElement("td");
+            tdConcepto.textContent = mov.concepto;
+            tr.appendChild(tdConcepto);
+
+            var tdValor = document.createElement("td");
+            tdValor.textContent = '$ ' + mov.valor.toLocaleString('es-CO');
+            tdValor.style.cssText = "text-align: right";
+            tr.appendChild(tdValor);
+
+            var tdpendiente = document.createElement("td");
+            tdpendiente.textContent = '$ ' + mov.pendiente.toLocaleString('es-CO');
+            tdpendiente.style.cssText = "text-align: right";
+            tr.appendChild(tdpendiente);
+
+            tablaMov.appendChild(tr);
+
+            totalValor += mov.valor;
+            totalPendiente += mov.pendiente;
+        });
+
+        var tr = document.createElement("tr");
+        tr.classList.add("table-light");
+
+        var tdConcepto = document.createElement("td");
+        tdConcepto.textContent = 'Total';
+        tdConcepto.style.cssText = "text-align: right; font-weight:bold";
+        tr.appendChild(tdConcepto);
+
+        var tdTotalValor = document.createElement("td");
+        tdTotalValor.textContent = '$ ' + totalValor.toLocaleString('es-CO');
+        tdTotalValor.style.cssText = "text-align: right; font-weight:bold";
+        tr.appendChild(tdTotalValor);
+
+        var tdTotalPendiente = document.createElement("td");
+        tdTotalPendiente.textContent = '$ ' + totalPendiente.toLocaleString('es-CO');
+        tdTotalPendiente.style.cssText = "text-align: right; font-weight:bold";
+        tr.appendChild(tdTotalPendiente);
+
+        tablaMov.appendChild(tr);
+
+    }
+
+    async cerrarPeriodo(event) {
+        let ruta = this.rutaCerrarTurnoValue;
+
+        var consulta = await fetch(ruta);
+        var result = await consulta.json();
+
+        ruta = this.rutaDashboardValue;
+
+        FlashMessage.show('Turno cerrado correctamente', 'success');
+
+        const modalInstance = Modal.getInstance(this.modalNuevoMovTarget);
+
+        if (modalInstance) { modalInstance.hide(); }
+
+        const respuesta = await fetch(ruta);
+        this.frameDashboardTarget.innerHTML = await respuesta.text();
+    }
+
+    async abrirModalCheckOut(event) {
+
+        let id = event.currentTarget.dataset.id;
+
+        let ruta = this.rutaObtenerCheckinValue;
+
+        ruta = ruta.replace('var1', id);
+
+        var consulta = await fetch(ruta);
+        var result = await consulta.json();
+
+        let datos = result.datos;
+
+        $("#clienteCheckout").val(datos.cliente);
+        $("#fechaLlegadaOut").val(datos.fechaLlegada);
+        $("#horaLlegadaOut").val(datos.horaLlegada);
+        $("#fechaSalidaOut").val(datos.fechaSalida);
+        $("#horaSalidaOut").val(datos.horaSalida);
+        $("#observacionesCheckOut").val(datos.observaciones);
+        (datos.tipoCliente == 1) ? $("#tipoClienteOut").text('Motorista') : $("#tipoClienteOut").text('Turista');
+
+
+        let servicios = result.servicios;
+
+        let tbody = this.modalCheckoutTarget.querySelector(`#serviciosCheckout`);
+        tbody.innerHTML = ''; // Limpiar el contenido actual
+
+        servicios.forEach((servicio) => {
+            let tr = document.createElement('tr');
+            const valorServicio = servicio.valor.toLocaleString('es-CO');
+            const valorPagado = servicio.valorPag.toLocaleString('es-CO');
+            const saldo = servicio.saldo.toLocaleString('es-CO');
+
+            tr.innerHTML = `
+                <td class="text-nowrap">${servicio.servicio}</td>
+                <td class="text-nowrap">${servicio.habitacion}</td>
+                <td class="text-nowrap">${servicio.formaPago}</td>
+                <td class="text-nowrap">comprobante</td>
+                <td class="text-nowrap" style="text-align:right;">$ ${valorServicio}</td>
+                <td class="text-nowrap" style="text-align:right;">$ ${valorPagado}</td>
+                <td class="text-nowrap" style="text-align:right;">$ ${saldo}</td>
+            `;
+
+            tbody.appendChild(tr);
+        });
+
+        let productos = result.productos;
+
+        let tbodyProductos = this.modalCheckoutTarget.querySelector(`#productosCheckout`);
+        tbodyProductos.innerHTML = ''; // Limpiar el contenido actual
+
+        if (productos.length > 0) {
+            productos.forEach((servicio) => {
+                let tr = document.createElement('tr');
+                const valorServicio = servicio.valor.toLocaleString('es-CO');
+                const valorPagado = servicio.valorPag.toLocaleString('es-CO');
+                const saldo = servicio.saldo.toLocaleString('es-CO');
+
+                tr.innerHTML = `
+                    <td class="text-nowrap">${servicio.servicio}</td>
+                    <td class="text-nowrap">${servicio.habitacion}</td>
+                    <td class="text-nowrap">${servicio.formaPago}</td>
+                    <td class="text-nowrap">comprobante</td>
+                    <td class="text-nowrap" style="text-align:right;">$ ${valorServicio}</td>
+                    <td class="text-nowrap" style="text-align:right;">$ ${valorPagado}</td>
+                    <td class="text-nowrap" style="text-align:right;">$ ${saldo}</td>
+                `;
+
+                tbodyProductos.appendChild(tr);
+            });
+        }
+        else {
+            let tr = document.createElement('tr');
+
+            tr.innerHTML = `<td colspan=7 style="color:red; text-align:center" >No se cargaron productos</td>`;
+
+            tbodyProductos.appendChild(tr);
         }
 
-        // Deshabilitar el botón actual y habilitar el siguiente
-        let botones = this.botonesModalCheckinTarget.querySelectorAll('button');
+        (datos.toalla) ? $("#checkToallaOut").prop("checked", true) : $("#checkToallaOut").prop("checked", false);
+        (datos.aire) ? $("#checkAireOut").prop("checked", true) : $("#checkAireOut").prop("checked", false);
+        (datos.cobija) ? $("#checkCobijaOut").prop("checked", true) : $("#checkCobijaOut").prop("checked", false);
+        (datos.control) ? $("#checkControlOut").prop("checked", true) : $("#checkControlOut").prop("checked", false);
+        (datos.llaves) ? $("#checkLlavesOut").prop("checked", true) : $("#checkLlavesOut").prop("checked", false);
 
-        botones.forEach(btn => {
-            btn.disabled = true;
-        });
+        if ($("#checkToallaOut").is(":checked") && $("#checkAireOut").is(":checked") && $("#checkCobijaOut").is(":checked") && $("#checkControlOut").is(":checked") && $("#checkLlavesOut").is(":checked")) {
+            $("#checkTodosOut").prop("checked", true);
+        }
+        else {
+            $("#checkTodosOut").prop("checked", false);
+        }
 
-
+        this.modal = new Modal(this.modalCheckoutTarget);
+        this.modal.show();
     }
 
 
 
 
+
 }
+

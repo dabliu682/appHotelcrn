@@ -39,20 +39,17 @@ class TurnosRepository extends ServiceEntityRepository
         }
     }
 
-//    /**
-//     * @return Turnos[] Returns an array of Turnos objects
-//     */
-//    public function findByExampleField($value): array
-//    {
-//        return $this->createQueryBuilder('t')
-//            ->andWhere('t.exampleField = :val')
-//            ->setParameter('val', $value)
-//            ->orderBy('t.id', 'ASC')
-//            ->setMaxResults(10)
-//            ->getQuery()
-//            ->getResult()
-//        ;
-//    }
+    /**
+    * @return Turnos[] Returns an array of Turnos objects
+    */
+    public function obtenerCant()
+    {
+        return $this->createQueryBuilder('t')
+            ->select('count(t.id)')
+            ->getQuery()
+            ->getResult()
+        ;
+    }
 
 //    public function findOneBySomeField($value): ?Turnos
 //    {
