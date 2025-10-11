@@ -24,15 +24,15 @@
                                 {% if servicio.typeroom == 1 %}
                                     Habitación sencilla
                                 {% elseif servicio.typeroom == 2 %}
-                                    Habitación de dos camas
+                                    Habitación doble
                                 {% elseif servicio.typeroom == 3 %}
                                     Habitación sencilla con aire acondicionado
                                 {% elseif servicio.typeroom == 4 %}
-                                    Habitación de dos camas con aire acondicionado
+                                    Habitación doble con aire acondicionado
                                 {% elseif servicio.typeroom == 5 %}
-                                    Habitación sencilla ventilador
+                                    Habitación sencilla con ventilador
                                 {% elseif servicio.typeroom == 6 %}
-                                    Habitación de dos camas ventilador
+                                    Habitación doble con ventilador
                                 {% else %}
                                     No aplica
                                 {% endif %}
@@ -46,7 +46,7 @@
                                 </div>
                             </td>
                             <td style="text-align:center; width: 20px;">
-                                <i class="far fa-window-maximize text-primary" style="cursor:pointer" data-action="click->sistema--app#abrirModalNuevoServicio" data-accion = '2'  data-id = {{ servicio.id }} data-codigo = "{{ servicio.code }}" data-name = "{{ servicio.name }}" data-price = "{{ servicio.price }}" data-tipo = "{{ servicio.tipo.id }}" ></i>
+                                <i class="far fa-window-maximize text-primary" style="cursor:pointer" data-action="click->sistema--app#abrirModalNuevoServicio" data-accion = '2'  data-id = {{ servicio.id }} data-codigo = "{{ servicio.code }}" data-name = "{{ servicio.name }}" data-price = "{{ servicio.price }}" data-tipo = "{{ servicio.tipo.id }}" data-typeroom = "{{ servicio.typeroom }}" data-hours = "{{ servicio.hours }}" ></i>
                             </td>
                             <td style="text-align:center; width: 20px;">
                                 <i class="fas fa-trash-restore-alt text-danger" style="cursor:pointer" data-action="click->sistema--app#eliminarServicio" data-id = {{ servicio.id }}></i>
@@ -95,14 +95,14 @@
                     <div class="row mb-3">
                         <div class="col-md-6">
                             <label for="tipoHabitacion" class="form-label fw-bold">Tipo de habitación</label>
-                            <select class="form-select" id="tipoHabitacion" name="tipoHabitacion" data-sistema--app-target="selectTipoHabitacion"  data-action="change->sistema--app#validaBtnGuardarHab">
+                            <select class="form-select" id="tipoHabitacion" name="tipoHabitacion" data-sistema--app-target="selectTipoHabitacion"  data-action="change->sistema--app#validaBtnGuardarServicio">
                                 <option value="">Seleccione tipo de habitación</option>
                                 <option value="1">Habitación sencilla</option>
-                                <option value="2">Habitación de dos camas</option>
+                                <option value="2">Habitación doble</option>
                                 <option value="3">Habitación sencilla con aire acondicionado</option>
-                                <option value="4">Habitación de dos camas con aire acondicionado</option>
+                                <option value="4">Habitación doble con aire acondicionado</option>
                                 <option value="5">Habitación sencilla ventilador</option>
-                                <option value="6">Habitación de dos camas ventilador</option>                  
+                                <option value="6">Habitación doble ventilador</option>                  
                             </select>
                         </div>
                         <div class="col-md-6">

@@ -1,0 +1,169 @@
+<style>
+    @page{
+        margin:5mm 5mm 5mm 5mm;
+    }
+
+    *{
+        font-size: 12px;
+    }
+
+    .section {
+        page-break-inside: avoid;
+        margin-top: 10px;
+        margin-bottom: 10px;
+        padding: 10px;
+        /*border:1px solid red;*/
+        min-height: 118mm;
+    }
+
+    .cabecera{
+        margin-bottom: 10px;
+    }
+
+    .fila-title{
+        font-weight: bold;
+        background-color: aliceblue;
+    }
+
+</style>
+<body>
+   
+
+            <div class="section">
+
+                <div class="cabecera">
+                    <table border="0" style="width:100%;border-collapse: collapse;">
+                        <tr>
+                            <td style="padding:5px; width:35%; font-size:8px">FECHA IMPRESIÓN: {{ datos.dia}}-{{ datos.mes}}-{{ datos.anio}}  </td>
+                            <td style="padding:5px; font-weight:bold; text-align:right; color:red; border: 1px solid white; font-size:14px">N° {{ datos.numero}}</td>
+                        </tr>
+                    </table>
+                    <table border="0" style="width:100%;border-collapse: collapse; margin-top:10px">
+                        <tr>
+                            <td align="left" style="width:10%">
+                                <img style="max-height: 90px;max-width: 185px;padding:2px;" src="{{ 'data:image;base64,'~datos.logo }}">
+                            </td>
+                            <td align="center"><span style="font-size:20px; font-weight:bold;">{{ datos.compania}}</span><br>Nit: {{ datos.nit}}</td>
+                        </tr>
+                    </table>
+                    <table border="0" style="width:100%;border-collapse: collapse; margin-top:10px">               
+                        <tr>
+                            <td style="width:10%;"><span style="font-weight:bold">Cliente:</span> </td>
+                            <td colspan=3 style="border-bottom:1px solid">{{ datos.cliente }}</td>
+                        </tr>
+                        <tr>
+                            <td style="padding-top:20px"><span style="font-weight:bold">Telefono:</span></td>
+                            <td style="border-bottom:1px solid; padding-top:20px">{{ datos.telefono }}</td>
+                            <td style="text-align:right; padding-top:20px"><span style="margin-right:20px; font-weight:bold">Fecha servicio:</span></td>
+                            <td style="border-bottom:1px solid; padding-top:20px">{{ datos.fechaServicio }}</td>
+                        </tr>                       
+                    </table>
+
+                    <table border="1" style="width:100%;border-collapse: collapse; margin-top:20px">
+                        <tr style="background:#f2f2f2">
+                            <th>Concepto</th>
+                            <th>Cant</th>
+                            <th>Valor und</th>
+                            <th>Subtotal</th>                            
+                        </tr>
+                        {% for item in tabla %}
+                            <tr>
+                                <td>{{ item.concepto }}</td>
+                                <td style="text-align:right;">{{ item.cantidad }}</td>
+                                <td style="text-align:right;">$ {{ item.valorUnd|number_format(0, ',', '.') }}</td>
+                                <td style="text-align:right;">$ {{ item.subtotal|number_format(0, ',', '.') }}</td>
+                            </tr>
+                        {% endfor %}
+                        <tr style="background:#f2f2f2">
+                            <td colspan=3 style="font-weight:bold; text-align:right;">TOTAL</td>
+                            <td style="font-weight:bold; text-align:right;">$ {{ total|number_format(0, ',', '.') }}</td>
+                        </tr>
+                    </table>
+
+                        
+                </div>
+                {#<div class="info-table">
+                    <table border="1" style="width:100%;">
+                        <tr style="vertical-align: text-top;">
+                            <td align="center" width="450px">
+                                Cargo <br>
+                                {{ dto.cargo }}
+                            </td>
+                            <td align="center" style="80px">
+                                Contrato <br>
+                                {{ dto.numero }}
+                            </td>
+                            <td colspan="2" align="center" style="200px">
+                                Centro de trabajo <br>
+                                {{ dto.nomCentroCosto }}
+                            </td>
+                        </tr>
+                        <tr class="fila-title">
+                            <td align="center">
+                                CONCEPTO
+                            </td>
+                            <td align="center">
+                                CANTIDAD
+                            </td>
+                            <td align="center" width="105px">
+                                DEVENGADO
+                            </td>
+                            <td align="center" width="95px">
+                                DEDUCIDO
+                            </td>
+                        </tr>
+                        <tr style="vertical-align: text-top;">
+                            <td style="height:150px;padding:3px;">
+                                {% for ccto in dto.tabla %}
+                                    {% if ccto.presentar == false %} * {% else %}  &nbsp; {% endif %} {{ ccto.concepto }} <br>
+                                {% endfor %}
+                            </td>
+                            <td align="center" style="padding:3px;">
+                                {% for cnt in dto.tabla %}
+                                    {% if cnt.dias != "" and cnt.dias != -1  %}
+                                        {{ cnt.dias }} Días <br>
+                                    {% endif %}
+                                {% endfor %}
+                            </td>
+                            <td align="right" style="padding:3px;">
+                                {% for dvg in dto.tabla %}
+                                    {% if dvg.devengado != -1  %}
+                                        $ {{ dvg.devengado|number_format('0', '.') }} <br>
+                                    {% endif %}
+                                {% endfor %}
+                            </td>
+                            <td align="right" style="padding:3px;">
+                                    {% for dddo in dto.tabla %}
+                                    {% if dddo.deducido != -1  %}
+                                        ${{ dddo.deducido|number_format('0', '.')  }} <br>
+                                    {% endif %}
+                                {% endfor %}
+                            </td>
+                        </tr>
+                        <tr class="fila-title">
+                            <td style="height:30px;padding:5px;">
+                            Firma:
+                            </td>
+                            <td align="center">
+                                TOTALES
+                            </td>
+                            <td align="right" style="padding:5px;">
+                                $ {{ dto.totDev|number_format('0', '.') }}
+                            </td>
+                            <td align="right" style="padding:5px;">
+                                $ {{ dto.totDed|number_format('0', '.') }}
+                            </td>
+                        </tr>
+                        <tr>
+                            <td colspan="3"style="height:20px;padding:5px;">
+                            <b>TOTAL A PAGAR:</b> {{ dto.vrLetras }}
+                            </td>
+                            <td align="right" style="font-weight: bold;padding:5px;">
+                                $ {{ dto.total|number_format('0', '.') }}
+                            </td>
+                        </tr>                        
+                    </table>
+                </div>#}
+
+            </div>
+</body>

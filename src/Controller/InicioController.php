@@ -46,7 +46,7 @@ class InicioController extends AbstractController
 
         $numClientes = count($bd->getRepository(Persons::class)->findBy([]));
 
-        $reservas = $bd->getRepository(Booking::class)->findBy([],['id' => 'ASC']);
+        $reservas = $bd->getRepository(Booking::class)->findBy([],['id' => 'desc']);
 
         $clientes = $bd->getRepository(Persons::class)->findBy([],['id' => 'ASC']);
 
@@ -66,10 +66,10 @@ class InicioController extends AbstractController
         foreach ($habitaciones as $habitacion) {
 
             $tipo = ($habitacion->getTyperoom() == 1) ? 'Habitación sencilla' : (
-                ($habitacion->getTyperoom() == 2) ? 'Habitación de dos camas' : (
+                ($habitacion->getTyperoom() == 2) ? 'Habitación doble' : (
                     ($habitacion->getTyperoom() == 3) ? 'Habitación sencilla con aire acondicionado' : (
-                        ($habitacion->getTyperoom() == 4) ? 'Habitación de dos camas con aire acondicionado' : (
-                            ($habitacion->getTyperoom() == 5) ? 'Habitación sencilla ventilador' : 'Habitación de dos camas ventilador'
+                        ($habitacion->getTyperoom() == 4) ? 'Habitación doble con aire acondicionado' : (
+                            ($habitacion->getTyperoom() == 5) ? 'Habitación sencilla ventilador' : 'Habitación doble con ventilador'
                         )
                     )
                 )
@@ -216,8 +216,9 @@ class InicioController extends AbstractController
             } 
             
 
-            $agrupaMov[$tipoMov][] = ['recibido' => $det->getValor(), 'pendiente' =>  $det->getSaldo()];
+            $agrupaMov[$tipoMov][] = ['recibido' => $det->getValor(), 'pendiente' =>  $det->getSaldo(), 'estado' => $det->getEstado()];
         }
+
 
         foreach ($agrupaMov as $key => $grupos) 
         {
@@ -227,7 +228,7 @@ class InicioController extends AbstractController
             foreach ($grupos as $grupo) 
             {
                 $valor += $grupo['recibido'];
-                $pendiente += $grupo['pendiente'];
+                $pendiente += ($grupo['estado'] != 2) ? $grupo['pendiente'] : 0;
             }
 
             $tablaMov[] = ['concepto' => $key, 'valor' => $valor, 'pendiente' => $pendiente];

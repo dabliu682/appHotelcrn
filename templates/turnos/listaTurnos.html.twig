@@ -15,6 +15,7 @@
                                     <th>Usuario</th>
                                     <th>Inicio</th>
                                     <th>Fin</th>
+                                    <th>Duración</th>
                                     <th>Hospedaje</th>
                                     <th>Servicios</th>
                                     <th>Tienda</th>
@@ -29,6 +30,7 @@
                                             <td>{{ item.usuario }}</td>
                                             <td>{{ item.inicio }}</td>
                                             <td>{{ item.fin }}</td>
+                                            <td>{{ item.horas }}</td>
                                             <td style="text-align:right">$ {{ item.hospedaje|number_format(0,'.','.') }}</td>
                                             <td style="text-align:right">$ {{ item.servicios|number_format(0,'.','.') }}</td>
                                             <td style="text-align:right">$ {{ item.tienda|number_format(0,'.','.') }}</td>

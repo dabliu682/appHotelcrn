@@ -299,17 +299,17 @@ class ConfiguracionController extends AbstractController
         $bd = $this->getDoctrine()->getManager();
 
         $servicio = $bd->getRepository(Services::class)->find($id);
-        $habitaciones = $bd->getRepository(Rooms::class)->findBy(['typeroom' => $servicio->getTyperoom()]);
+        $habitaciones = $bd->getRepository(Rooms::class)->findBy(['typeroom' => $servicio->getTyperoom(), 'status' => 1]);
 
         $habitacionesSelector = [];
 
         foreach ($habitaciones as $habitacion) {
 
             $tipo = ($habitacion->getTyperoom() == 1) ? 'Habitación sencilla' : (
-                ($habitacion->getTyperoom() == 2) ? 'Habitación de dos camas' : (
+                ($habitacion->getTyperoom() == 2) ? 'Habitación doble ' : (
                     ($habitacion->getTyperoom() == 3) ? 'Habitación sencilla con aire acondicionado' : (
-                        ($habitacion->getTyperoom() == 4) ? 'Habitación de dos camas con aire acondicionado' : (
-                            ($habitacion->getTyperoom() == 5) ? 'Habitación sencilla ventilador' : 'Habitación de dos camas ventilador'
+                        ($habitacion->getTyperoom() == 4) ? 'Habitación doble con aire acondicionado' : (
+                            ($habitacion->getTyperoom() == 5) ? 'Habitación sencilla con ventilador' : 'Habitación doble con ventilador'
                         )
                     )
                 )

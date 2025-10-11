@@ -3,7 +3,7 @@
         <div class="col-md-12">
             <div class="card shadow-sm border-0 rounded-4">
                 <div class="card-body">
-                    <h5 class="card-title mb-3">Listado de reservas</h5>
+                    <h5 class="card-title mb-3">Listado de check-in</h5>
                     <div class="mb-3">
                         <input type="text" class="form-control" placeholder="Filtrar reservas..." id="filtroReservas">
                     </div>
@@ -17,7 +17,7 @@
                                     <th>Fecha/hora de llegada</th>
                                     <th>Fecha/hora de Salida</th>
                                     <th>Habitacion</th>
-                                    <th colspan=2 >Acciones</th>
+                                    <th colspan=3 >Acciones</th>
                                 </tr>
                                 </thead>
                                 <tbody>
@@ -25,28 +25,44 @@
                                     {% for checkin in checkins %}
                                         <tr>
                                             <td>{{ checkin.reserva.numero }}</td>
-                                            <td>{{ checkin.cliente.name }} {{ checkin.cliente.lastname }}</td>
+                                            <td>{{ checkin.cliente.documentNumber }} - {{ checkin.cliente.name }} {{ checkin.cliente.lastname }}</td>
                                             <td>{{ checkin.cliente.cellphone }}</td>
-                                            <td>{{ checkin.fechallegada|date('Y-m-d') }}/{{ checkin.horallegada|date('H:i') }}</td>
+                                            <td>{{ checkin.fechallegada|date('Y-m-d') }} {{ checkin.horallegada|date('H:i') }}</td>
                                             <td>
                                                 {% if checkin.fechasalida is not null  %}
-                                                    {{ checkin.fechasalida|date('Y-m-d') }}/{{ checkin.horasalida|date('H:i') }}</td>
+                                                    {{ checkin.fechasalida|date('Y-m-d') }} {{ checkin.horasalida|date('H:i') }}</td>
                                                 {% endif %}
                                             <td>
                                                 {% if checkin.habitacion is not null  %}
                                                     {{ checkin.habitacion.name }}
                                                 {% endif %}
                                             </td>
-                                            <td style="text-align:center; width: 20px;">
+                                            
                                                 {% if checkin.estado == 0 %}
-                                                    <i class="fas fa-check-circle text-primary" style="cursor:pointer" data-action="click->sistema--app#abrirModalCheckin" data-id = {{ checkin.id }} ></i>
+                                                    <td colspan=2 style="text-align:center; width: 20px;">
+                                                        <i class="fas fa-check-circle text-primary" style="cursor:pointer" data-action="click->sistema--app#abrirModalCheckin" data-id = {{ checkin.id }} data-cliente = {{ checkin.cliente.id }} ></i>
+                                                    </td>
+                                                {% elseif checkin.estado == 1 %}
+                                                    <td style="text-align:center; width: 20px;">
+                                                        <i class="far fa-window-maximize text-primary" style="cursor:pointer" data-action="click->sistema--app#abrirModalCheckOut" data-id = {{ checkin.id }} data-accion = '2'></i>
+                                                    </td>
+                                                    <td style="text-align:center; width: 20px;">
+                                                        <i class="fas fa-concierge-bell text-success" style="cursor:pointer; font-size:18px" data-action="click->sistema--app#abrirModalServicio" data-id = {{ checkin.id }} data-habitacion = {{ checkin.habitacion.name }}></i>
+                                                    </td>
+                                                    <td style="text-align:center; width: 20px;">
+                                                        <i class="fas fa-cart-plus text-success" style="cursor:pointer" data-action="click->sistema--app#abrirModalProductos" data-id = {{ checkin.id }} data-habitacion = {{ checkin.habitacion.name }} ></i>
+                                                    </td>
                                                 {% else %}
-                                                    <i class="far fa-window-maximize text-primary" style="cursor:pointer" data-action="click->sistema--app#abrirModalCheckOut" data-id = {{ checkin.id }} data-accion = '2'></i>
+                                                    <td colspan=3 style="text-align:end; width: 20px;">
+                                                        <span class="badge bg-danger" data-action="click->sistema--app#verFactura" data-id = {{ checkin.id }} title="Ver factura" style="cursor:pointer" >Finalizado</span>
+                                                    </td>
                                                 {% endif %}
-                                            </td>
-                                            <td style="text-align:center; width: 20px;">
-                                                <i class="fas fa-trash-restore-alt text-danger" style="cursor:pointer" data-action="click->sistema--app#eliminarCliente" ></i>
-                                            </td>
+                                            
+                                            {% if checkin.estado == 0 %}
+                                                <td style="text-align:left; width: 20px;">
+                                                    <i class="fas fa-trash-restore-alt text-danger" style="cursor:pointer" data-action="click->sistema--app#eliminarCheckin" data-id = {{ checkin.id }} ></i>
+                                                </td>
+                                            {% endif %}
                                         </tr>
                                     {% endfor %}
                                 {% else %}
@@ -100,15 +116,11 @@
                                         </div>
                                     </div>
                                     <div class="input-group mt-1">
-                                        <select id="clienteSelectCustom-1" class="form-control" name="clienteRev" data-sistema--app-target="clienteRev">
-                                            <option value="">Seleccione cliente</option>
+                                        <select id="clienteSelectCustom-1" class="form-control selectpicker"  data-live-search="true" data-live-search-placeholder="Filtro clientes" data-size="5" title="Seleccione cliente" name="clienteRev" data-sistema--app-target="clienteRev">
                                             {% for cliente in clientes %}
                                                 <option value="{{ cliente.id }}">{{ cliente.documentNumber }} - {{ cliente.name }} {{ cliente.lastname }}</option>
                                             {% endfor %}
                                         </select>
-                                        <button type="button" class="btn btn-outline-secondary" tabindex="-1" data-action="click->sistema--app#abrirBusquedaClienteModal" data-index = 1 title="Buscar cliente" style="border: 1px solid #dee2e6;">
-                                            <i class="fas fa-search"></i>
-                                        </button>
                                     </div>
                                 </div>                                    
                                 <div class="col-md-2">
@@ -521,17 +533,287 @@
                                 </div>
                                 <div class="col-md-2">
                                     <label class="form-label" style="font-weight: bold;">Saldo a pagar</label> 
-                                    </br><span id="totalPagar-1" class="text-success" style=" font-size: 26pt; font-weight: bold;">$ 0</span>
+                                    </br><span id="saldoPagar" class="text-success" style=" font-size: 26pt; font-weight: bold;">$ 0</span>
                                 </div>
                             </div>
                         </form>
                     </div>
                 </div>  
                 <div class="modal-footer">
-                    <button type="button" class="btn btn-primary" data-sistema--app-target="btnGuardarReserva" data-action="sistema--app#hacerCheckin">Guardar</button>
+                    <button type="button" class="btn btn-primary" data-sistema--app-target="btnGuardarReserva" data-action="sistema--app#checkout">Finalizar</button>
                     <button type="button" class="btn btn-danger" data-bs-dismiss="modal">Cancelar</button>
                 </div>
             </div>
         </div>
     </div>
+
+    <!-- Modal para factura -->
+    <div class="modal fade" id="modalFactura" data-turbo="false" data-sistema--app-target="modalFactura" tabindex="-1" aria-labelledby="modalFacturaLabel" aria-hidden="true">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <input type="hidden" name="idCheckout" id="idCheckout"  value="0">
+                <div class="modal-header">
+                    <h5 class="modal-title">Factura</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <iframe id="frame-pdfLiq" style="width:100%; height:500px; border:1px solid;" class="PDF" src=""></iframe>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal para registrar servicios checkin -->
+    <div class="modal fade" id="nuevoServicioCheckin" data-sistema--app-target="nuevoServicioCheckin" tabindex="-1" aria-labelledby="nuevoServicioCheckinLabel" aria-hidden="true" style="margin-top:25px !important;">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content shadow-lg" style="box-shadow: 0 1.5rem 3.5rem 1rem rgba(33,37,41,0.98) !important;">
+                <div class="modal-header">
+                    <h5 class="modal-title">Registro de servicios</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>            
+                <div class="modal-body">
+                    <input type="hidden" id="idCheckinNewService" value="0" />
+                    <div class="row mb-3">
+                        <div class="col-md-2">
+                            <label for="selectServ" class="form-label" style="font-weight: bold;">Habitación</label> 
+                            <input class="form-control" id="NumHabitacion" value="" readonly/>
+                        </div>
+                        <div class="col-md-7">
+                            <label for="selectServ" class="form-label" style="font-weight: bold;">Servicio</label> 
+                            <select class="form-select" id="selectNewServ" name="selectServ"  data-action="change->sistema--app#cargarnewServicioCheckin change->sistema--app#validaBtnCargarNewServicio">
+                                <option value="">Seleccione servicio</option>    
+                                {% for servicio in serviciosCheck %}
+                                    <option value="{{ servicio.id }}">{{ servicio.name }} {% if servicio.hours is not null %} / {{ servicio.hours }} horas {% endif %} </option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                        <div class="col-md-3">
+                            <label for="tipoDoc" class="form-label" style="font-weight: bold;">Valor</label> 
+                            <input type="text" name="numeroDocCliente" class="form-control" id="valorNewService" disabled>
+                        </div>
+                    </div>
+                    <div class="row mb-3">                        
+                        <div class="col-md-3">
+                            <label for="tipoDoc" class="form-label" style="font-weight: bold;">Valor pagado</label> 
+                            <input type="text" name="numeroDocCliente" class="form-control" id="valorPagNewService" data-action="sistema--app#formatearCampo blur->sistema--app#actualizaSaldoNewService blur->sistema--app#validaBtnCargarNewServicio">
+                        </div>
+                        <div class="col-md-2">
+                            <label for="tipoDoc" class="form-label" style="font-weight: bold;">Saldo</label> 
+                            <input type="text" name="numeroDocCliente" class="form-control" id="saldoNewService" disabled>
+                        </div>
+                        <div class="col-md-4">
+                            <label for="selectFormaPagoCheckin" class="form-label" style="font-weight: bold;">Forma de pago</label> 
+                            <select class="form-select" id="selectFormaPagoNewService" name="selectFormaPagoCheckin" data-action="change->sistema--app#actualizarComprobanteNewService change->sistema--app#validaBtnCargarNewServicio">
+                                <option value="">Seleccione forma de pago</option>                     
+                                <option value="1">Efectivo</option>                     
+                                <option value="2">Bono</option>                     
+                                <option value="3">Transaccion</option>                     
+                            </select>
+                        </div>
+                        <div class="col-md-3">
+                            <label for="tipoDoc" class="form-label" style="font-weight: bold;">N° comprobante</label> 
+                            <input type="text" name="numeroDocCliente" class="form-control" id="comprobanteNewService" disabled data-action="blur->sistema--app#validaBtnCargarNewServicio">
+                        </div>
+                    </div>
+
+                    <div class="row mt-3">
+                        <div class="col-12">
+                            <div class="table-responsive">
+                                <table class="table table-bordered table-sm align-middle mb-0">
+                                    <thead class="table-light">
+                                        <tr>
+                                            <th colspan="2" class="text-nowrap">
+                                                <i class="fas fa-plus-circle" id="btnCaragarNewService1" style="cursor:pointer; font-weight: bold; margin-right:10px; color:#7dc3ab;"></i>
+                                                <i class="fas fa-plus-circle text-success" id="btnCaragarNewService2" style="cursor:pointer; font-weight: bold; margin-right:10px; display: none " data-action="click->sistema--app#cargarNewServicio"></i> 
+                                                Servicio
+                                            </th>
+                                            <th class="text-nowrap">Forma de pago</th>
+                                            <th class="text-nowrap">Comprobante</th>
+                                            <th class="text-nowrap">Valor</th>
+                                            <th class="text-nowrap">Valor pagado</th>
+                                            <th class="text-nowrap">Saldo</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="tablaNewsServices">
+                                        <tr>
+                                            <td colspan=8 style="text-align:center" >No se han registrado servicios</td>
+                                        </tr>                                                    
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-primary" id="btnGuardarNweServicio" data-action="sistema--app#guardarnewServicio" disabled>Guardar</button>
+                    <button type="button" class="btn btn-danger" data-bs-dismiss="modal">Cancelar</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+     <!-- Modal para registrar productos checkin -->
+    <div class="modal fade" id="nuevoProductoCheckin" data-sistema--app-target="nuevoProductoCheckin" tabindex="-1" aria-labelledby="nuevoServicioCheckinLabel" aria-hidden="true" style="margin-top:25px !important;">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content shadow-lg" style="box-shadow: 0 1.5rem 3.5rem 1rem rgba(33,37,41,0.98) !important;">
+                <div class="modal-header">
+                    <h5 class="modal-title">Registro de productos</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>            
+                <div class="modal-body">
+                    <input type="hidden" id="idCheckProducto" value="0" />
+                    <div class="row mb-3">
+                        <div class="col-md-2">
+                            <label for="valorProductorCheckin" class="form-label" style="font-weight: bold;">Habitación</label> 
+                            <input type="text" name="valorProductorCheckin" class="form-control" id="habitacionNewProducto" readonly>
+                        </div>
+                        <div class="col-md-6">
+                            <label for="selectProductoCheckin" class="form-label" style="font-weight: bold;">Producto</label> 
+                            <select class="form-select" name="selectProductoCheckin" id="selectProductoNewCheckin"  data-action="change->sistema--app#cargarNewProductoCheckin change->sistema--app#validaBtnCargarnewProductoCheckin">
+                                <option value="">Seleccione producto</option>    
+                                {% for producto in productos %}
+                                    <option value="{{ producto.id }}">{{ producto.codigo }} - {{ producto.nombre }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                        <div class="col-md-2">
+                            <label for="valorProductorCheckin" class="form-label" style="font-weight: bold;">Valor</label> 
+                            <input type="text" name="valorProductorCheckin" class="form-control" id="valorNewProductorCheckin" disabled>
+                        </div>
+                        <div class="col-md-2">
+                            <label for="cantProductoCheckin" class="form-label" style="font-weight: bold;">Cantidad</label> 
+                            <input type="text" name="cantProductoCheckin" class="form-control" id="cantProductoNewCheckin" data-action="sistema--app#formatearCampo blur->sistema--app#calculaValorNewProductos blur->sistema--app#validaBtnCargarnewProductoCheckin">
+                        </div>
+                    </div>
+                    <div class="row mb-3">                        
+                        <div class="col-md-2">
+                            <label for="valorPagoProductoCheckin" class="form-label" style="font-weight: bold;">Valor pagado</label> 
+                            <input type="text" name="valorPagoProductoCheckin" class="form-control" id="valorPagoNewProducto" data-action="sistema--app#formatearCampo blur->sistema--app#actualizaSaldoProdNewCheckin blur->sistema--app#validaBtnCargarnewProductoCheckin">
+                        </div>
+                        <div class="col-md-2">
+                            <label for="saldoProductoCheckin" class="form-label" style="font-weight: bold;">Saldo</label> 
+                            <input type="text" name="saldoProductoCheckin" class="form-control" id="saldoProductoNewCheckin" disabled>
+                        </div>
+                        <div class="col-md-4">
+                            <label for="selectFormaPagoProductoCheckin" class="form-label" style="font-weight: bold;">Forma de pago</label> 
+                            <select class="form-select" id="selectFormaPagoNewProductoCheckin" name="selectFormaPagoProductoCheckin" data-action="change->sistema--app#actualizarComprobanteNewProducto change->sistema--app#validaBtnCargarnewProductoCheckin">
+                                <option value="">Seleccione forma de pago</option>                     
+                                <option value="1">Efectivo</option>                     
+                                <option value="2">Bono</option>                     
+                                <option value="3">Transaccion</option>                     
+                            </select>
+                        </div>
+                        <div class="col-md-4">
+                            <label for="comprobanteProductoCheckin" class="form-label" style="font-weight: bold;">N° comprobante</label> 
+                            <input type="text" name="comprobanteProductoCheckin" class="form-control" id="comprobanteNewProductoCheckin" disabled data-action="blur->sistema--app#validaBtnCargarnewProductoCheckin">
+                        </div>
+                    </div>
+                    <div class="row mt-3">
+                        <div class="col-12">
+                            <div class="table-responsive">
+                                <table class="table table-bordered table-sm align-middle mb-0">
+                                    <thead class="table-light">
+                                        <tr>
+                                            <th colspan="2" class="text-nowrap">
+                                                <i class="fas fa-cart-plus" id="btnCaragarNewProducto1" style="cursor:pointer; font-weight: bold; margin-right:10px; color:#7dc3ab;"></i>
+                                                <i class="fas fa-cart-plus text-success" id="btnCaragarNewProducto2" style="cursor:pointer; font-weight: bold; margin-right:10px; display: none " data-action="click->sistema--app#cargarNewProducto"></i> 
+                                                Producto
+                                            </th>
+                                            <th class="text-nowrap">Forma de pago</th>
+                                            <th class="text-nowrap">Cantidad</th>
+                                            <th class="text-nowrap">Valor und</th>
+                                            <th class="text-nowrap">Total</th>
+                                            <th class="text-nowrap">Valor pagado</th>
+                                            <th class="text-nowrap">Saldo</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="productosNewCheckin">
+                                        <tr>
+                                            <td colspan=8 style="text-align:center" >No se han registrado productos</td>
+                                        </tr>                                                    
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-primary" id="btnGuardarProductoNewCheckin" data-action="sistema--app#guardarProductosNewCheckin" disabled>Guardar</button>
+                    <button type="button" class="btn btn-danger" data-bs-dismiss="modal">Cancelar</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal para registrar clientes -->
+    <div class="modal fade" id="modalNuevoCliente" data-sistema--app-target="modalNuevoCliente" tabindex="-1" aria-labelledby="modalNuevoClienteLabel" aria-hidden="true">
+        <div class="modal-dialog modal-xl">
+        <div class="modal-content">
+            <div class="modal-header">
+            <h5 class="modal-title"><span data-sistema--app-target="modalClienteLabel"></span></h5>
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <form data-sistema--app-target="formNuevoCliente">
+            <input type="hidden" name="id" data-sistema--app-target="idCliente" value="0">
+            <div class="modal-body">
+                <div class="row mb-3">
+                    <div class="col-md-6">
+                        <label for="tipoDoc" class="form-label" style="font-weight: bold;">Tipo de documento</label> 
+                        <select class="form-select" id="tipoDoc" name="tipoDoc" data-sistema--app-target="selectTipoDocCliente"  data-action="change->sistema--app#validaBtnGuardarCliente">
+                            <option value="">Seleccione tipo de documento</option>
+                            {% for document in documents %}
+                                <option value="{{ document.id }}">{{ document.name }}</option>
+                            {% endfor %}                        
+                        </select>
+                    </div>
+                    <div class="col-md-6">
+                        <label for="numeroDocCliente" class="form-label" style="font-weight: bold;">Numero de documento</label> 
+                        <input type="text" name="numeroDocCliente" class="form-control" id="numeroDocCliente" data-sistema--app-target="numeroDocCliente" placeholder="Ingrese el numero de documento" data-action="blur->sistema--app#validaBtnGuardarCliente">
+                    </div>
+                </div>
+                <div class="row mb-3">
+                    <div class="col-md-6">
+                        <label for="nombresCliente" class="form-label" style="font-weight: bold;">Nombres</label> 
+                        <input type="text" name="nombresCliente" class="form-control" id="nombresCliente" data-sistema--app-target="nombresCliente" placeholder="Ingrese los nombres" data-action="blur->sistema--app#validaBtnGuardarCliente">
+                    </div>
+                    <div class="col-md-6">
+                        <label for="apellidosCliente" class="form-label" style="font-weight: bold;">Apellidos</label> 
+                        <input type="text" name="apellidosCliente" class="form-control" id="apellidosCliente" data-sistema--app-target="apellidosCliente" placeholder="Ingrese los apellidos" data-action="blur->sistema--app#validaBtnGuardarCliente">
+                    </div>
+                </div>
+                <div class="row mb-3">
+                    <div class="col-md-6">
+                        <label for="numeroCelCliente" class="form-label" style="font-weight: bold;">Numero Celular</label> 
+                        <input type="text" name="numeroCelCliente" class="form-control" id="numeroCelCliente" data-sistema--app-target="numeroCelCliente" placeholder="Ingrese el numero de celular" data-action="blur->sistema--app#validaBtnGuardarCliente">
+                    </div>
+                    <div class="col-md-6">
+                        <label for="placaCliente" class="form-label" style="font-weight: bold;">Placa</label> 
+                        <input type="text" name="placaCliente" class="form-control" id="placaCliente" data-sistema--app-target="placaCliente" placeholder="Ingrese el numero de la placa" data-action="blur->sistema--app#validaBtnGuardarCliente">
+                    </div>
+                </div>              
+                <div class="row mb-3">
+                    <div class="col-md-6">
+                        <label for="numeroVehiculoCliente" class="form-label" style="font-weight: bold;">Numero de vehiculo</label> 
+                        <input type="text" name="numeroVehiculoCliente" class="form-control" id="numeroVehiculoCliente" data-sistema--app-target="numeroVehiculoCliente" placeholder="Ingrese el numero del vehiculo" data-action="blur->sistema--app#validaBtnGuardarCliente">
+                    </div>
+                    <div class="col-md-6">
+                        <label for="selectCompaniaCliente" class="form-label" style="font-weight: bold;">Compañia</label> 
+                        <select class="form-select" id="selectCompaniaCliente" name="selectCompaniaCliente" data-sistema--app-target="selectCompaniaCliente"  data-action="change->sistema--app#validaBtnGuardarCliente">
+                            <option value="">Seleccione compañia</option>
+                            {% for compania in companias %}
+                                <option value="{{ compania.id }}">{{ compania.name }}</option>
+                            {% endfor %}                        
+                        </select>
+                    </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-primary" data-sistema--app-target="btnGuardarCliente" data-action="sistema--app#guardarClienteCheckin" disabled>Guardar</button>
+                <button type="button" class="btn btn-danger" data-bs-dismiss="modal">Cancelar</button>
+            </div>
+            </form>
+        </div>
+        </div>
+    </div>
+
+    
 </turbo-frame>
