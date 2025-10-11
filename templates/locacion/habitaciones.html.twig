@@ -29,19 +29,19 @@
                                         <td>{{ room.bedNumber }}</td>
                                         <td>{{ room.airCond ? 'Sí' : 'No' }}</td>
                                         <td>{{ room.fan ? 'Sí' : 'No' }}</td>
-                                        <td>
+                                        <td>   
                                           {% if room.typeroom == 1 %}
                                             Habitación sencilla
                                           {% elseif room.typeroom == 2 %}
-                                            Habitación de dos camas
+                                            Habitación doble
                                           {% elseif room.typeroom == 3 %}
                                             Habitación sencilla con aire acondicionado
                                           {% elseif room.typeroom == 4 %}
-                                            Habitación de dos camas con aire acondicionado
+                                            Habitación doble con aire acondicionado
                                           {% elseif room.typeroom == 5 %}
                                             Habitación sencilla ventilador
                                           {% elseif room.typeroom == 6 %}
-                                            Habitación de dos camas ventilador
+                                            Habitación doble ventilador
                                           {% endif %}
                                         </td>
                                         <td>
@@ -55,7 +55,10 @@
                                         </td>
                                         <td style="text-align:center; width: 20px;">
                                           {% if room.status == 1 %}
-                                            <i class="far fa-window-maximize text-primary" style="cursor:pointer" data-action="click->sistema--app#abrirModalNuevaHab" data-accion = '2'  data-id = {{ room.id }} data-name = "{{ room.name}}" data-piso = {{ room.floor.id }} data-bedmunber = {{ room.bedNumber }} data-aircond = {{ room.airCond }} data-fan = {{ room.fan }} ></i>
+                                            {% if room.fan is null %}{% set fan = 0 %}{% else %}{% set fan = 0 %}{% endif %}
+                                            {% if room.airCond is null %}{% set airCond = 0 %}{% else %}{% set airCond = 0 %}{% endif %}
+
+                                            <i class="far fa-window-maximize text-primary" style="cursor:pointer" data-action="click->sistema--app#abrirModalNuevaHab" data-accion = '2'  data-id = {{ room.id }} data-name = "{{ room.name}}" data-piso = {{ room.floor.id }} data-bedmunber = {{ room.bedNumber }} data-aircond = {{ airCond }} data-fan = {{ fan }} data-tipo= {{ room.typeroom }} ></i>
                                           {% else %}
                                             <i class="far fa-window-maximize text-secondary" style="cursor:not-allowed"></i>
                                           {% endif %}
@@ -118,11 +121,11 @@
                 <select class="form-select" id="tipoHabitacion" name="tipoHabitacion" data-sistema--app-target="selectTipoHabitacion"  data-action="change->sistema--app#validaBtnGuardarHab">
                   <option value="">Seleccione tipo de habitación</option>
                   <option value="1">Habitación sencilla</option>
-                  <option value="2">Habitación de dos camas</option>
+                  <option value="2">Habitación doble</option>
                   <option value="3">Habitación sencilla con aire acondicionado</option>
-                  <option value="4">Habitación de dos camas con aire acondicionado</option>
+                  <option value="4">Habitación doble con aire acondicionado</option>
                   <option value="5">Habitación sencilla ventilador</option>
-                  <option value="6">Habitación de dos camas ventilador</option>                  
+                  <option value="6">Habitación doble ventilador</option>                  
                 </select>
               </div>
               <div class="mb-3 row">

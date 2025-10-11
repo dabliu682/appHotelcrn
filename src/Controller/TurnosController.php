@@ -66,21 +66,12 @@ class TurnosController extends AbstractController
         $bd = $this->getDoctrine()->getManager();
         $usuario = $this->getUser(); 
 
-        $turnosCerrados = $bd->getRepository(Turnos::class)->findBy(['status' => 0]);
-
-        /*<th>Numero</th>
-        <th>Usuario</th>
-        <th>Inicio</th>
-        <th>Fin</th>
-        <th>Hospedaje</th>
-        <th>Servicios</th>
-        <th>Tienda</th>
-        <th>Valor</th>*/
+        $turnosCerrados = $bd->getRepository(Turnos::class)->findBy(['status' => 0],['id' => 'desc']);
 
         $tabla = [];
 
         foreach ($turnosCerrados as $turno) 
-        {//dump($turno->getStartdate());
+        {
             $totalHospedaje = 0;
             $totalServicios = 0;
             $totalTienda = 0;
@@ -103,6 +94,10 @@ class TurnosController extends AbstractController
 
             $total = $totalHospedaje + $totalServicios + $totalTienda;
 
+            $diff = $turno->getStartdate()->diff($turno->getEnddate());
+            $horas   = ($diff->days * 24) + $diff->h;
+            $minutos = $diff->i;
+
             $tabla[] =  [
                             'idTurno' => $turno->getId(), 
                             'numero' => $turno->getNumero(), 
@@ -113,6 +108,7 @@ class TurnosController extends AbstractController
                             'total' => $total,
                             'inicio' => $turno->getStartdate()->format('Y-m-d H:i'),
                             'fin' => $turno->getEnddate()->format('Y-m-d H:i'),
+                            'horas' => $horas.':'.$minutos,
                         ];
         }
 

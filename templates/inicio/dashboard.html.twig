@@ -175,8 +175,8 @@
                                     <th style="background: #212529;">Fecha/Hora llegada</th>
                                     <th style="background: #212529;"># Habitaciones</th>
                                     <th style="background: #212529;">Aire</th>
-                                    {#<th style="background: #212529;">Empresa</th>
-                                    <th style="background: #212529;">Observaciones</th>#}
+                                    <th style="background: #212529;">Empresa</th>
+                                    {#<th style="background: #212529;">Observaciones</th>#}
                                     <th style="background: #212529;">Turno</th>
                                     <th style="background: #212529;">Estado</th>
                                     <th colspan="2" style="background: #212529;">Acciones</th>
@@ -192,12 +192,12 @@
                                             <td>{{ reserva.fechallegada|date('d-m-Y') }} / {{ reserva.horallegada|date('h:i a') }}</td>
                                             <td>{{ reserva.canthabitaciones }}</td>
                                             <td> {% if reserva.aire == 1 %} Si {% else %} No {% endif %} </td>                                            
-                                            {#<td>
+                                            <td>
                                                 {% if reserva.person.compania is not null %}
                                                     {{ reserva.person.compania.name }}
                                                 {% endif %}
                                             </td>
-                                            <td>{{ reserva.observaciones }}</td>#}
+                                            {#<td>{{ reserva.observaciones }}</td>#}
                                             <td>
                                                {{ reserva.turno.usuario.name }} - {{ '%05d'|format(reserva.turno.numero) }}
                                             </td>
@@ -205,9 +205,11 @@
                                                 {% if reserva.status == 1 %}
                                                     <span class="badge bg-success">Pendiente</span>
                                                 {% elseif reserva.status == 2 %}
-                                                    <span class="badge bg-danger">Check-in</span>
+                                                    <span class="badge bg-warning">Check-in</span>
                                                 {% elseif reserva.status == 3 %}
                                                     <span class="badge bg-danger">Activa</span>
+                                                {% elseif reserva.status == 4 %}
+                                                    <span class="badge bg-secondary">Finalizada</span>
                                                 {% else %}
                                                     <span class="badge bg-warning">Cancelada</span>
                                                 {% endif %}
@@ -259,8 +261,8 @@
                         <div class="row mb-3">
                             <div class="col-md-8">
                                 <label for="clienteSelect" class="form-label" style="font-weight: bold;">Cliente</label>
-                                <select class="form-control" name="clienteRev" data-sistema--app-target="clienteRev" data-action="change->sistema--app#obtenerDatosClienteReserva change->sistema--app#validaBtnGuardarReserva">
-                                    <option value="">Seleccione cliente</option>
+                                <select class="selectpicker form-control" data-controller="sistema--selectpicker" data-live-search-normalize="true" data-live-search="true" data-live-search-placeholder="Filtro clientes" data-size="5" name="clienteRev" data-sistema--app-target="clienteRev" data-action="change->sistema--app#obtenerDatosClienteReserva change->sistema--app#validaBtnGuardarReserva">
+                                |   <option value="">Seleccione cliente</option>
                                     {% for cliente in clientes %}
                                         <option value="{{ cliente.id }}">{{ cliente.documentNumber }} - {{ cliente.name }} {{ cliente.lastname }}</option>
                                     {% endfor %}
