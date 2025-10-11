@@ -102,6 +102,18 @@ app_eliminarReserva:
   path: /eliminarReserva/{id}
   defaults: {_controller: App\Controller\ReservasController::eliminarReserva}
 
+app_eliminarCheckin:
+  path: /eliminarCheckin/{id}
+  defaults: {_controller: App\Controller\ReservasController::eliminarCheckin}
+
+app_agregarServicioCheckin:
+  path: /agregarServicioCheckin
+  defaults: {_controller: App\Controller\ReservasController::agregarServicioCheckin}
+
+app_agregarProductoCheckin:
+  path: /agregarProductoCheckin
+  defaults: {_controller: App\Controller\ReservasController::agregarProductoCheckin}
+
 app_obtenerDatosClienteReserva:
   path: /obtenerDatosClienteReserva/{id}
   defaults: {_controller: App\Controller\ReservasController::obtenerDatosClienteReserva}
@@ -194,6 +206,9 @@ app_obtenerCheckin:
   path: /checkin/obtenerCheckin/{id}
   defaults: {_controller: App\Controller\ReservasController::obtenerCheckin}
 
+app_checkout:
+  path: /checkout/{id}
+  defaults: {_controller: App\Controller\ReservasController::checkout}
 
 app_registrarVenta:
   path: /registrarVenta/{detalle},{producto},{cantidad},{valor}
@@ -202,6 +217,10 @@ app_registrarVenta:
 app_turnos:
   path: /listaTurnos
   defaults: {_controller: App\Controller\TurnosController::listaTurnos}
+
+app_generarFactura:
+  path: /generarFactura/{id}
+  defaults: {_controller: App\Controller\ContabilidadController::generarFactura}
 
 
 

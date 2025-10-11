@@ -7,48 +7,53 @@ import FlashMessage from '../../utils/FlashMessage';
 export default class extends Controller {
     static values = {
         'rutaObtenerDatosClienteReserva': String,
+        'rutaAgregarProductoCheckin': String,
+        'rutaAgregarServicioCheckin': String,
+        'rutaCambiaEstadoServicio': String,
+        'rutaCargarProductosPlano': String,
+        'rutaUpdateCantProducto': String,
+        'rutaEliminarTiposServ': String,
         'rutaEliminarCompania': String,
         'rutaEliminarClientes': String,
+        'rutaEliminarServicio': String,
+        'rutaGuardarTiposServ': String,
+        'rutaEliminarCheckin': String,
+        'rutaEliminarReserva': String,
+        'rutaGuardarServicio': String,
+        'rutaObtenerServicio': String,
+        'rutaObtenerProducto': String,
+        'rutaGuardarProducto': String,
         'rutaNuevaHabitacion': String,
         'rutaEliminarTipodoc': String,
         'rutaGuardarClientes': String,
-        'rutaGuardarTipodoc': String,
-        'rutaNuevaCompania': String,
         'rutaGuardarReserva': String,
+        'rutaGuardarTipodoc': String,
+        'rutaGuardarEntrada': String,
+        'rutaRegistrarVenta': String,
+        'rutaGenerarFactura': String,
+        'rutaObtenerCheckin': String,
+        'rutaNuevaCompania': String,
         'rutaHabitaciones': String,
         'rutaEliminarPiso': String,
-        'rutaAbrirTurno': String,
+        'rutaCrearCheckin': String,
+        'rutaCerrarTurno': String,
         'rutaEliminarHab': String,
+        'rutaAbrirTurno': String,
+        'rutaInventario': String,
         'rutaDashboard': String,
         'rutaNuevoPiso': String,
+        'rutaTiposServ': String,
+        'rutaProductos': String,
+        'rutaListaServ': String,
         'rutaCompanias': String,
         'rutaReservas': String,
         'rutaClientes': String,
+        'rutaEntradas': String,
+        'rutaCheckout': String,
+        'rutaCheckin': String,
         'rutaVistas': String,
         'rutaPisos': String,
         'rutaDocs': String,
-        'rutaGuardarTiposServ': String,
-        'rutaTiposServ': String,
-        'rutaGuardarServicio': String,
-        'rutaListaServ': String,
-        'rutaCambiaEstadoServicio': String,
-        'rutaEliminarTiposServ': String,
-        'rutaEliminarServicio': String,
-        'rutaObtenerServicio': String,
-        'rutaGuardarProducto': String,
-        'rutaProductos': String,
-        'rutaEntradas': String,
-        'rutaGuardarEntrada': String,
-        'rutaCargarProductosPlano': String,
-        'rutaInventario': String,
-        'rutaCrearCheckin': String,
-        'rutaEliminarReserva': String,
-        'rutaObtenerProducto': String,
-        'rutaUpdateCantProducto': String,
-        'rutaCheckin': String,
-        'rutaRegistrarVenta': String,
-        'rutaCerrarTurno': String,
-        'rutaObtenerCheckin': String,
     };
     static targets = [
         'selectFormaPagoProductoCheckin',
@@ -66,12 +71,14 @@ export default class extends Controller {
         'numeroVehiculoCliente',
         'selectCompaniaCliente',
         'selectTipoHabitacion',
+        'nuevoServicioCheckin',
         'selectHabitacionServ',
         'frameListaServicioss',
         'saldoProductoCheckin',
         'modalCargarProductos',
         'modalNuevaHabitacion',
         'selectTipoDocCliente',
+        'nuevoProductoCheckin',
         'fechaLlegClienteRev',
         'frameTiposServicios',
         'valorPagServCheckin',
@@ -161,6 +168,7 @@ export default class extends Controller {
         'frameTipoDoc',
         'placaCliente',
         'modalCheckin',
+        'modalFactura',
         'tipoProducto',
         'porcProducto',
         'selectPisos',
@@ -180,6 +188,7 @@ export default class extends Controller {
         'nombreServ',
         'codigoProd',
         'idReserva',
+        'horasServ',
         'idTipoDoc',
         'valorServ',
         'idCliente',
@@ -289,8 +298,13 @@ export default class extends Controller {
             let name = event.currentTarget.dataset.name;
             let piso = event.currentTarget.dataset.piso;
             let bedmunber = event.currentTarget.dataset.bedmunber;
-            let aircond = event.currentTarget.dataset.aircond;
-            let fan = event.currentTarget.dataset.fan;
+            let aircond = (event.currentTarget.dataset.aircon == 0) ? 'si' : 'no';
+            let fan = (event.currentTarget.dataset.fan == 0) ? 'si' : 'no';
+            let tipo = event.currentTarget.dataset.tipo;
+
+            console.log('aircond ' + aircond);
+            console.log('fan ' + fan);
+            console.log('tipo ' + tipo);
 
             this.idHabitacionTarget.value = id;
 
@@ -300,8 +314,7 @@ export default class extends Controller {
             this.numeroCamaTarget.value = bedmunber;
             this.aireAcondicionadoTarget.value = aircond;
             this.ventiladorTarget.value = fan;
-
-
+            this.selectTipoHabitacionTarget.value = tipo;
         }
         else {
 
@@ -681,7 +694,7 @@ export default class extends Controller {
 
     abrirModalNuevaReserva(event) {
         let accion = event.currentTarget.dataset.accion;
-        //$('.selectpicker').selectpicker('refresh');
+
 
         if (accion == '2') {
             this.modalReservaLabelTarget.innerHTML = 'Editar Reserva';
@@ -823,56 +836,10 @@ export default class extends Controller {
         $("#fechaLlegada").val(fechaActual);
         $("#horallegada").val(horaActual24);
         $("#idCheckin").val(event.currentTarget.dataset.id);
+        console.log(event.currentTarget.dataset.cliente);
+        $("#clienteSelectCustom-1").val(event.currentTarget.dataset.cliente);
 
-        // Limpiar el contenido del modal y botones antes de renderizar
-        //this.modalBodyCheckinTarget.innerHTML = '';
-        //this.botonesModalCheckinTarget.innerHTML = '';
-
-        /*let target = ``;
-        let botones = ``;
-
-        // Generar las opciones de clientes solo una vez
-        let clienteOptions = '<option value="">Seleccione cliente</option>';
-
-        clientes.forEach(cliente => {
-            clienteOptions += `<option value="${cliente.id}">${cliente.documentNumber} - ${cliente.name} ${cliente.lastname}</option>`;
-        });
-
-        // Generar las opciones de habitaciones
-
-        let habitacionOptions = '<option value="">Seleccione habitación</option>';
-
-        habitaciones.forEach(habitacion => {
-            habitacionOptions += `<option value="${habitacion.id}">${habitacion.name}</option>`;
-        });
-
-        // Generar las opciones de servicios
-        let servicioOptions = '<option value="">Seleccione servicio</option>';
-
-        servicios.forEach(servicio => {
-            servicioOptions += `<option value="${servicio.id}">${servicio.name}</option>`;
-        });
-
-
-        for (let index = 1; index <= canthabitaciones; index++) {
-            let style = (index == 1) ? `display: block;` : `display: none;`;
-            const selectId = `clienteSelectCustom-${index}`;
-            target += ``;
-
-            // Botones para el modal
-
-            if (index == 1) {
-                botones += `<button type="button" id="btn-${index}" class="btn btn-warning m-1 text-nowrap" style="width:110px; white-space:nowrap;" disabled data-action="sistema--app#cambiocheckin" data-index = ${index} >check-in ${index}</button>`;
-            }
-            else {
-                botones += `<button type="button" id="btn-${index}" class="btn btn-primary m-1 text-nowrap" style="width:110px; white-space:nowrap;" data-action="sistema--app#cambiocheckin" data-index = ${index} >check-in ${index}</button>`;
-            }
-
-        }
-
-        // Insertar el HTML generado
-        this.modalBodyCheckinTarget.innerHTML = target;
-        this.botonesModalCheckinTarget.innerHTML = botones;*/
+        $("#clienteSelectCustom-1").selectpicker('render')
 
         this.modal = new Modal(this.modalCheckinTarget);
         this.modal.show();
@@ -1015,8 +982,6 @@ export default class extends Controller {
 
     async cargarServicioCheckin(event) {
 
-        let index = $("#numCheckin").val();
-
         let ruta = this.rutaObtenerServicioValue.replace('var1', event.currentTarget.value);
 
         var consulta = await fetch(ruta);
@@ -1048,7 +1013,10 @@ export default class extends Controller {
         let hora = $("#horallegada").val();
         let diferencia = result.horas;
 
-        this.calcularFechaSalida(fecha, hora, diferencia);
+        if (diferencia != null) {
+            this.calcularFechaSalida(fecha, hora, diferencia);
+        }
+
 
     }
 
@@ -1180,17 +1148,6 @@ export default class extends Controller {
         let selectProducto = this.selectProductoCheckinTarget.value
         let cantProducto = this.cantProductoCheckinTarget.value
 
-        /*
-        ** Actualizar las cantidades del producto
-        */
-
-        let rutaUpdateProd = this.rutaUpdateCantProductoValue;
-        rutaUpdateProd = rutaUpdateProd.replace('var1', selectProducto);
-        rutaUpdateProd = rutaUpdateProd.replace('var2', 1);
-        rutaUpdateProd = rutaUpdateProd.replace('var3', cantProducto);
-
-        await fetch(rutaUpdateProd);
-
         let valorServicio = Number(this.valorProductorCheckinTarget.value.replace(/[.,]/g, '')) * cantProducto;
         let valorProductor = this.valorProductorCheckinTarget.value
         let valorPagoProducto = this.valorPagoProductoCheckinTarget.value
@@ -1200,7 +1157,6 @@ export default class extends Controller {
         let productoText = this.selectProductoCheckinTarget.options[this.selectProductoCheckinTarget.selectedIndex].text;
         let formaPagoText = this.selectFormaPagoProductoCheckinTarget.options[this.selectFormaPagoProductoCheckinTarget.selectedIndex].text;
 
-        // Crear un array con los datos del producto actual
         let nuevoProducto = [
             productoText,
             formaPagoText,
@@ -1254,18 +1210,6 @@ export default class extends Controller {
         const cantidad = event.currentTarget.dataset.cantidad;
         const productoIndex = event.currentTarget.dataset.index;
         const valorpag = event.currentTarget.dataset.valorpag;
-
-        /*
-        ** Actualizar las cantidades del producto
-        */
-
-        let rutaUpdateProd = this.rutaUpdateCantProductoValue;
-        rutaUpdateProd = rutaUpdateProd.replace('var1', idProducto);
-        rutaUpdateProd = rutaUpdateProd.replace('var2', 2);
-        rutaUpdateProd = rutaUpdateProd.replace('var3', cantidad);
-
-        await fetch(rutaUpdateProd);
-
 
         let key = 'productoCheckin';
         let productosArray = [];
@@ -1656,6 +1600,8 @@ export default class extends Controller {
             this.nombreServTarget.value = event.currentTarget.dataset.name;
             this.valorServTarget.value = event.currentTarget.dataset.price;
             this.idServicioTarget.value = event.currentTarget.dataset.id;
+            this.selectTipoHabitacionTarget.value = event.currentTarget.dataset.typeroom;
+            this.horasServTarget.value = event.currentTarget.dataset.hours;
         }
         else {
             this.modalServicioLabelTarget.innerHTML = 'Nuevo servicio';
@@ -1664,6 +1610,9 @@ export default class extends Controller {
             this.nombreServTarget.value = '';
             this.valorServTarget.value = '';
             this.idServicioTarget.value = '0';
+            this.selectTipoHabitacionTarget.value = '';
+            this.horasServTarget.value = '';
+
         }
 
 
@@ -2045,33 +1994,39 @@ export default class extends Controller {
 
         let ruta = this.rutaReservasValue;
 
-        let serviciosGuardados = localStorage.getItem('servicioCheckin1');
-        let productosGuardados = localStorage.getItem('productoCheckin');
+        if ($("#fechaSalida").val() != '') {
+            let serviciosGuardados = localStorage.getItem('servicioCheckin1');
+            let productosGuardados = localStorage.getItem('productoCheckin');
 
-        $("#productos").val(productosGuardados);
-        $("#servicios").val(serviciosGuardados);
+            $("#productos").val(productosGuardados);
+            $("#servicios").val(serviciosGuardados);
 
-        let urlGuardar = this.rutaCheckinValue;
+            let urlGuardar = this.rutaCheckinValue;
 
-        let formulario = '';
+            let formulario = '';
 
-        formulario = this.formCheckinTarget;
+            formulario = this.formCheckinTarget;
 
-        var parametros = new FormData(formulario);
+            var parametros = new FormData(formulario);
 
-        var consulta = await fetch(urlGuardar, { 'method': 'POST', 'body': parametros });
-        var result = await consulta.json();
+            var consulta = await fetch(urlGuardar, { 'method': 'POST', 'body': parametros });
+            var result = await consulta.json();
 
-        if (result.response == "Ok") {
-            const modalInstance = Modal.getInstance(this.modalCheckinTarget);
+            if (result.response == "Ok") {
+                const modalInstance = Modal.getInstance(this.modalCheckinTarget);
 
-            if (modalInstance) { modalInstance.hide(); }
+                if (modalInstance) { modalInstance.hide(); }
 
-            FlashMessage.show('Check-in realizado correctamente', 'success');
+                FlashMessage.show('Check-in realizado correctamente', 'success');
 
-            const respuesta = await fetch(ruta);
-            this.frameReservasTarget.innerHTML = await respuesta.text();
+                const respuesta = await fetch(ruta);
+                this.frameReservasTarget.innerHTML = await respuesta.text();
+            }
         }
+        else {
+            alert('No se ha registrado un servicio de hospedaje');
+        }
+
     }
 
     registrarMov() {
@@ -2236,12 +2191,14 @@ export default class extends Controller {
 
         let datos = result.datos;
 
+        $("#idCheckout").val(id);
         $("#clienteCheckout").val(datos.cliente);
         $("#fechaLlegadaOut").val(datos.fechaLlegada);
         $("#horaLlegadaOut").val(datos.horaLlegada);
         $("#fechaSalidaOut").val(datos.fechaSalida);
         $("#horaSalidaOut").val(datos.horaSalida);
         $("#observacionesCheckOut").val(datos.observaciones);
+        $("#saldoPagar").text('$ ' + result.saldo.toLocaleString('es-CO'));
         (datos.tipoCliente == 1) ? $("#tipoClienteOut").text('Motorista') : $("#tipoClienteOut").text('Turista');
 
 
@@ -2275,17 +2232,18 @@ export default class extends Controller {
         tbodyProductos.innerHTML = ''; // Limpiar el contenido actual
 
         if (productos.length > 0) {
-            productos.forEach((servicio) => {
+            productos.forEach((producto) => {
                 let tr = document.createElement('tr');
-                const valorServicio = servicio.valor.toLocaleString('es-CO');
-                const valorPagado = servicio.valorPag.toLocaleString('es-CO');
-                const saldo = servicio.saldo.toLocaleString('es-CO');
+                const valorServicio = producto.valor.toLocaleString('es-CO');
+                const valorPagado = producto.valorPag.toLocaleString('es-CO');
+                const saldo = producto.saldo.toLocaleString('es-CO');
+                const valUnd = producto.valUnd.toLocaleString('es-CO');
 
                 tr.innerHTML = `
-                    <td class="text-nowrap">${servicio.servicio}</td>
-                    <td class="text-nowrap">${servicio.habitacion}</td>
-                    <td class="text-nowrap">${servicio.formaPago}</td>
-                    <td class="text-nowrap">comprobante</td>
+                    <td class="text-nowrap">${producto.producto}</td>                   
+                    <td class="text-nowrap">${producto.formaPago}</td>                   
+                    <td class="text-nowrap" style="text-align:right;">${producto.cantidad}</td>                   
+                    <td class="text-nowrap" style="text-align:right;">$ ${valUnd}</td>                   
                     <td class="text-nowrap" style="text-align:right;">$ ${valorServicio}</td>
                     <td class="text-nowrap" style="text-align:right;">$ ${valorPagado}</td>
                     <td class="text-nowrap" style="text-align:right;">$ ${saldo}</td>
@@ -2315,9 +2273,614 @@ export default class extends Controller {
             $("#checkTodosOut").prop("checked", false);
         }
 
+
+
         this.modal = new Modal(this.modalCheckoutTarget);
         this.modal.show();
     }
+
+    async checkout() {
+
+        let rutaCheckin = this.rutaReservasValue;
+
+        let id = $("#idCheckout").val();
+
+        let ruta = this.rutaCheckoutValue;
+
+        ruta = ruta.replace('var1', id);
+
+        var consulta = await fetch(ruta);
+        var result = await consulta.json();
+
+        if (result.response == "Ok") {
+            const modalInstance = Modal.getInstance(this.modalCheckoutTarget);
+
+            if (modalInstance) { modalInstance.hide(); }
+
+            FlashMessage.show('Check-out realizado correctamente', 'success');
+
+            const respuesta = await fetch(rutaCheckin);
+            this.frameReservasTarget.innerHTML = await respuesta.text();
+        }
+    }
+
+    async verFactura(event) {
+        let id = event.currentTarget.dataset.id;
+        let ruta = this.rutaGenerarFacturaValue;
+        ruta = ruta.replace('var1', id);
+
+        var consulta = await fetch(ruta);
+        var result = await consulta.json();
+
+        if (result.response == 'Ok') {
+
+            var base64Data = result.pdf;
+            var byteCharacters = atob(base64Data);
+
+            var byteNumbers = new Array(byteCharacters.length);
+            for (var i = 0; i < byteCharacters.length; i++) {
+                byteNumbers[i] = byteCharacters.charCodeAt(i);
+            }
+
+            var byteArray = new Uint8Array(byteNumbers);
+
+            var blob = new Blob([byteArray], { type: 'application/pdf' });
+
+            $("#frame-pdfLiq").attr("src", URL.createObjectURL(blob));
+
+            this.modal = new Modal(this.modalFacturaTarget);
+            this.modal.show();
+
+        }
+    }
+
+    abrirModalServicio(event) {
+
+        localStorage.clear();
+
+        let id = event.currentTarget.dataset.id;
+        let habitacion = event.currentTarget.dataset.habitacion;
+
+        $("#NumHabitacion").val(habitacion);
+        $("#idCheckinNewService").val(id);
+
+        this.modal = new Modal(this.nuevoServicioCheckinTarget);
+        this.modal.show();
+    }
+
+    async cargarnewServicioCheckin(event) {
+        let ruta = this.rutaObtenerServicioValue.replace('var1', event.currentTarget.value);
+
+        var consulta = await fetch(ruta);
+        var result = await consulta.json();
+
+        $("#valorNewService").val(Number(result.price).toLocaleString('es-CO'));
+
+        if ($("#valorPagNewService") != '') {
+            let valor = $("#valorNewService").val().replace(/[.,]/g, '');
+            let pago = $("#valorPagNewService").val().replace(/[.,]/g, '');
+            let saldo = (Number(valor) - Number(pago)).toLocaleString('es-CO');
+            $("#saldoNewService").val(saldo);
+        }
+    }
+
+    actualizaSaldoNewService() {
+        let valor = $("#valorNewService").val().replace(/[.,]/g, '');
+        let pago = $("#valorPagNewService").val().replace(/[.,]/g, '');
+        let saldo = (Number(valor) - Number(pago)).toLocaleString('es-CO');
+        $("#saldoNewService").val(saldo);
+    }
+
+    actualizarComprobanteNewService(event) {
+        if (event.currentTarget.value == 2) {
+            $("#comprobanteNewService").prop("disabled", false)
+        }
+        else {
+            $("#comprobanteNewService").prop("disabled", true)
+        }
+    }
+
+    validaBtnCargarNewServicio() {
+        let selectServ = $("#selectNewServ").val();
+        let valorPagNewService = $("#valorPagNewService").val();
+        let selectFormaPagoNewService = $("#selectFormaPagoNewService").val();
+        let comprobanteNewService = $("#comprobanteNewService").val();
+        let btnCaragarNewService1 = $("#btnCaragarNewService1");
+        let btnCaragarNewService2 = $("#btnCaragarNewService2");
+
+        if (selectServ != '' && valorPagNewService != '' && selectFormaPagoNewService != '') {
+            if (selectFormaPagoNewService == '2') {
+                if (comprobanteNewService != '') {
+                    btnCaragarNewService1.css("display", "none");
+                    btnCaragarNewService2.css("display", "inline");
+                }
+                else {
+                    btnCaragarNewService1.css("display", "inline");
+                    btnCaragarNewService2.css("display", "none");
+                }
+            }
+            else {
+                btnCaragarNewService1.css("display", "none");
+                btnCaragarNewService2.css("display", "inline");
+            }
+        }
+        else {
+            btnCaragarNewService1.css("display", "inline");
+            btnCaragarNewService2.css("display", "none");
+        }
+    }
+
+    cargarNewServicio() {
+        let selectServ = $("#selectNewServ").val();
+        let selectServText = $("#selectNewServ option:selected").text();
+        let selectFormaPagoNewService = $("#selectFormaPagoNewService").val();
+        let selectFomaPagoText = $("#selectFormaPagoNewService option:selected").text();
+
+        let valorServCheckin = $("#valorNewService").val();
+        let valorPagServCheckin = $("#valorPagNewService").val();
+        let saldoServCheckin = $("#saldoNewService").val();
+        let selectFormaPagoCheckin = selectFormaPagoNewService;
+        let comprobanteCheckin = $("#comprobanteNewService").val();
+
+        // Crear un array con los datos del servicio actual
+        let nuevoServicio = [
+            selectServText,
+            selectFomaPagoText,
+            comprobanteCheckin,
+            valorServCheckin,
+            valorPagServCheckin,
+            saldoServCheckin,
+            selectServ,
+            selectFormaPagoCheckin,
+        ];
+
+        // Acumular servicios en el array, agregando el nuevo al inicio
+        let key = 'newServicioCheckin';
+        let serviciosArray = [];
+        let serviciosGuardados = localStorage.getItem(key);
+        if (serviciosGuardados) {
+            try {
+                serviciosArray = JSON.parse(serviciosGuardados);
+                if (!Array.isArray(serviciosArray)) {
+                    serviciosArray = [];
+                }
+            } catch (e) {
+                serviciosArray = [];
+            }
+        }
+        serviciosArray.unshift(nuevoServicio);
+        localStorage.setItem(key, JSON.stringify(serviciosArray));
+
+        // Limpiar los campos del formulario
+        $("#selectNewServ").val('');
+        $("#valorPagNewService").val('');
+        $("#selectFormaPagoNewService").val('');
+        $("#comprobanteNewService").val('');
+        $("#valorPagNewService").val('');
+        $("#saldoNewService").val('');
+        $("#comprobanteNewService").val('')
+        $("#btnCaragarNewService1").css("display", "inline");
+        $("#btnCaragarNewService2").css("display", "none");
+
+        FlashMessage.show('Servicio agregado correctamente', 'success');
+
+        // Actualizar la tabla de servicios en el modal
+        this.actualizarTablaNewServicios();
+
+        $("#btnGuardarNweServicio").prop('disabled', false);
+    }
+
+    actualizarTablaNewServicios() {
+        let key = 'newServicioCheckin';
+        let serviciosArray = [];
+        let serviciosGuardados = localStorage.getItem(key);
+        if (serviciosGuardados) {
+            try {
+                serviciosArray = JSON.parse(serviciosGuardados);
+                if (!Array.isArray(serviciosArray)) {
+                    serviciosArray = [];
+                }
+            } catch (e) {
+                serviciosArray = [];
+            }
+        }
+        let tbody = this.nuevoServicioCheckinTarget.querySelector(`#tablaNewsServices`);
+        tbody.innerHTML = ''; // Limpiar el contenido actual
+
+        console.table(serviciosArray);
+        if (serviciosArray.length > 0) {
+            serviciosArray.forEach((servicio, i) => {
+                let tr = document.createElement('tr');
+                const valorServicio = Number(servicio[3].replace(/[.,]/g, '')).toLocaleString('es-CO');
+                const valorPagado = Number(servicio[4].replace(/[.,]/g, '')).toLocaleString('es-CO');
+                const saldo = Number(servicio[5].replace(/[.,]/g, '')).toLocaleString('es-CO');
+                tr.innerHTML = `
+                     <td>
+                         <i class="fas fa-trash-alt text-danger" title="Eliminar" data-servicio-index="${i}" data-action="click->sistema--app#eliminarNewServicio"></i>
+                     </td>
+                     <td class="text-nowrap">
+                         ${servicio[0]}
+                     </td>
+                     <td class="text-nowrap">${servicio[1]}</td>
+                     <td class="text-nowrap">${servicio[2]}</td>
+                     <td class="text-nowrap" style="text-align:right;">$ ${valorServicio}</td>
+                     <td class="text-nowrap" style="text-align:right;">$ ${valorPagado}</td>
+                     <td class="text-nowrap" style="text-align:right;">$ ${saldo}</td>
+                 `;
+                tbody.appendChild(tr);
+            });
+
+        } else {
+            tbody.innerHTML = '<tr><td colspan="7" style="text-align:center">No se han registrado servicios</td></tr>';
+        }
+    }
+
+    eliminarNewServicio(event) {
+
+        const servicioIndex = event.currentTarget.dataset.servicioIndex;
+
+        let key = 'newServicioCheckin';
+        let serviciosArray = [];
+        let serviciosGuardados = localStorage.getItem(key);
+        if (serviciosGuardados) {
+            try {
+                serviciosArray = JSON.parse(serviciosGuardados);
+                if (!Array.isArray(serviciosArray)) {
+                    serviciosArray = [];
+                }
+            } catch (e) {
+                serviciosArray = [];
+            }
+        }
+        // Eliminar el servicio por índice
+        serviciosArray.splice(servicioIndex, 1);
+
+        localStorage.setItem(key, JSON.stringify(serviciosArray));
+        // Actualizar la tabla
+        this.actualizarTablaNewServicios();
+
+        if (serviciosArray.length > 0) {
+            $("#btnGuardarNweServicio").prop('disabled', false);
+        }
+        else {
+            $("#btnGuardarNweServicio").prop('disabled', true);
+        }
+    }
+
+    async guardarnewServicio() {
+        let ruta = this.rutaAgregarServicioCheckinValue;
+
+        let serviciosGuardados = localStorage.getItem('newServicioCheckin');
+        let id = $("#idCheckinNewService").val();
+
+        let formData = new FormData();
+        formData.append("servicio", serviciosGuardados);
+        formData.append("id", id);
+
+        var consulta = await fetch(ruta, { method: 'POST', body: formData });
+        var result = await consulta.json();
+
+        if (result.response == 'Ok') {
+
+            const modalInstance = Modal.getInstance(this.nuevoServicioCheckinTarget);
+
+            if (modalInstance) { modalInstance.hide(); }
+
+            FlashMessage.show('Servicio agregado correctamente', 'success');
+
+            let ruta = this.rutaReservasValue;
+            const respuesta = await fetch(ruta);
+            this.frameReservasTarget.innerHTML = await respuesta.text();
+        }
+    }
+
+    async abrirModalProductos(event) {
+
+        localStorage.clear();
+
+        let id = event.currentTarget.dataset.id;
+        let habitacion = event.currentTarget.dataset.habitacion;
+
+        $("#habitacionNewProducto").val(habitacion);
+        $("#idCheckProducto").val(id);
+
+        this.modal = new Modal(this.nuevoProductoCheckinTarget);
+        this.modal.show();
+    }
+
+    async cargarNewProductoCheckin(event) {
+        let ruta = this.rutaObtenerProductoValue.replace('var1', event.currentTarget.value);
+
+        var consulta = await fetch(ruta);
+        var result = await consulta.json();
+
+        $("#valorNewProductorCheckin").val(result.valor.toLocaleString('es-CO'));
+        $("#cantProd").val(result.existencias);
+        $("#valPro").val(result.valor);
+
+        if ($("#cantProductoNewCheckin").val() != '' && $("#valorNewProductorCheckin").val()) {
+            let cantidad = $("#cantProductoNewCheckin").val().replace(/[.,]/g, '');
+            let valorUnd = $("#valorNewProductorCheckin").val().replace(/[.,]/g, '');
+            let valorPag = Number(cantidad) * Number(valorUnd);
+
+            if ($("#valorPagoNewProducto").val() != '') {
+                let saldo = valorPag - Number($("#valorPagoNewProducto").val().replace(/[.,]/g, ''));
+                $("#saldoProductoNewCheckin").val(saldo.toLocaleString('es-CO'));
+            }
+            else {
+                $("#valorPagoNewProducto").val(valorPag.toLocaleString('es-CO'));
+                $("#saldoProductoNewCheckin").val('0');
+            }
+        }
+        else {
+            $("#valorPagoNewProducto").val('');
+            $("#saldoProductoNewCheckin").val('');
+            $("#cantProductoNewCheckin").val('');
+        }
+
+
+
+    }
+
+    calculaValorNewProductos(event) {
+
+        let cantidad = Number(event.currentTarget.value);
+        let cantProd = $("#cantProd").val();
+
+        if (cantidad <= cantProd) {
+            let valor = Number($("#valPro").val());
+            let total = cantidad * valor;
+
+            $("#valorPagoNewProducto").val(total.toLocaleString('es-CO'));
+            $("#saldoProductoNewCheckin").val(0);
+        }
+        else {
+            FlashMessage.show('Existencias: ' + cantProd, 'danger');
+            $("#valorPagoNewProducto").val('');
+            $("#saldoProductoNewCheckin").val('');
+            $("#cantProductoNewCheckin").val('');
+        }
+    }
+
+    actualizaSaldoProdNewCheckin(event) {
+        if ($("#valorPagoNewProducto").val() != '' && $("#cantProductoNewCheckin").val() != '' && $("#valorNewProductorCheckin").val() != '') {
+            let valor = Number(event.currentTarget.value.replace(/[.,]/g, ''));
+            let cant = $("#cantProductoNewCheckin").val();
+            let valorUnd = Number($("#valorNewProductorCheckin").val().replace(/[.,]/g, ''));
+
+            let valorT = cant * valorUnd;
+
+            let total = valorT - valor;
+
+            $("#saldoProductoNewCheckin").val(total.toLocaleString('es-CO'));
+
+        }
+    }
+
+    validaBtnCargarnewProductoCheckin() {
+        if ($("#valorPagoNewProducto").val() != '' && $("#cantProductoNewCheckin").val() != "" && $("#selectProductoNewCheckin").val() != '' && $("#selectFormaPagoNewProductoCheckin").val() != '') {
+            if ($("#selectFormaPagoNewProductoCheckin").val() == 2) {
+                if ($("#comprobanteNewProductoCheckin").val() != '') {
+                    $("#btnCaragarNewProducto1").css("display", "none");
+                    $("#btnCaragarNewProducto2").css("display", "inline");
+                }
+                else {
+                    $("#btnCaragarNewProducto1").css("display", "inline");
+                    $("#btnCaragarNewProducto2").css("display", "none");
+                }
+            }
+            else {
+                $("#btnCaragarNewProducto1").css("display", "none");
+                $("#btnCaragarNewProducto2").css("display", "inline");
+            }
+        }
+        else {
+            $("#btnCaragarNewProducto1").css("display", "inline");
+            $("#btnCaragarNewProducto2").css("display", "none");
+        }
+    }
+
+    actualizarComprobanteNewProducto() {
+        if ($("#selectFormaPagoNewProductoCheckin").val() == 2) {
+            $("#comprobanteNewProductoCheckin").prop('disabled', false);
+        }
+        else {
+            $("#comprobanteNewProductoCheckin").val('');
+            $("#comprobanteNewProductoCheckin").prop('disabled', true);
+        }
+    }
+
+    cargarNewProducto() {
+        let selectProducto = $("#selectProductoNewCheckin").val();
+        let selectProdText = $("#selectProductoNewCheckin option:selected").text();
+        let selectFormaPagoNewProducto = $("#selectFormaPagoNewProductoCheckin").val();
+        let selectFomaPagoText = $("#selectFormaPagoNewProductoCheckin option:selected").text();
+
+        let valorProCheckin = $("#valorNewProductorCheckin").val();
+        let valorPagProdCheckin = $("#valorPagoNewProducto").val();
+        let saldoProCheckin = $("#saldoProductoNewCheckin").val();
+        let selectFormaPagoCheckin = selectFormaPagoNewProducto;
+        let comprobanteCheckin = $("#comprobanteNewProductoCheckin").val();
+        let cantidad = $("#cantProductoNewCheckin").val();
+
+        // Crear un array con los datos del servicio actual
+        let nuevoServicio = [
+            selectProdText,
+            selectFomaPagoText,
+            comprobanteCheckin,
+            valorProCheckin,
+            valorPagProdCheckin,
+            saldoProCheckin,
+            selectProducto,
+            selectFormaPagoCheckin,
+            cantidad,
+        ];
+
+        // Acumular servicios en el array, agregando el nuevo al inicio
+        let key = 'newProductoCheckin';
+        let productosArray = [];
+        let productosGuardados = localStorage.getItem(key);
+        if (productosGuardados) {
+            try {
+                productosArray = JSON.parse(productosGuardados);
+                if (!Array.isArray(productosArray)) {
+                    productosArray = [];
+                }
+            } catch (e) {
+                productosArray = [];
+            }
+        }
+        productosArray.unshift(nuevoServicio);
+        localStorage.setItem(key, JSON.stringify(productosArray));
+
+        // Limpiar los campos del formulario
+        $("#selectProductoNewCheckin").val('');
+        $("#valorPagoNewProducto").val('');
+        $("#selectFormaPagoNewProductoCheckin").val('');
+        $("#comprobanteNewProductoCheckin").val('');
+        $("#saldoProductoNewCheckin").val('');
+        $("#cantProductoNewCheckin").val('');
+        $("#btnCaragarNewProducto1").css("display", "inline");
+        $("#btnCaragarNewProducto2").css("display", "none");
+        $("#comprobanteNewProductoCheckin").prop('disabled', true);
+        $("#valorNewProductorCheckin").val('');
+
+        FlashMessage.show('Servicio agregado correctamente', 'success');
+
+        // Actualizar la tabla de servicios en el modal
+        this.actualizarTablaNewProductos();
+
+        $("#btnGuardarProductoNewCheckin").prop('disabled', false);
+    }
+
+    actualizarTablaNewProductos() {
+        let key = 'newProductoCheckin';
+        let productosArray = [];
+        let productosGuardados = localStorage.getItem(key);
+        if (productosGuardados) {
+            try {
+                productosArray = JSON.parse(productosGuardados);
+                if (!Array.isArray(productosArray)) {
+                    productosArray = [];
+                }
+            } catch (e) {
+                productosArray = [];
+            }
+        }
+        let tbody = this.nuevoProductoCheckinTarget.querySelector(`#productosNewCheckin`);
+        tbody.innerHTML = ''; // Limpiar el contenido actual
+
+        if (productosArray.length > 0) {
+            productosArray.forEach((producto, i) => {
+                let tr = document.createElement('tr');
+                const valorPagado = Number(producto[4].replace(/[.,]/g, '')).toLocaleString('es-CO');
+                const saldo = Number(producto[5].replace(/[.,]/g, '')).toLocaleString('es-CO');
+                const valorServicio = Number(producto[4].replace(/[.,]/g, '')) + Number(producto[5].replace(/[.,]/g, ''));
+                tr.innerHTML = `
+                     <td>
+                         <i class="fas fa-trash-alt text-danger" title="Eliminar" data-servicio-index="${i}" data-action="click->sistema--app#eliminarNewProducto"></i>
+                     </td>
+                     <td class="text-nowrap">
+                         ${producto[0]}
+                     </td>
+                     <td class="text-nowrap">${producto[1]}</td>
+                     <td class="text-nowrap">${producto[8]}</td>
+                     <td class="text-nowrap">${producto[3]}</td>
+                     <td class="text-nowrap" style="text-align:right;">$ ${valorServicio}</td>
+                     <td class="text-nowrap" style="text-align:right;">$ ${valorPagado}</td>
+                     <td class="text-nowrap" style="text-align:right;">$ ${saldo}</td>
+                 `;
+                tbody.appendChild(tr);
+            });
+
+        } else {
+            tbody.innerHTML = '<tr><td colspan="7" style="text-align:center">No se han registrado servicios</td></tr>';
+        }
+    }
+
+    eliminarNewProducto() {
+        const servicioIndex = event.currentTarget.dataset.servicioIndex;
+
+        let key = 'newProductoCheckin';
+        let productosArray = [];
+        let productosGuardados = localStorage.getItem(key);
+        if (productosGuardados) {
+            try {
+                productosArray = JSON.parse(productosGuardados);
+                if (!Array.isArray(productosArray)) {
+                    productosArray = [];
+                }
+            } catch (e) {
+                productosArray = [];
+            }
+        }
+        // Eliminar el servicio por índice
+        productosArray.splice(servicioIndex, 1);
+
+        localStorage.setItem(key, JSON.stringify(productosArray));
+        // Actualizar la tabla
+        this.actualizarTablaNewProductos();
+
+        if (productosArray.length > 0) {
+            $("#btnGuardarProductoNewCheckin").prop('disabled', false);
+        }
+        else {
+            $("#btnGuardarProductoNewCheckin").prop('disabled', true);
+        }
+    }
+
+    async guardarProductosNewCheckin() {
+        let ruta = this.rutaAgregarProductoCheckinValue;
+
+        let productosGuardados = localStorage.getItem('newProductoCheckin');
+        let id = $("#idCheckProducto").val();
+
+        let formData = new FormData();
+        formData.append("producto", productosGuardados);
+        formData.append("id", id);
+
+        var consulta = await fetch(ruta, { method: 'POST', body: formData });
+        var result = await consulta.json();
+
+        if (result.response == 'Ok') {
+
+            const modalInstance = Modal.getInstance(this.nuevoProductoCheckinTarget);
+
+            if (modalInstance) { modalInstance.hide(); }
+
+            FlashMessage.show('Producto agregado correctamente', 'success');
+
+            let ruta = this.rutaReservasValue;
+            const respuesta = await fetch(ruta);
+            this.frameReservasTarget.innerHTML = await respuesta.text();
+        }
+    }
+
+    async eliminarCheckin(event) {
+        let id = event.currentTarget.dataset.id;
+        let ruta = this.rutaEliminarCheckinValue;
+        let rutaP = this.rutaReservasValue;
+
+        ruta = ruta.replace('var1', id);
+
+        var consulta = await fetch(ruta);
+        var result = await consulta.json();
+
+        if (result.response == 'Ok') {
+            FlashMessage.show('Check-in eliminado correctamente', 'success');
+            const respuesta = await fetch(rutaP);
+            this.frameReservasTarget.innerHTML = await respuesta.text();
+        }
+    }
+
+
+
+
+
+
+
+
+
 
 
 
