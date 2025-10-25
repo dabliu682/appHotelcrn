@@ -2,5 +2,8 @@ import { Controller } from '@hotwired/stimulus';
 
 
 export default class extends Controller {
-    connect() { $(".selectpicker").selectpicker() }
+    connect() {
+        console.log('entro');
+        $(".selectpicker").selectpicker()
+    }
 }

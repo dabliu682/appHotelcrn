@@ -77,7 +77,8 @@ class ReservasController extends AbstractController
             $booking->setAire($request->get('selectAireRev'));
             $booking->setCanthabitaciones($request->get('cantHabClienteRev'));
             $numMax = $bd->getRepository(Booking::class)->findNumMax();
-            $booking->setNumero($numMax[0]['numero']);
+
+            (!is_null($numMax[0]['numero'])) ? $booking->setNumero($numMax[0]['numero']) : $booking->setNumero(1);
             $booking->setStatus(1);
             $booking->setTurno($turno);
             $booking->setFechacrea(new \DateTime('now', new \DateTimeZone('America/Bogota')));

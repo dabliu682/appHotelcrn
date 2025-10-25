@@ -7,12 +7,14 @@ import FlashMessage from '../../utils/FlashMessage';
 export default class extends Controller {
     static values = {
         'rutaObtenerDatosClienteReserva': String,
+        'rutaCambiarEstadoHabitacion': String,
         'rutaAgregarProductoCheckin': String,
         'rutaAgregarServicioCheckin': String,
         'rutaCambiaEstadoServicio': String,
         'rutaCargarProductosPlano': String,
         'rutaUpdateCantProducto': String,
         'rutaEliminarTiposServ': String,
+        'rutaContabilizarGasto': String,
         'rutaEliminarCompania': String,
         'rutaEliminarClientes': String,
         'rutaEliminarServicio': String,
@@ -33,12 +35,17 @@ export default class extends Controller {
         'rutaGenerarFactura': String,
         'rutaObtenerCheckin': String,
         'rutaNuevaCompania': String,
+        'rutaEliminarGasto': String,
+        'rutaGuardarBonos': String,
         'rutaHabitaciones': String,
+        'rutaGuardarGasto': String,
         'rutaEliminarPiso': String,
         'rutaCrearCheckin': String,
         'rutaCerrarTurno': String,
         'rutaEliminarHab': String,
+        'rutaMovimientos': String,
         'rutaAbrirTurno': String,
+        'rutaCobrarBono': String,
         'rutaInventario': String,
         'rutaDashboard': String,
         'rutaNuevoPiso': String,
@@ -52,6 +59,7 @@ export default class extends Controller {
         'rutaCheckout': String,
         'rutaCheckin': String,
         'rutaVistas': String,
+        'rutaBonos': String,
         'rutaPisos': String,
         'rutaDocs': String,
     };
@@ -70,9 +78,11 @@ export default class extends Controller {
         'valorProductorCheckin',
         'numeroVehiculoCliente',
         'selectCompaniaCliente',
+        'modalContabilizaGasto',
         'selectTipoHabitacion',
         'nuevoServicioCheckin',
         'selectHabitacionServ',
+        'modalNuevoMovimiento',
         'frameListaServicioss',
         'saldoProductoCheckin',
         'modalCargarProductos',
@@ -101,6 +111,7 @@ export default class extends Controller {
         'modalNuevoServicio',
         'modalTipoServLabel',
         'btnCargarProductos',
+        'modalEliminarGasto',
         'btnGuardarEntrada',
         'aireAcondicionado',
         'frameHabitaciones',
@@ -135,7 +146,11 @@ export default class extends Controller {
         'valorServCheckin',
         'saldoServCheckin',
         'numeroCelCliente',
+        'modalcobrarBono',
         'frameInventario',
+        'modalNuevoGasto',
+        'frameMovimentos',
+        'btnGuardarGasto',
         'btnGuardarPiso',
         'modalNuevoPiso',
         'nombreCompania',
@@ -151,6 +166,8 @@ export default class extends Controller {
         'frameProductos',
         'codigoProducto',
         'frameDashboard',
+        'modalNuevoBono',
+        'formNuevoGasto',
         'nombreTipoDoc',
         'labelModalHab',
         'modalNuevoMov',
@@ -175,6 +192,7 @@ export default class extends Controller {
         'formCheckin',
         'nitCompania',
         'btnServicio',
+        'formNewBono',
         'framePisos',
         'numeroCama',
         'idCompania',
@@ -187,6 +205,7 @@ export default class extends Controller {
         'selectServ',
         'nombreServ',
         'codigoProd',
+        'frameBonos',
         'idReserva',
         'horasServ',
         'idTipoDoc',
@@ -197,8 +216,7 @@ export default class extends Controller {
     ];
 
     connect() {
-        // Código que se ejecuta al conectar el controlador
-        console.log("AppController conectado");
+
     }
 
     formatearCampo(event) {
@@ -687,8 +705,8 @@ export default class extends Controller {
         if (result.response == 'Ok') {
             FlashMessage.show('Turno abierto correctamente', 'success');
 
-            const respuesta = await fetch(ruta);
-            this.frameDashboardTarget.innerHTML = await respuesta.text();
+            let url = this.rutaVistasValue.replace('var1', 0);
+            window.location.href = url;
         }
     }
 
@@ -953,26 +971,36 @@ export default class extends Controller {
         var consulta = await fetch(urlGuardar, { 'method': 'POST', 'body': parametros });
         var result = await consulta.json();
 
+        console.log(result);
+
+        let select = $("#clienteSelectCustom-1");
+
+        select.selectpicker('destroy');
+
         if (result.response == 'Ok') {
             const modalInstance = Modal.getInstance(this.modalNuevoClienteTarget);
             if (modalInstance) { modalInstance.hide(); }
             FlashMessage.show('Cliente guardado correctamente', 'success');
 
-            let index = $("#numCheckin").val();
-            let select = $("#clienteSelectCustom-" + index);
+            let existe = select.find(`option[value='${result.id}']`).length > 0;
 
-            // Crear nueva opción y agregarla al selector
-            let newOption = new Option(
-                result.documentNumber + ' - ' + result.name + ' ' + result.lastname,
-                result.id
-            );
-            select.append(newOption);
-            select.val(result.id); // Seleccionar el nuevo cliente
+            if (!existe) {
+                let newOption = new Option(
+                    result.documentNumber + ' - ' + result.name + ' ' + result.lastname,
+                    result.id
+                );
 
-            $("#cellClienteCheckin-" + index).val(result.cellphone);
-            $("#companiaClienteCheckin-" + index).val(result.compania);
-            $("#numeroVehiculoClienteCheckin-" + index).val(result.numberBus);
+                //select.append(newOption);
+            }
+
+            //select.val(result.id); // Seleccionar el nuevo cliente
+
+            $("#cellClienteCheckin-1").val(result.cellphone);
+            $("#companiaClienteCheckin-1").val(result.compania);
+            $("#numeroVehiculoClienteCheckin-1").val(result.numberBus);
         }
+
+        //select.selectpicker('refresh');
     }
 
     abrirModalServicioCheckin() {
@@ -1011,31 +1039,46 @@ export default class extends Controller {
 
         let fecha = $("#fechaLlegada").val();
         let hora = $("#horallegada").val();
-        let diferencia = result.horas;
+        let cant = $("#inputCantidadServicio").val();
+        let diferencia = result.horas * cant;
+
+        $("#valHorasServ").val(result.horas);
 
         if (diferencia != null) {
-            this.calcularFechaSalida(fecha, hora, diferencia);
+            //this.calcularFechaSalida(fecha, hora, diferencia);
         }
 
 
     }
 
+    recalcularFechaSalida() {
+        let fecha = $("#fechaLlegada").val();
+        let hora = $("#horallegada").val();
+        let cant = $("#inputCantidadServicio").val();
+        let horas = $("#valHorasServ").val();
+        let diferencia = horas * cant;
+
+        if (diferencia != null || diferencia > 0) {
+            this.calcularFechaSalida(fecha, hora, diferencia);
+        }
+    }
+
     calcularFechaSalida(fecha, hora, diferencia) {
-        // Crear objeto Date con fecha y hora combinadas
 
         let fechaHora = new Date(`${fecha}T${hora}:00`);
 
+        console.log(diferencia)
 
-        // Sumar 18 horas (en milisegundos)
         fechaHora.setHours(fechaHora.getHours() + diferencia);
 
-        // Obtener fecha y hora formateadas
-        let fechasalida = fechaHora.toISOString().slice(0, 10);            // YYYY-MM-DD
+        let fechasalida = fechaHora.toLocaleDateString('es-CO'); // YYYY-MM-DD
+        let arrayFecha = fechasalida.split('/');
         let horasalida = fechaHora.toTimeString().slice(0, 5);             // HH:mm
 
-        $("#fechaSalida").val(fechasalida);
-        $("#horaSalida").val(horasalida);
+        console.log(arrayFecha);
 
+        $("#fechaSalida").val(arrayFecha[2] + '-' + arrayFecha[1] + '-' + arrayFecha[0]);
+        $("#horaSalida").val(horasalida);
     }
 
     cargarHab(event) {
@@ -1488,6 +1531,7 @@ export default class extends Controller {
 
         // Actualizar la tabla de servicios en el modal
         this.actualizarTablaServiciosCheckin();
+        this.recalcularFechaSalida();
 
 
     }
@@ -2037,6 +2081,15 @@ export default class extends Controller {
     async cargarSelectProductosMov(event) {
         let accion = event.currentTarget.value;
 
+        if (accion == 1) {
+            $("#divProductos").css('display', 'inline');
+            $("#divServicios").css('display', 'none');
+        }
+        else {
+            $("#divProductos").css('display', 'none');
+            $("#divServicios").css('display', 'inline');
+        }
+
 
     }
 
@@ -2069,12 +2122,23 @@ export default class extends Controller {
 
     async registrarVenta() {
 
+        $("#btnRegistroVenta").prop('disabled', true)
+
         let ruta = this.rutaRegistrarVentaValue;
 
-        let detalleMov = $("#detalleMov").val();
-        let productoMov = $("#productoMov").val();
-        let valorProdMov = Number($("#valorProdMov").val().replace(/\.|,/g, ''));
-        let cantProdMov = $("#cantProdMov").val();
+        let detalleMov = $("#detalleVenta").val();
+
+        let productoMov = 0;
+
+        if (detalleMov == 1) {
+            productoMov = $("#productoVenta").val();
+        }
+        else {
+            productoMov = $("#servicioVenta").val();
+        }
+
+        let valorProdMov = Number($("#valorVenta").val().replace(/\.|,/g, ''));
+        let cantProdMov = $("#cantVenta").val();
 
         ruta = ruta.replace('var1', detalleMov);
         ruta = ruta.replace('var2', productoMov);
@@ -2114,6 +2178,7 @@ export default class extends Controller {
         tablaMov.innerHTML = "";
         let totalValor = 0;
         let totalPendiente = 0;
+        let bono = 0;
 
         movimientos.forEach(function (mov) {
             var tr = document.createElement("tr");
@@ -2132,10 +2197,16 @@ export default class extends Controller {
             tdpendiente.style.cssText = "text-align: right";
             tr.appendChild(tdpendiente);
 
+            var tdBono = document.createElement("td");
+            tdBono.textContent = '$ ' + mov.bono.toLocaleString('es-CO');
+            tdBono.style.cssText = "text-align: right";
+            tr.appendChild(tdBono);
+
             tablaMov.appendChild(tr);
 
             totalValor += mov.valor;
             totalPendiente += mov.pendiente;
+            bono += mov.bono;
         });
 
         var tr = document.createElement("tr");
@@ -2156,7 +2227,19 @@ export default class extends Controller {
         tdTotalPendiente.style.cssText = "text-align: right; font-weight:bold";
         tr.appendChild(tdTotalPendiente);
 
+        var tdBono = document.createElement("td");
+        tdBono.textContent = '$ ' + bono.toLocaleString('es-CO');
+        tdBono.style.cssText = "text-align: right; font-weight:bold";
+        tr.appendChild(tdBono);
+
         tablaMov.appendChild(tr);
+
+        $("#productoVenta").val('');
+        $("#servicioVenta").val('');
+        $("#valorUndVenta").val('0');
+        $("#cantVenta").val('');
+        $("#cantVenta").attr('placeholder', '');
+        $("#valorVenta").val('0');
 
     }
 
@@ -2174,8 +2257,8 @@ export default class extends Controller {
 
         if (modalInstance) { modalInstance.hide(); }
 
-        const respuesta = await fetch(ruta);
-        this.frameDashboardTarget.innerHTML = await respuesta.text();
+        let url = this.rutaVistasValue.replace('var1', 0);
+        window.location.href = url;
     }
 
     async abrirModalCheckOut(event) {
@@ -2873,8 +2956,346 @@ export default class extends Controller {
         }
     }
 
+    async abrirModalNuevoMov() {
+        this.modal = new Modal(this.modalNuevoMovimientoTarget);
+        this.modal.show();
+    }
+
+    abrirModalBono() {
+
+        $("#beneficiarioBono").val('');
+        $("#valorBono").val('');
+        $("#detalleBono").val('');
+        $("#btnGuardarBono").prop('disabled', true);
+
+        this.modal = new Modal(this.modalNuevoBonoTarget);
+        this.modal.show();
+    }
+
+    validaBtnGuardarBono() {
+        if ($("#beneficiarioBono").val() != '' && $("#valorBono").val() != '' && $("#detalleBono").val() != '') {
+            $("#btnGuardarBono").prop("disabled", false);
+        }
+        else {
+            $("#btnGuardarBono").prop("disabled", true);
+        }
+    }
+
+    async registrarBono() {
+        $("#btnGuardarBono").prop("disabled", true);
+
+        let urlGuardar = this.rutaGuardarBonosValue;
+
+        let formulario = '';
+
+        formulario = this.formNewBonoTarget;
+
+        var parametros = new FormData(formulario);
+
+        var consulta = await fetch(urlGuardar, { 'method': 'POST', 'body': parametros });
+        var result = await consulta.json();
+
+        const modalInstance = Modal.getInstance(this.modalNuevoBonoTarget);
+
+        if (modalInstance) { modalInstance.hide(); }
+
+        $("#btnGuardarBono").prop("disabled", false);
+
+        var ventas = result.tablaVentas;
+        var tablaVentas = document.getElementById("tablaVentas");
+
+        tablaVentas.innerHTML = "";
+
+        ventas.forEach(function (item) {
+            var tr = document.createElement("tr");
+
+            var tdProducto = document.createElement("td");
+            tdProducto.textContent = item.producto;
+            tr.appendChild(tdProducto);
+
+            var tdCantidad = document.createElement("td");
+            tdCantidad.textContent = item.cantidad;
+            tr.appendChild(tdCantidad);
+
+            var tdValor = document.createElement("td");
+            tdValor.textContent = '$ ' + item.valor.toLocaleString('es-CO');
+            tdValor.style.cssText = "text-align: right";
+            tr.appendChild(tdValor);
+
+            tablaVentas.appendChild(tr);
+        });
+
+        var movimientos = result.tablaMov;
+        var tablaMov = document.getElementById("tablaMov");
+
+        tablaMov.innerHTML = "";
+        let totalValor = 0;
+        let totalPendiente = 0;
+        let bonos = 0;
+
+        movimientos.forEach(function (mov) {
+            var tr = document.createElement("tr");
+
+            var tdConcepto = document.createElement("td");
+            tdConcepto.textContent = mov.concepto;
+            tr.appendChild(tdConcepto);
+
+            var tdValor = document.createElement("td");
+            tdValor.textContent = '$ ' + mov.valor.toLocaleString('es-CO');
+            tdValor.style.cssText = "text-align: right";
+            tr.appendChild(tdValor);
+
+            var tdpendiente = document.createElement("td");
+            tdpendiente.textContent = '$ ' + mov.pendiente.toLocaleString('es-CO');
+            tdpendiente.style.cssText = "text-align: right";
+            tr.appendChild(tdpendiente);
+
+            var tdBonos = document.createElement("td");
+            tdBonos.textContent = '$ ' + mov.bono.toLocaleString('es-CO');
+            tdBonos.style.cssText = "text-align: right";
+            tr.appendChild(tdBonos);
+
+            tablaMov.appendChild(tr);
+
+            totalValor += mov.valor;
+            totalPendiente += mov.pendiente;
+            bonos += mov.bono;
+        });
+
+        var tr = document.createElement("tr");
+        tr.classList.add("table-light");
+
+        var tdConcepto = document.createElement("td");
+        tdConcepto.textContent = 'Total';
+        tdConcepto.style.cssText = "text-align: right; font-weight:bold";
+        tr.appendChild(tdConcepto);
+
+        var tdTotalValor = document.createElement("td");
+        tdTotalValor.textContent = '$ ' + totalValor.toLocaleString('es-CO');
+        tdTotalValor.style.cssText = "text-align: right; font-weight:bold";
+        tr.appendChild(tdTotalValor);
+
+        var tdTotalPendiente = document.createElement("td");
+        tdTotalPendiente.textContent = '$ ' + totalPendiente.toLocaleString('es-CO');
+        tdTotalPendiente.style.cssText = "text-align: right; font-weight:bold";
+        tr.appendChild(tdTotalPendiente);
+
+        var tdTotalBonos = document.createElement("td");
+        tdTotalBonos.textContent = '$ ' + bonos.toLocaleString('es-CO');
+        tdTotalBonos.style.cssText = "text-align: right; font-weight:bold";
+        tr.appendChild(tdTotalBonos);
+
+        tablaMov.appendChild(tr);
+    }
+
+    async cargarproductoVenta(event) {
+        if ($("#detalleVenta").val() == 1) {
+            let ruta = this.rutaObtenerProductoValue.replace('var1', event.currentTarget.value);
+
+            var consulta = await fetch(ruta);
+            var result = await consulta.json();
+
+            $("#cantVenta").val('');
+            $("#cantVenta").attr('placeholder', result.existencias);
+            $("#valorUndVenta").val(result.valor.toLocaleString('es-CO'));
+
+        }
+        else {
+            let ruta = this.rutaObtenerServicioValue.replace('var1', event.currentTarget.value);
+
+            var consulta = await fetch(ruta);
+            var result = await consulta.json();
+
+            $("#cantVenta").val('');
+            $("#cantVenta").attr('placeholder', '');
+            $("#valorUndVenta").val(result.price.toLocaleString('es-CO'));
+        }
 
 
+    }
+
+    async validaBtnRegistroVenta() {
+        if ($("#detalleVenta").val() == 1) {
+            if ($("#productoVenta").val() != '' && $("#cantVenta").val() != '' && $("#cantVenta").val() > 0) {
+                $("#btnRegistroVenta").prop('disabled', false);
+            }
+            else {
+                $("#btnRegistroVenta").prop('disabled', true);
+            }
+        }
+        else {
+            if ($("#servicioVenta").val() != '' && $("#cantVenta").val() != '' && $("#cantVenta").val() > 0) {
+                $("#btnRegistroVenta").prop('disabled', false);
+            }
+            else {
+                $("#btnRegistroVenta").prop('disabled', true);
+            }
+        }
+    }
+
+    calculoValProdVenta() {
+        let valorUnd = $("#valorUndVenta").val();
+        valorUnd = Number(valorUnd.replace(/\.|,/g, ''));
+
+        let cant = $("#cantVenta").val();
+        cant = Number(cant.replace(/\.|,/g, ''));
+
+        let valor = valorUnd * cant;
+
+        $("#valorVenta").val(valor.toLocaleString('es-CO'));
+    }
+
+    abrirModalCobrarBono(event) {
+        let id = event.currentTarget.dataset.id;
+        $("#idBonoCobro").val(id);
+        this.modal = new Modal(this.modalcobrarBonoTarget);
+        this.modal.show();
+    }
+
+    async cobrarBono() {
+        let id = $("#idBonoCobro").val();
+        let rutaTabla = this.rutaBonosValue;
+        let ruta = this.rutaCobrarBonoValue;
+        ruta = ruta.replace('var1', id);
+
+        var consulta = await fetch(ruta);
+        var result = await consulta.json();
+
+        if (result.response == 'Ok') {
+
+            const modalInstance = Modal.getInstance(this.modalcobrarBonoTarget);
+            if (modalInstance) { modalInstance.hide(); }
+
+            FlashMessage.show('Bono cobrado correctamente', 'success');
+
+            const respuesta = await fetch(rutaTabla);
+            this.frameBonosTarget.innerHTML = await respuesta.text();
+        }
+    }
+
+    abrirModalNuevoGasto() {
+        this.modal = new Modal(this.modalNuevoGastoTarget);
+        this.modal.show();
+    }
+
+    validaBtnGuardarGasto() {
+        if ($("#valorGasto").val() != '' && $("#tipoGasto").val() != '') {
+            this.btnGuardarGastoTarget.disabled = false;
+        }
+        else {
+            this.btnGuardarGastoTarget.disabled = true;
+        }
+    }
+
+    async guardarGasto() {
+        let rutaTabla = this.rutaMovimientosValue;
+        let urlGuardar = this.rutaGuardarGastoValue;
+
+        let formulario = '';
+
+        formulario = this.formNuevoGastoTarget;
+
+        var parametros = new FormData(formulario);
+
+        var consulta = await fetch(urlGuardar, { 'method': 'POST', 'body': parametros });
+        var result = await consulta.json();
+
+        const modalInstance = Modal.getInstance(this.modalNuevoGastoTarget);
+
+        if (modalInstance) { modalInstance.hide(); }
+
+        const respuesta = await fetch(rutaTabla);
+        this.frameMovimentosTarget.innerHTML = await respuesta.text();
+
+
+    }
+
+    abrirModalContabilizarGasto(event) {
+        let id = event.currentTarget.dataset.id;
+        let tipo = event.currentTarget.dataset.tipo;
+        let valor = event.currentTarget.dataset.valor;
+
+        $("#idGasto").val(id);
+        $("#nomGasto").text(tipo + ' ' + valor);
+
+        this.modal = new Modal(this.modalContabilizaGastoTarget);
+        this.modal.show();
+    }
+
+    async contabilizarGasto() {
+        let rutaTabla = this.rutaMovimientosValue;
+        let id = $("#idGasto").val();
+
+        let ruta = this.rutaContabilizarGastoValue;
+        ruta = ruta.replace('var1', id);
+
+        var consulta = await fetch(ruta);
+        var result = await consulta.json();
+
+        if (result.response == 'Ok') {
+
+            const modalInstance = Modal.getInstance(this.modalContabilizaGastoTarget);
+            if (modalInstance) { modalInstance.hide(); }
+
+            FlashMessage.show('Gasto contabilizado correctamente', 'success');
+
+            const respuesta = await fetch(rutaTabla);
+            this.frameMovimentosTarget.innerHTML = await respuesta.text();
+        }
+    }
+
+    abrirModalEliminarGasto(event) {
+
+        let id = event.currentTarget.dataset.id;
+        let tipo = event.currentTarget.dataset.tipo;
+        let valor = event.currentTarget.dataset.valor;
+
+        $("#idGastoEli").val(id);
+        $("#nomGastoEli").text(tipo + ' ' + valor);
+
+        this.modal = new Modal(this.modalEliminarGastoTarget);
+        this.modal.show();
+    }
+
+    async eliminarGasto() {
+        let rutaTabla = this.rutaMovimientosValue;
+        let id = $("#idGastoEli").val();
+
+        let ruta = this.rutaEliminarGastoValue;
+        ruta = ruta.replace('var1', id);
+
+        var consulta = await fetch(ruta);
+        var result = await consulta.json();
+
+        if (result.response == 'Ok') {
+
+            const modalInstance = Modal.getInstance(this.modalEliminarGastoTarget);
+            if (modalInstance) { modalInstance.hide(); }
+
+            FlashMessage.show('Gasto eliminado correctamente', 'success');
+
+            const respuesta = await fetch(rutaTabla);
+            this.frameMovimentosTarget.innerHTML = await respuesta.text();
+        }
+    }
+
+    async cambiarEstadoHab(event) {
+        let rutaTabla = this.rutaHabitacionesValue;
+        let ruta = this.rutaCambiarEstadoHabitacionValue;
+        let id = event.currentTarget.dataset.id;
+        let accion = event.currentTarget.dataset.accion;
+        ruta = ruta.replace('var1', id);
+        ruta = ruta.replace('var2', accion);
+
+        var consulta = await fetch(ruta);
+        var result = await consulta.json();
+
+        if (result.response == 'Ok') {
+
+            const respuesta = await fetch(rutaTabla);
+            this.frameHabitacionesTarget.innerHTML = await respuesta.text();
+        }
+    }
 
 
 

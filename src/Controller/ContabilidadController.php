@@ -5,13 +5,18 @@ namespace App\Controller;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpFoundation\JsonResponse;
+use Symfony\Component\HttpFoundation\Request;
 use App\Entity\Movimientos;
 use App\Entity\Detallesmov;
 use App\Entity\Inventario;
 use App\Entity\Productos;
+use App\Entity\Services;
 use App\Entity\Service;
 use App\Entity\Turnos;
+use App\Entity\Persons;
 use App\Entity\Checkin;
+use App\Entity\Gastos;
+use App\Entity\Bonos;
 use Dompdf\Options;
 use Dompdf\Dompdf;
 
@@ -32,7 +37,7 @@ class ContabilidadController extends AbstractController
         }
         else 
         {
-            $producto = $bd->getRepository(Service::class)->find($producto);
+            $producto = $bd->getRepository(Services::class)->find($producto);
         }
 
         $detalleMov = new Detallesmov();
@@ -116,7 +121,7 @@ class ContabilidadController extends AbstractController
                     }
                     elseif($det->getServicio()->getTipo()->getId() == 4)
                     {
-                        $tipoMov = 'Lavanderia';
+                        $tipoMov = 'Lavandería';
                     }
                 }
                 else
@@ -127,21 +132,31 @@ class ContabilidadController extends AbstractController
             } 
             
 
-            $agrupaMov[$tipoMov][] = ['recibido' => $det->getValor(), 'pendiente' =>  $det->getSaldo()];
+            $agrupaMov[$tipoMov][] = ['recibido' => $det->getValor(), 'pendiente' =>  $det->getSaldo(), 'bono' => 0];
         }
+
+        $bonos = $bd->getRepository(Bonos::class)->findBy(['turno' => $turno]);
+
+        foreach ($bonos as $bono) 
+        {
+            $agrupaMov['Bonos'][] = ['recibido' => 0, 'pendiente' =>  0, 'estado' => 0, 'bono' => $bono->getValor()];
+        }
+
 
         foreach ($agrupaMov as $key => $grupos) 
         {
             $valor = 0;
             $pendiente = 0;
+            $bonos = 0;
 
             foreach ($grupos as $grupo) 
             {
                 $valor += $grupo['recibido'];
                 $pendiente += $grupo['pendiente'];
+                $bonos += $grupo['bono'];
             }
 
-            $tablaMov[] = ['concepto' => $key, 'valor' => $valor, 'pendiente' => $pendiente];
+            $tablaMov[] = ['concepto' => $key, 'valor' => $valor, 'pendiente' => $pendiente, 'bono' => $bonos];
         }
 
         return new JsonResponse(['tablaVentas' => $tablaVentas, 'tablaMov' => $tablaMov]);
@@ -225,23 +240,25 @@ class ContabilidadController extends AbstractController
         foreach ($productos as $grupoProd) 
         {
             $subtotal = 0;
+            $cantidad = 0;
 
             foreach ($grupoProd as $producto)
             {
                 $subtotal += $producto['subtotal'];
+                $cantidad += $producto['cantidad'];
             }
 
             $tabla[] =  [
                             'concepto' => $grupoProd[0]['concepto'],
-                            'cantidad' => $grupoProd[0]['cantidad'],
-                            'valorUnd' => $subtotal/$grupoProd[0]['cantidad'],
+                            'cantidad' => $cantidad,
+                            'valorUnd' => $subtotal/$cantidad,
                             'subtotal' => $subtotal,
                                 
                         ];
             
             $total += $subtotal;
 
-        }       
+        } 
 
         // Configure Dompdf según sus necesidades
         $pdfOptions = new Options();
@@ -266,5 +283,207 @@ class ContabilidadController extends AbstractController
         $PDF = base64_encode($dompdf->output());
 
         return new JsonResponse(['response' => 'Ok', 'pdf' => $PDF]);
+    }
+
+    public function movimientos()
+    {
+        $bd = $this->getDoctrine()->getManager();
+
+        $gastos = $bd->getRepository(Gastos::class)->findBy([],['id' => 'desc']);
+
+        return $this->render('contabilidad/listaMovimientos.html.twig', ['gastos' => $gastos]);
+    }
+
+    public function guardarBonos(Request $request)
+    {
+        $bd = $this->getDoctrine()->getManager();
+
+        $beneficiario = $bd->getRepository(Persons::class)->find($request->get('beneficiarioBono'));
+        $valor = str_replace(".", "", $request->get('valorBono'));
+        $detalle = $request->get('detalleBono');
+        $turno = $bd->getRepository(Turnos::class)->findOneBy(['status' => 1]);
+        $mov = $bd->getRepository(Movimientos::class)->findOneBy(['tipo' => 1, 'estado' =>1],['id' => 'desc']);
+        $usuario = $this->getUser();
+
+        $bono = new Bonos();
+
+        $bono->setBeneficiario($beneficiario);
+        $bono->setTurno($turno);
+        $bono->setUsucrea($usuario);
+        $bono->setValor($valor);
+        $bono->setFechacrea(new \DateTime('now', new \DateTimeZone('America/Bogota')));
+        $bono->setEstado(1);
+        $bono->setDetalle($detalle);
+
+        $bd->persist($bono);
+
+        $bd->flush();
+        
+        $detalles = $bd->getRepository(Detallesmov::class)->findBy(['turno' => $turno, 'mov' => $mov ],['id' => 'desc']);
+
+        $tablaVentas = [];
+
+        foreach ($detalles as $det) 
+        {
+            if(!is_null($det->getServicio()))
+            {
+                $producto = $det->getServicio()->getName();
+            }
+            else
+            {
+                $producto = $det->getProducto()->getCodigo().'-'.$det->getProducto()->getNombre();
+            }    
+            
+            $tablaVentas[] = ['producto' => $producto, 'cantidad' => $det->getCantidad(),'valor' => $det->getValor() ];
+        }
+
+        $tablaMov = [];
+
+        $detallesMov = $bd->getRepository(Detallesmov::class)->findBy(['turno' => $turno]);
+
+        $agrupaMov = [];
+
+        foreach ($detallesMov as $det) 
+        {
+            if(is_null($det->getServicio()) && is_null($det->getProducto()))
+            {
+                if($det->getMov()->getTipo() == 4)
+                {
+                    $tipoMov = 'Salidas';
+                }
+                else
+                {
+                    $tipoMov = 'Entradas';
+                }
+            }
+            else
+            {
+                if(!is_null($det->getServicio()))
+                {
+                    if($det->getServicio()->getTipo()->getId() == 1 || $det->getServicio()->getTipo()->getId() == 2 || $det->getServicio()->getTipo()->getId() == 3)
+                    {
+                        $tipoMov = 'Hospedaje';
+                    }
+                    elseif($det->getServicio()->getTipo()->getId() == 4)
+                    {
+                        $tipoMov = 'Lavandería';
+                    }
+                }
+                else
+                {
+                    $tipoMov = 'Tienda';
+                }
+
+            } 
+            
+
+            $agrupaMov[$tipoMov][] = ['recibido' => $det->getValor(), 'pendiente' =>  $det->getSaldo(), 'bono' => 0];
+        }
+
+        $bonos = $bd->getRepository(Bonos::class)->findBy(['turno' => $turno]);
+
+        foreach ($bonos as $bono) 
+        {
+            $agrupaMov['Bonos'][] = ['recibido' => 0, 'pendiente' =>  0, 'estado' => 0, 'bono' => $bono->getValor()];
+        }
+
+        foreach ($agrupaMov as $key => $grupos) 
+        {
+            $valor = 0;
+            $pendiente = 0;
+            $bonos = 0;
+
+            foreach ($grupos as $grupo) 
+            {
+                $valor += $grupo['recibido'];
+                $pendiente += $grupo['pendiente'];
+                $bonos += $grupo['bono'];
+            }
+
+            $tablaMov[] = ['concepto' => $key, 'valor' => $valor, 'pendiente' => $pendiente, 'bono' => $bonos];
+        }
+
+        return new JsonResponse(['tablaVentas' => $tablaVentas, 'tablaMov' => $tablaMov]);
+    }
+
+    public function bonos()
+    {
+        $bd = $this->getDoctrine()->getManager();
+
+        $bonos = $bd->getRepository(Bonos::class)->findBy([],['id' => 'desc']);
+
+        return $this->render('contabilidad/listaBonos.html.twig', ['bonos' => $bonos]);
+    }
+
+    public function cobrarBono($id)
+    {
+        $bd = $this->getDoctrine()->getManager();
+        
+        $usuario = $this->getUser();
+
+        $bono = $bd->getRepository(Bonos::class)->find($id);
+
+        $bono->setEstado(2);
+        $bono->setUsucobro($usuario);
+        $bono->setFechacobro(new \DateTime('now', new \DateTimeZone('America/Bogota')));
+        
+        $bd->persist($bono);
+
+        $bd->flush();
+
+        return new JsonResponse(['response' => 'Ok']);
+    }
+
+    public function guardarGasto(Request $request)
+    {
+        $bd = $this->getDoctrine()->getManager();
+        
+        $usuario = $this->getUser();
+
+        $valorGasto = $request->get('valorGasto');
+        $valorGasto = str_replace([".", ","], ["","."], $valorGasto);
+        $tipoGasto = $request->get('tipoGasto');
+        $detallesGasto = $request->get('detallesGasto');
+
+        $gasto = new Gastos();
+
+        $gasto->setValor($valorGasto);
+        $gasto->setTipo($tipoGasto);
+        $gasto->setDetalles($detallesGasto);
+        $gasto->setUsucrea($usuario);
+        $gasto->setFechacrea(new \DateTime('now', new \DateTimeZone('America/Bogota')));
+        $gasto->setEstado(1);
+
+        $bd->persist($gasto);
+
+        $bd->flush();
+
+        return new JsonResponse(['response' => 'Ok']);
+    }
+
+    public function contabilizarGasto($id)
+    {
+        $bd = $this->getDoctrine()->getManager();
+
+        $gasto = $bd->getRepository(Gastos::class)->find($id);
+        $gasto->setEstado(2);
+
+        $bd->persist($gasto);
+
+        $bd->flush();
+
+        return new JsonResponse(['response' => 'Ok']);
+    }
+
+    public function eliminarGasto($id)
+    {
+        $bd = $this->getDoctrine()->getManager();
+
+        $gasto = $bd->getRepository(Gastos::class)->find($id);
+        $bd->remove($gasto);
+        
+        $bd->flush();
+
+        return new JsonResponse(['response' => 'Ok']);
     }
 }

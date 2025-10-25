@@ -42,6 +42,10 @@ app_eliminarHabitacion:
   path: /locacion/eliminarHabitacion/{id}
   defaults: {_controller: App\Controller\LocacionController::eliminarHabitacion}
 
+app_cambiarEstadoHabitacion:
+  path: /locacion/cambiarEstadoHabitacion/{id},{accion}
+  defaults: {_controller: App\Controller\LocacionController::cambiarEstadoHabitacion}
+
 app_tipodoc:
   path: /configuracion/tipodoc
   defaults: {_controller: App\Controller\ConfiguracionController::tipoDoc}
@@ -221,6 +225,35 @@ app_turnos:
 app_generarFactura:
   path: /generarFactura/{id}
   defaults: {_controller: App\Controller\ContabilidadController::generarFactura}
+
+app_movimientos:
+  path: /movimientos/
+  defaults: {_controller: App\Controller\ContabilidadController::movimientos}
+
+app_bonos:
+  path: /movimientos/bonos
+  defaults: {_controller: App\Controller\ContabilidadController::bonos}
+
+app_guardarBonos:
+  path: /movimientos/guardarBonos
+  defaults: {_controller: App\Controller\ContabilidadController::guardarBonos}
+
+app_cobrarBono:
+  path: /movimientos/cobrarBono/{id}
+  defaults: {_controller: App\Controller\ContabilidadController::cobrarBono}
+
+app_guardarGasto:
+  path: /movimientos/guardarGasto
+  defaults: {_controller: App\Controller\ContabilidadController::guardarGasto}
+
+app_contabilizarGasto:
+  path: /movimientos/contabilizarGasto/{id}
+  defaults: {_controller: App\Controller\ContabilidadController::contabilizarGasto}
+
+app_eliminarGasto:
+  path: /movimientos/eliminarGasto/{id}
+  defaults: {_controller: App\Controller\ContabilidadController::eliminarGasto}
+
 
 
 

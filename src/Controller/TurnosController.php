@@ -80,9 +80,14 @@ class TurnosController extends AbstractController
             {
                 if($turno->getId() == $mov->getTurno()->getId())
                 {
-                    if(!is_null($mov->getServicio()))
+                    if(!is_null($mov->getServicio()) && !is_null($mov->getServicio()->getTyperoom()))
                     {
                         $totalHospedaje += $mov->getValor();
+                    }
+
+                    if(!is_null($mov->getServicio()) && is_null($mov->getServicio()->getTyperoom()))
+                    {
+                        $totalServicios += $mov->getValor();
                     }
 
                     if(!is_null($mov->getProducto()))

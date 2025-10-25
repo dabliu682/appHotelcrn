@@ -56,8 +56,8 @@
                         {% endif %}
                     </div>
                     <div class="flex-grow-1">
-                        <div class="h6 fw-bold mb-1">{{ turno is not null ? turno.usuario.name : 'Sin turno' }}</div>
-                        <div class="card-title mb-1 fs-6">Turno actual - {{ turno is not null ? '%05d'|format(turno.numero) : 'Sin turno' }}</div>                            
+                        <div class="h6 fw-bold mb-1">{{ app.user.name }}</div>
+                        <div class="card-title mb-1 fs-6">Turno actual - {{ turnoActual }}</div>                            
                     </div>
                 </div>
             </div>
@@ -214,20 +214,26 @@
                                                     <span class="badge bg-warning">Cancelada</span>
                                                 {% endif %}
                                             </td>
-                                            <td style="text-align:center; width: 20px;">
-                                                {% if reserva.status == 1 %}
-                                                    <i class="fas fa-check-circle text-primary" style="cursor:pointer; font-size: 12pt;" title="Check-in" data-action="click->sistema--app#crearCheckin" data-id="{{ reserva.id }}"></i>
-                                                {% else %}
-                                                    <i class="fas fa-check-circle" style="cursor:pointer; color: #8db0e3; font-size: 12pt;" title="Check-in"></i>
-                                                {% endif %}
-                                            </td>
-                                            <td style="text-align:center; width: 20px;">
-                                                {% if reserva.status == 1 or reserva.status == 2  %}
-                                                    <i class="fas fa-trash-restore-alt text-danger" style="cursor:pointer; font-size: 12pt;" title="Cancelar reserva" data-action="click->sistema--app#eliminarReserva" data-id = '{{ reserva.id }}'></i>
-                                                {% else %}
-                                                    <i class="fas fa-trash-restore-alt" style="cursor:pointer; font-size: 12pt; color:#e58e96" title="Cancelar reserva"></i>
-                                                {% endif %}
-                                            </td>
+                                            {% if turno is not null %}
+                                                <td style="text-align:center; width: 20px;">                                                
+                                                    {% if reserva.status == 1 %}
+                                                        <i class="fas fa-check-circle text-primary" style="cursor:pointer; font-size: 12pt;" title="Check-in" data-action="click->sistema--app#crearCheckin" data-id="{{ reserva.id }}"></i>
+                                                    {% else %}
+                                                        <i class="fas fa-check-circle" style="cursor:pointer; color: #8db0e3; font-size: 12pt;" title="Check-in"></i>
+                                                    {% endif %}
+                                                </td>
+                                                <td style="text-align:center; width: 20px;">                                                
+                                                    {% if reserva.status == 1 or reserva.status == 2  %}
+                                                        <i class="fas fa-trash-restore-alt text-danger" style="cursor:pointer; font-size: 12pt;" title="Cancelar reserva" data-action="click->sistema--app#eliminarReserva" data-id = '{{ reserva.id }}'></i>
+                                                    {% else %}
+                                                        <i class="fas fa-trash-restore-alt" style="cursor:pointer; font-size: 12pt; color:#e58e96" title="Cancelar reserva"></i>
+                                                    {% endif %}                                                
+                                                </td>
+                                            {% else %}
+                                                <td>
+                                                    <span class="badge bg-secondary">Abrir turno</span>
+                                                <td>
+                                            {% endif %}
                                         </tr>
                                     {% endfor %}
                                 {% else %}
@@ -239,8 +245,11 @@
                         </table>
                     </div>
                     <div class="mt-3 d-flex justify-content-space-between">
-                        <button type="button" class="btn btn-primary btn-sm" style="margin-right:10px" data-action="sistema--app#abrirModalNuevaReserva" data-accion = '1' data-id = '0'>Nuevo</button>
-                        <a href="{{ path('app_inicio') }}" class="btn btn-danger btn-sm">Regresar</a>
+                        {% if turno is not null %}
+                            <button type="button" class="btn btn-primary btn-sm" style="margin-right:10px" data-action="sistema--app#abrirModalNuevaReserva" data-accion = '1' data-id = '0'>Nuevo</button>
+                        {% else %}
+                            <button type="button" class="btn btn-sm" title="No se ha asignado un turno" style="margin-right:10px; background:#91c5f0; color:white">Nuevo</button>
+                        {% endif %}
                     </div>
                 </div>
             </div>
@@ -260,7 +269,7 @@
                     <div class="modal-body">
                         <div class="row mb-3">
                             <div class="col-md-8">
-                                <label for="clienteSelect" class="form-label" style="font-weight: bold;">Cliente</label>
+                                <label for="clienteSelect" class="form-label" style="font-weight: bold;">Cliente <i class="fas fa-exclamation-circle text-info" title="Crear cliente" style="" data-action="click->sistema--app#abrirModalNuevoCliente" data-accion="1"></i></label></label>
                                 <select class="selectpicker form-control" data-controller="sistema--selectpicker" data-live-search-normalize="true" data-live-search="true" data-live-search-placeholder="Filtro clientes" data-size="5" name="clienteRev" data-sistema--app-target="clienteRev" data-action="change->sistema--app#obtenerDatosClienteReserva change->sistema--app#validaBtnGuardarReserva">
                                 |   <option value="">Seleccione cliente</option>
                                     {% for cliente in clientes %}
@@ -421,74 +430,75 @@
     </div>#}
 
     <!-- Modal para registrar clientes -->
-    {#<div class="modal fade" id="modalNuevoCliente" data-sistema--app-target="modalNuevoCliente" tabindex="-1" aria-labelledby="modalNuevoClienteLabel" aria-hidden="true">
-        <div class="modal-dialog modal-xl">
-        <div class="modal-content">
-            <div class="modal-header">
-            <h5 class="modal-title"><span data-sistema--app-target="modalClienteLabel"></span></h5>
-            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-            </div>
-            <form data-sistema--app-target="formNuevoCliente">
-            <input type="hidden" name="id" data-sistema--app-target="idCliente" value="0">
-            <div class="modal-body">
-                <div class="row mb-3">
-                    <div class="col-md-6">
-                        <label for="tipoDoc" class="form-label" style="font-weight: bold;">Tipo de documento</label> 
-                        <select class="form-select" id="tipoDoc" name="tipoDoc" data-sistema--app-target="selectTipoDocCliente"  data-action="change->sistema--app#validaBtnGuardarCliente">
-                            <option value="">Seleccione tipo de documento</option>
-                            {% for document in documents %}
-                                <option value="{{ document.id }}">{{ document.name }}</option>
-                            {% endfor %}                        
-                        </select>
-                    </div>
-                    <div class="col-md-6">
-                        <label for="numeroDocCliente" class="form-label" style="font-weight: bold;">Numero de documento</label> 
-                        <input type="text" name="numeroDocCliente" class="form-control" id="numeroDocCliente" data-sistema--app-target="numeroDocCliente" placeholder="Ingrese el numero de documento" data-action="blur->sistema--app#validaBtnGuardarCliente">
-                    </div>
+    <div class="modal fade" id="modalNuevoCliente" style="margin-top:23px" data-sistema--app-target="modalNuevoCliente" tabindex="-1" aria-labelledby="modalNuevoClienteLabel" aria-hidden="true">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title"><span data-sistema--app-target="modalClienteLabel"></span></h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
-                <div class="row mb-3">
-                    <div class="col-md-6">
-                        <label for="nombresCliente" class="form-label" style="font-weight: bold;">Nombres</label> 
-                        <input type="text" name="nombresCliente" class="form-control" id="nombresCliente" data-sistema--app-target="nombresCliente" placeholder="Ingrese los nombres" data-action="blur->sistema--app#validaBtnGuardarCliente">
+                <form data-sistema--app-target="formNuevoCliente">
+                    <input type="hidden" name="id" data-sistema--app-target="idCliente" value="0">
+                    <div class="modal-body">
+                        <div class="row mb-3">
+                            <div class="col-md-6">
+                                <label for="tipoDoc" class="form-label" style="font-weight: bold;">Tipo de documento</label> 
+                                <select class="form-select" id="tipoDoc" name="tipoDoc" data-sistema--app-target="selectTipoDocCliente"  data-action="change->sistema--app#validaBtnGuardarCliente">
+                                    <option value="">Seleccione tipo de documento</option>
+                                    {% for document in documents %}
+                                        <option value="{{ document.id }}">{{ document.name }}</option>
+                                    {% endfor %}                        
+                                </select>
+                            </div>
+                            <div class="col-md-6">
+                                <label for="numeroDocCliente" class="form-label" style="font-weight: bold;">Numero de documento</label> 
+                                <input type="text" name="numeroDocCliente" class="form-control" id="numeroDocCliente" data-sistema--app-target="numeroDocCliente" placeholder="Ingrese el numero de documento" data-action="blur->sistema--app#validaBtnGuardarCliente">
+                            </div>
+                        </div>
+                        <div class="row mb-3">
+                            <div class="col-md-6">
+                                <label for="nombresCliente" class="form-label" style="font-weight: bold;">Nombres</label> 
+                                <input type="text" name="nombresCliente" class="form-control" id="nombresCliente" data-sistema--app-target="nombresCliente" placeholder="Ingrese los nombres" data-action="blur->sistema--app#validaBtnGuardarCliente">
+                            </div>
+                            <div class="col-md-6">
+                                <label for="apellidosCliente" class="form-label" style="font-weight: bold;">Apellidos</label> 
+                                <input type="text" name="apellidosCliente" class="form-control" id="apellidosCliente" data-sistema--app-target="apellidosCliente" placeholder="Ingrese los apellidos" data-action="blur->sistema--app#validaBtnGuardarCliente">
+                            </div>
+                        </div>
+                        <div class="row mb-3">
+                            <div class="col-md-6">
+                                <label for="numeroCelCliente" class="form-label" style="font-weight: bold;">Numero Celular</label> 
+                                <input type="text" name="numeroCelCliente" class="form-control" id="numeroCelCliente" data-sistema--app-target="numeroCelCliente" placeholder="Ingrese el numero de celular" data-action="blur->sistema--app#validaBtnGuardarCliente">
+                            </div>
+                            <div class="col-md-6">
+                                <label for="placaCliente" class="form-label" style="font-weight: bold;">Placa</label> 
+                                <input type="text" name="placaCliente" class="form-control" id="placaCliente" data-sistema--app-target="placaCliente" placeholder="Ingrese el numero de la placa" data-action="blur->sistema--app#validaBtnGuardarCliente">
+                            </div>
+                        </div>              
+                        <div class="row mb-3">
+                            <div class="col-md-6">
+                                <label for="numeroVehiculoCliente" class="form-label" style="font-weight: bold;">Numero de vehiculo</label> 
+                                <input type="text" name="numeroVehiculoCliente" class="form-control" id="numeroVehiculoCliente" data-sistema--app-target="numeroVehiculoCliente" placeholder="Ingrese el numero del vehiculo" data-action="blur->sistema--app#validaBtnGuardarCliente">
+                            </div>
+                            <div class="col-md-6">
+                                <label for="selectCompaniaCliente" class="form-label" style="font-weight: bold;">Compañia</label> 
+                                <select class="form-select" id="selectCompaniaCliente" name="selectCompaniaCliente" data-sistema--app-target="selectCompaniaCliente"  data-action="change->sistema--app#validaBtnGuardarCliente">
+                                    <option value="">Seleccione compañia</option>
+                                    {% for compania in companias %}
+                                        <option value="{{ compania.id }}">{{ compania.name }}</option>
+                                    {% endfor %}                        
+                                </select>
+                            </div>
+                        </div>
                     </div>
-                    <div class="col-md-6">
-                        <label for="apellidosCliente" class="form-label" style="font-weight: bold;">Apellidos</label> 
-                        <input type="text" name="apellidosCliente" class="form-control" id="apellidosCliente" data-sistema--app-target="apellidosCliente" placeholder="Ingrese los apellidos" data-action="blur->sistema--app#validaBtnGuardarCliente">
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-primary" data-sistema--app-target="btnGuardarCliente" data-action="sistema--app#guardarClienteCheckin" disabled>Guardar</button>
+                        <button type="button" class="btn btn-danger" data-bs-dismiss="modal">Cancelar</button>
                     </div>
-                </div>
-                <div class="row mb-3">
-                    <div class="col-md-6">
-                        <label for="numeroCelCliente" class="form-label" style="font-weight: bold;">Numero Celular</label> 
-                        <input type="text" name="numeroCelCliente" class="form-control" id="numeroCelCliente" data-sistema--app-target="numeroCelCliente" placeholder="Ingrese el numero de celular" data-action="blur->sistema--app#validaBtnGuardarCliente">
-                    </div>
-                    <div class="col-md-6">
-                        <label for="placaCliente" class="form-label" style="font-weight: bold;">Placa</label> 
-                        <input type="text" name="placaCliente" class="form-control" id="placaCliente" data-sistema--app-target="placaCliente" placeholder="Ingrese el numero de la placa" data-action="blur->sistema--app#validaBtnGuardarCliente">
-                    </div>
-                </div>              
-                <div class="row mb-3">
-                    <div class="col-md-6">
-                        <label for="numeroVehiculoCliente" class="form-label" style="font-weight: bold;">Numero de vehiculo</label> 
-                        <input type="text" name="numeroVehiculoCliente" class="form-control" id="numeroVehiculoCliente" data-sistema--app-target="numeroVehiculoCliente" placeholder="Ingrese el numero del vehiculo" data-action="blur->sistema--app#validaBtnGuardarCliente">
-                    </div>
-                    <div class="col-md-6">
-                        <label for="selectCompaniaCliente" class="form-label" style="font-weight: bold;">Compañia</label> 
-                        <select class="form-select" id="selectCompaniaCliente" name="selectCompaniaCliente" data-sistema--app-target="selectCompaniaCliente"  data-action="change->sistema--app#validaBtnGuardarCliente">
-                            <option value="">Seleccione compañia</option>
-                            {% for compania in companias %}
-                                <option value="{{ compania.id }}">{{ compania.name }}</option>
-                            {% endfor %}                        
-                        </select>
-                    </div>
+                </form>
             </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-primary" data-sistema--app-target="btnGuardarCliente" data-action="sistema--app#guardarClienteCheckin" disabled>Guardar</button>
-                <button type="button" class="btn btn-danger" data-bs-dismiss="modal">Cancelar</button>
-            </div>
-            </form>
         </div>
-        </div>
-    </div>#}
+    </div>
 
 
     <!-- Modal para registrar movimientos -->
@@ -503,34 +513,43 @@
                     <div class="row mb-3">
                         <div class="col-md-2">
                             <label for="selectServ" class="form-label" style="font-weight: bold;">Detalle</label> 
-                            <select class="form-select" id="detalleMov" name="selectServ" data-sistema--app-target="selectServ"  data-action="change->sistema--app#cargarSelectProductosMov">
+                            <select class="form-select" id="detalleVenta" name="selectServ" data-sistema--app-target="selectServ"  data-action="change->sistema--app#cargarSelectProductosMov change->sistema--app#validaBtnRegistroVenta">
                                 <option value="1">Producto</option>    
                                 <option value="2">Servicio</option>    
                             </select>
                         </div>
-                        <div class="col-md-4">
-                            <label for="selectServ" class="form-label" style="font-weight: bold;">Producto</label> 
-                            <select class="form-select" id="productoMov" name="selectServ" data-sistema--app-target="selectServ" data-action="change->sistema--app#cargarproductoMov">
+                        <div class="col-md-4" id="divProductos">
+                            <label for="selectServ" class="form-label" style="font-weight: bold;">Productos</label> 
+                            <select class="form-select" id="productoVenta" name="selectServ" data-sistema--app-target="selectServ" data-action="change->sistema--app#cargarproductoVenta change->sistema--app#validaBtnRegistroVenta">
                                 <option value="">Seleccione producto</option>    
                                 {% for producto in productos %}
                                     <option value="{{ producto.id }}">{{ producto.codigo}} - {{ producto.nombre}}</option>    
                                 {% endfor %}    
                             </select>
                         </div>
+                        <div class="col-md-4" id="divServicios" style="display:none">
+                            <label for="selectServ" class="form-label" style="font-weight: bold;">Servicios</label> 
+                            <select class="form-select" id="servicioVenta" name="selectServ" data-sistema--app-target="selectServ" data-action="change->sistema--app#cargarproductoVenta change->sistema--app#validaBtnRegistroVenta">
+                                <option value="">Seleccione servicio</option>    
+                                {% for servicio in selectServicios %}
+                                    <option value="{{ servicio.id }}">{{ servicio.name }}</option>    
+                                {% endfor %}    
+                            </select>
+                        </div>
                         <div class="col-md-2">
-                            <label for="tipoDoc" class="form-label" style="font-weight: bold;">Valor</label> 
+                            <label for="tipoDoc" class="form-label" style="font-weight: bold;">Valor und</label> 
                             <div class="input-group">
-                                <input type="text" id="valorUndProdMov" name="numeroDocCliente" class="form-control" placeholder='0' disabled>
+                                <input type="text" id="valorUndVenta" name="numeroDocCliente" class="form-control" placeholder='0' disabled>
                             </div>
                         </div>
                         <div class="col-md-2">
                             <label for="tipoDoc" class="form-label" style="font-weight: bold;">Cantidad</label> 
-                            <input type="text" id="cantProdMov" name="numeroDocCliente" class="form-control" data-action="blur->sistema--app#calculoValProdMov">
+                            <input type="text" id="cantVenta" name="numeroDocCliente" class="form-control" data-action="blur->sistema--app#calculoValProdVenta blur->sistema--app#validaBtnRegistroVenta">
                         </div>
                         <div class="col-md-2">
                             <label for="tipoDoc" class="form-label" style="font-weight: bold;">Valor</label> 
                             <div class="input-group">
-                                <input type="text" id="valorProdMov" name="numeroDocCliente" class="form-control" placeholder='0' disabled>
+                                <input type="text" id="valorVenta" name="numeroDocCliente" class="form-control" placeholder='0' disabled>
                                 <button type="button" class="btn btn-success" id="btnRegistroVenta" data-action="click->sistema--app#registrarVenta" disabled><i class="fas fa-plus"></i></button>
                             </div>
                         </div>
@@ -569,30 +588,38 @@
                                 <table class="table table-bordered table-sm align-middle mb-0">
                                     <thead class="table-light">
                                         <tr>
+                                            <th colspan="4" class="text-nowrap" style="text-align:center">Movimientos turno</th>
+                                        </tr>
+                                        <tr>
                                             <th class="text-nowrap">Concepto</th>
                                             <th class="text-nowrap">Recibido</th>
                                             <th class="text-nowrap">Pendiente</th>
+                                            <th class="text-nowrap">Salida</th>
                                         </tr>
                                     </thead>
                                     <tbody id="tablaMov">
                                         {% if tablaMov is not empty %}
                                             {% set valor = 0 %}
                                             {% set saldo = 0 %}
+                                            {% set bonos = 0 %}
 
                                             {% for mov in tablaMov %}
                                                 <tr>
                                                     <td>{{ mov.concepto }}</td>
                                                     <td style="text-align:right">$ {{ mov.valor|number_format(0,'.','.') }}</td>
                                                     <td style="text-align:right">$ {{ mov.pendiente|number_format(0,'.','.') }}</td>
+                                                    <td style="text-align:right">$ {{ mov.bono|number_format(0,'.','.') }}</td>
                                                 </tr>
 
                                                 {% set valor = valor + mov.valor %}
                                                 {% set saldo = saldo + mov.pendiente %}
+                                                {% set bonos = bonos + mov.bono %}
                                             {% endfor %}
                                             <tr class="table-light">
                                                 <td style="text-align:right; font-weight:bold">Totales</td>
                                                 <td style="text-align:right; font-weight:bold">$ {{valor|number_format(0,'.','.')}}</td>
                                                 <td style="text-align:right; font-weight:bold">$ {{saldo|number_format(0,'.','.')}}</td>
+                                                <td style="text-align:right; font-weight:bold">$ {{bonos|number_format(0,'.','.')}}</td>
                                             </tr>
                                         {% else %}
                                             <tr class="table-light">
@@ -606,7 +633,49 @@
                     </div>
                 </div>
                 <div class="modal-footer">
-                    <button type="button" class="btn btn-warning" data-sistema--app-target="btnGuardarServicioCheckin" data-action="sistema--app#cerrarPeriodo">Cerrar periodo</button>
+                    <button type="button" class="btn btn-success" data-sistema--app-target="" data-action="sistema--app#abrirModalBono">Registrar bono</button>
+                    <button type="button" class="btn btn-danger" data-sistema--app-target="" data-action="sistema--app#cerrarPeriodo">Cerrar turno</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+     <!-- Modal para registrar bonos -->
+    <div class="modal fade" id="modalNuevoBono" data-sistema--app-target="modalNuevoBono" tabindex="-1" aria-labelledby="modalNuevoBono" aria-hidden="true" style="margin-top:25px !important;">
+        <div class="modal-dialog">
+            <div class="modal-content shadow-lg" style="box-shadow: 0 1.5rem 3.5rem 1rem rgba(33,37,41,0.98) !important;">
+                <div class="modal-header">
+                    <h5 class="modal-title">Registro de Bonos</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>            
+                <div class="modal-body">
+                    <form data-sistema--app-target="formNewBono">
+                        <div class="row mb-3 mt-2">
+                            <div class="col-md-12">
+                                <label for="selectServ" class="form-label" style="font-weight: bold;">A nombre de </label> 
+                                <select id="beneficiarioBono" name="beneficiarioBono" class="form-control selectpicker"  data-live-search="true" data-live-search-placeholder="Filtro beneficiarios" data-size="5" title="Seleccione beneficiario" name="clienteRev" data-action="sistema--app#validaBtnGuardarBono">
+                                    {% for cliente in beneficiariosSelector %}
+                                        <option value="{{ cliente.id }}">{{ cliente.documentNumber }} - {{ cliente.name }} {{ cliente.lastname }}</option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+                        </div>
+                        <div class="row mb-3 mt-2">
+                            <div class="col-md-12">
+                                <label for="selectServ" class="form-label" style="font-weight: bold;">Valor</label> 
+                                <input type="text" id="valorBono" name="valorBono" class="form-control" data-action="sistema--app#formatearCampo blur->sistema--app#validaBtnGuardarBono">
+                            </div>
+                        </div>
+                        <div class="row mb-3 mt-2">
+                            <div class="col-md-12">
+                                <label for="selectServ" class="form-label" style="font-weight: bold;">Detalle</label> 
+                                <textarea id="detalleBono" name="detalleBono" class="form-control" rows="2" data-action="blur->sistema--app#validaBtnGuardarBono"></textarea>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-success" id="btnGuardarBono" data-action="sistema--app#registrarBono" disabled>Guardar</button>
                     <button type="button" class="btn btn-danger" data-bs-dismiss="modal">Cancelar</button>
                 </div>
             </div>

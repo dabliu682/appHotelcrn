@@ -110,6 +110,21 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
      */
     private $inventario_usumod;
 
+    /**
+     * @ORM\OneToMany(targetEntity=Bonos::class, mappedBy="usucrea")
+     */
+    private $bonos;
+
+    /**
+     * @ORM\OneToMany(targetEntity=Bonos::class, mappedBy="usucobro")
+     */
+    private $bonos_usucobro;
+
+    /**
+     * @ORM\OneToMany(targetEntity=Gastos::class, mappedBy="usucrea")
+     */
+    private $gastos;
+
     public function __construct()
     {
         $this->floors = new ArrayCollection();
@@ -124,6 +139,9 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
         $this->entradas = new ArrayCollection();
         $this->inventario_usucrea = new ArrayCollection();
         $this->inventario_usumod = new ArrayCollection();
+        $this->bonos = new ArrayCollection();
+        $this->bonos_usucobro = new ArrayCollection();
+        $this->gastos = new ArrayCollection();
     }
 
     /**
@@ -571,6 +589,96 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
             // set the owning side to null (unless already changed)
             if ($inventarioUsumod->getUsumod() === $this) {
                 $inventarioUsumod->setUsumod(null);
+            }
+        }
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, Bonos>
+     */
+    public function getBonos(): Collection
+    {
+        return $this->bonos;
+    }
+
+    public function addBono(Bonos $bono): self
+    {
+        if (!$this->bonos->contains($bono)) {
+            $this->bonos[] = $bono;
+            $bono->setUsucrea($this);
+        }
+
+        return $this;
+    }
+
+    public function removeBono(Bonos $bono): self
+    {
+        if ($this->bonos->removeElement($bono)) {
+            // set the owning side to null (unless already changed)
+            if ($bono->getUsucrea() === $this) {
+                $bono->setUsucrea(null);
+            }
+        }
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, Bonos>
+     */
+    public function getBonosUsucobro(): Collection
+    {
+        return $this->bonos_usucobro;
+    }
+
+    public function addBonosUsucobro(Bonos $bonosUsucobro): self
+    {
+        if (!$this->bonos_usucobro->contains($bonosUsucobro)) {
+            $this->bonos_usucobro[] = $bonosUsucobro;
+            $bonosUsucobro->setUsucobro($this);
+        }
+
+        return $this;
+    }
+
+    public function removeBonosUsucobro(Bonos $bonosUsucobro): self
+    {
+        if ($this->bonos_usucobro->removeElement($bonosUsucobro)) {
+            // set the owning side to null (unless already changed)
+            if ($bonosUsucobro->getUsucobro() === $this) {
+                $bonosUsucobro->setUsucobro(null);
+            }
+        }
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, Gastos>
+     */
+    public function getGastos(): Collection
+    {
+        return $this->gastos;
+    }
+
+    public function addGasto(Gastos $gasto): self
+    {
+        if (!$this->gastos->contains($gasto)) {
+            $this->gastos[] = $gasto;
+            $gasto->setUsucrea($this);
+        }
+
+        return $this;
+    }
+
+    public function removeGasto(Gastos $gasto): self
+    {
+        if ($this->gastos->removeElement($gasto)) {
+            // set the owning side to null (unless already changed)
+            if ($gasto->getUsucrea() === $this) {
+                $gasto->setUsucrea(null);
             }
         }
 

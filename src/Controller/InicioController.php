@@ -11,6 +11,7 @@ use App\Entity\Documents;
 use App\Entity\Companys;
 use App\Entity\Booking;
 use App\Entity\Services;
+use App\Entity\Bonos;
 use App\Entity\Detallesmov;
 use App\Entity\Movimientos;
 use App\Entity\Productos;
@@ -19,7 +20,22 @@ class InicioController extends AbstractController
 {
     public function index($pantalla)
     {
-        return $this->render('inicio/index.html.twig', ['pantalla' => $pantalla]);
+        $bd = $this->getDoctrine()->getManager();
+
+        $turno = $bd->getRepository(Turnos::class)->findOneBy(['status' => 1]);
+
+        if(!is_null($turno))
+        {
+            $numero = str_pad($turno->getNumero(), 5, "0", STR_PAD_LEFT);
+            $turnoActual = $turno->getUsuario()->getName().' - '.$numero;
+        }
+        else
+        {
+            $turnoActual = 'Sin turno';
+        }
+
+
+        return $this->render('inicio/index.html.twig', ['pantalla' => $pantalla, 'turnoActivo' => $turnoActual]);
     }
 
     public function dashboard()
@@ -157,6 +173,17 @@ class InicioController extends AbstractController
             
         }
 
+        $servicios = $bd->getRepository(Services::class)->findBy(['typeroom' => null ],['name' => 'ASC']);
+
+        $selectServicios=[];
+
+        foreach ($servicios as $servicio) 
+        {
+            
+            $selectServicios[] = $servicio;
+            
+        }
+
         $detalles = $bd->getRepository(Detallesmov::class)->findBy(['turno' => $turno, 'mov' => $mov ],['id' => 'desc']);
 
         $tablaVentas = [];
@@ -205,7 +232,7 @@ class InicioController extends AbstractController
                     }
                     elseif($det->getServicio()->getTipo()->getId() == 4)
                     {
-                        $tipoMov = 'Lavanderia';
+                        $tipoMov = 'Lavandería';
                     }
                 }
                 else
@@ -216,22 +243,55 @@ class InicioController extends AbstractController
             } 
             
 
-            $agrupaMov[$tipoMov][] = ['recibido' => $det->getValor(), 'pendiente' =>  $det->getSaldo(), 'estado' => $det->getEstado()];
+            $agrupaMov[$tipoMov][] = ['recibido' => $det->getValor(), 'pendiente' =>  $det->getSaldo(), 'estado' => $det->getEstado(), 'bono' => 0];
         }
 
+        $bonos = $bd->getRepository(Bonos::class)->findBy(['turno' => $turno]);
+
+        foreach ($bonos as $bono) 
+        {
+            $agrupaMov['Bonos'][] = ['recibido' => 0, 'pendiente' =>  0, 'estado' => 0, 'bono' => $bono->getValor()];
+        }
 
         foreach ($agrupaMov as $key => $grupos) 
         {
             $valor = 0;
             $pendiente = 0;
+            $bonos = 0;
 
             foreach ($grupos as $grupo) 
             {
                 $valor += $grupo['recibido'];
                 $pendiente += ($grupo['estado'] != 2) ? $grupo['pendiente'] : 0;
+                $bonos += $grupo['bono'];
+
             }
 
-            $tablaMov[] = ['concepto' => $key, 'valor' => $valor, 'pendiente' => $pendiente];
+            $tablaMov[] = ['concepto' => $key, 'valor' => $valor, 'pendiente' => $pendiente, 'bono' => $bonos];
+        }
+
+
+        if(!is_null($turno))
+        {
+            $numero = str_pad($turno->getNumero(), 5, "0", STR_PAD_LEFT);
+            $turnoActual = $numero;
+        }
+        else
+        {
+            $turnoActual = 'Sin turno';
+        }
+
+        $beneficiarios = $bd->getRepository(Persons::class)->findBy(['tipo' => '2' ],['id' => 'ASC']);
+
+        $beneficiariosSelector = [];
+
+        foreach ($beneficiarios as $cliente) {
+            $beneficiariosSelector[] = [
+                'id' => $cliente->getId(),
+                'documentNumber' => $cliente->getDocumentNumber(),
+                'name' => $cliente->getName(),
+                'lastname' => $cliente->getLastname()
+            ];
         }
 
 
@@ -252,6 +312,9 @@ class InicioController extends AbstractController
                         'productos' => $selectPrtoductos,
                         'tablaMov' => $tablaMov,
                         'tablaVentas' => $tablaVentas,
+                        'turnoActual' => $turnoActual,
+                        'beneficiariosSelector' => $beneficiariosSelector,
+                        'selectServicios' => $selectServicios
                     ];
 
 

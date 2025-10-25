@@ -81,10 +81,21 @@ class Persons
      */
     private $checkins;
 
+    /**
+     * @ORM\OneToMany(targetEntity=Bonos::class, mappedBy="beneficiario")
+     */
+    private $bonos;
+
+    /**
+     * @ORM\Column(type="integer")
+     */
+    private $tipo;
+
     public function __construct()
     {
         $this->bookings = new ArrayCollection();
         $this->checkins = new ArrayCollection();
+        $this->bonos = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -268,6 +279,48 @@ class Persons
                 $checkin->setCliente(null);
             }
         }
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, Bonos>
+     */
+    public function getBonos(): Collection
+    {
+        return $this->bonos;
+    }
+
+    public function addBono(Bonos $bono): self
+    {
+        if (!$this->bonos->contains($bono)) {
+            $this->bonos[] = $bono;
+            $bono->setBeneficiario($this);
+        }
+
+        return $this;
+    }
+
+    public function removeBono(Bonos $bono): self
+    {
+        if ($this->bonos->removeElement($bono)) {
+            // set the owning side to null (unless already changed)
+            if ($bono->getBeneficiario() === $this) {
+                $bono->setBeneficiario(null);
+            }
+        }
+
+        return $this;
+    }
+
+    public function getTipo(): ?int
+    {
+        return $this->tipo;
+    }
+
+    public function setTipo(int $tipo): self
+    {
+        $this->tipo = $tipo;
 
         return $this;
     }
