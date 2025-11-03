@@ -1,0 +1,46 @@
+<turbo-frame id="frame-filtrosInformes">
+    <div class="row">
+        <div class="col-md-2">
+            <label for="codigo" class="form-label" style="font-weight: bold;">Informes</label> 
+            <select class="form-select" id="codigo"  name="codigo" data-sistema--app-target="codigoProducto" data-action="sistema--app#validaBtnGuardarEntrada" >
+                <option value="">Seleccione Informe</option>
+                <option value="1">Entradas consolidado</option>
+                <option value="">Entradas detallado</option>
+                <option value="">Gastos</option>
+                <option value="">Bonos Pendientes</option>
+                <option value="">Bonos Contabilizados</option>
+                <option value="">Turnos</option>
+            </select>
+        </div>
+        <div class="col-md-2">
+            <label for="codigo" class="form-label" style="font-weight: bold;">Desde</label> 
+            <input type="date" class="form-control" value="{{ desde }}" />
+        </div>
+        <div class="col-md-2">
+            <label for="codigo" class="form-label" style="font-weight: bold;">Hasta</label> 
+            <input type="date" class="form-control"  value="{{ hasta }}"/>
+        </div>
+        <div class="col-md-2">
+            <label for="codigo" class="form-label" style="font-weight: bold;">Servicio</label>
+            <div class="input-group">
+                <select class="form-select" id="codigo" name="codigo" data-sistema--app-target="codigoProducto" data-action="sistema--app#validaBtnGuardarEntrada">
+                    <option value="">Seleccione servicio</option>
+                    <option value="">Hospedaje</option>
+                    <option value="">Tienda</option>
+                    <option value="">Lavanderia</option>
+                </select>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <label for="codigo" class="form-label" style="font-weight: bold;">Empresa</label>
+            <div class="input-group">
+                <select class="form-select" id="codigo" name="codigo" data-sistema--app-target="codigoProducto" data-action="sistema--app#validaBtnGuardarEntrada">
+                    <option value="">Seleccione empresa</option>
+                </select>
+                <button type="button" class="btn btn-secondary" data-action="sistema--app#mostrarInforme">
+                    <i class="fa-solid fa-magnifying-glass"></i>
+                </button>
+            </div>
+        </div>                       
+    </div>
+</turbo-frame>

@@ -971,36 +971,87 @@ export default class extends Controller {
         var consulta = await fetch(urlGuardar, { 'method': 'POST', 'body': parametros });
         var result = await consulta.json();
 
-        console.log(result);
-
         let select = $("#clienteSelectCustom-1");
 
-        select.selectpicker('destroy');
+        if (select.length && typeof select.selectpicker === 'function') {
+            try { select.selectpicker('destroy'); } catch (e) { /* ignore */ }
+        }
+
+        select.empty().selectpicker('destroy');
 
         if (result.response == 'Ok') {
             const modalInstance = Modal.getInstance(this.modalNuevoClienteTarget);
             if (modalInstance) { modalInstance.hide(); }
             FlashMessage.show('Cliente guardado correctamente', 'success');
 
-            let existe = select.find(`option[value='${result.id}']`).length > 0;
+            select.append('<option value="">Seleccione cliente</option>');
 
-            if (!existe) {
-                let newOption = new Option(
-                    result.documentNumber + ' - ' + result.name + ' ' + result.lastname,
-                    result.id
-                );
+            let clientesArray = result.clientes;
 
-                //select.append(newOption);
-            }
+            clientesArray.forEach(c => {
+                // asegurar que los valores estén escapados correctamente
+                const id = c.id;
+                const nombre = c.nombre;
+                select.append(`<option value="${id}">${nombre}</option>`);
+            });
 
-            //select.val(result.id); // Seleccionar el nuevo cliente
+            select.val(result.id); // Seleccionar el nuevo cliente
+
+            select.selectpicker();
 
             $("#cellClienteCheckin-1").val(result.cellphone);
             $("#companiaClienteCheckin-1").val(result.compania);
             $("#numeroVehiculoClienteCheckin-1").val(result.numberBus);
         }
+    }
 
-        //select.selectpicker('refresh');
+    async guardarClienteReseva() {
+        this.btnGuardarClienteTarget.disabled = true;
+
+        let urlGuardar = this.rutaGuardarClientesValue;
+
+        let formulario = '';
+
+        formulario = this.formNuevoClienteTarget;
+
+        var parametros = new FormData(formulario);
+
+        var consulta = await fetch(urlGuardar, { 'method': 'POST', 'body': parametros });
+        var result = await consulta.json();
+
+        let select = $("#clienteSelectCustom");
+
+        if (select.length && typeof select.selectpicker === 'function') {
+            try { select.selectpicker('destroy'); } catch (e) { /* ignore */ }
+        }
+
+        select.empty().selectpicker('destroy');
+
+        if (result.response == 'Ok') {
+            const modalInstance = Modal.getInstance(this.modalNuevoClienteTarget);
+            if (modalInstance) { modalInstance.hide(); }
+            FlashMessage.show('Cliente guardado correctamente', 'success');
+
+            select.append('<option value="">Seleccione cliente</option>');
+
+            let clientesArray = result.clientes;
+
+            clientesArray.forEach(c => {
+                // asegurar que los valores estén escapados correctamente
+                const id = c.id;
+                const nombre = c.nombre;
+                select.append(`<option value="${id}">${nombre}</option>`);
+            });
+
+            select.val(result.id); // Seleccionar el nuevo cliente
+
+            select.selectpicker();
+
+            this.cellCienteRevTarget.value = result.cellphone;
+            this.numeroVehiculoClienteRevTarget.value = result.numberBus;
+            this.companiaClienteRevTarget.value = result.compania;
+
+        }
     }
 
     abrirModalServicioCheckin() {
@@ -1902,40 +1953,52 @@ export default class extends Controller {
 
     calcularValEnt(event) {
 
-        let cantidadProducto = this.cantidadProductoTarget.value.replace(/\.|,/g, '');
-        let valorProducto = this.valorProductoTarget.value.replace(/\.|,/g, '');
-        let porcProducto = this.porcProductoTarget.value.replace(/\.|,/g, '');
+        let cantidadProducto = (this.cantidadProductoTarget.value != '') ? Number(this.cantidadProductoTarget.value.replace(/\.|,/g, '').replace(/\./g, '').replace(',', '.')) : '';
+        let valorProducto = (this.valorProductoTarget.value != '') ? parseFloat(this.valorProductoTarget.value.replace(/\./g, '').replace(',', '.')) : '';
+        let porcProducto = (this.porcProductoTarget.value != '') ? parseFloat(this.porcProductoTarget.value.replace(/\./g, '').replace(',', '.')) : '';
 
-        if (cantidadProducto != '' && valorProducto != '') {
-            let total = parseFloat(valorProducto) / parseFloat(cantidadProducto);
+
+        if (cantidadProducto != '' && valorProducto != '' && porcProducto == '') {
+            let total = valorProducto / cantidadProducto;
             this.valEntProductoTarget.value = total.toLocaleString('es-CO');
+            this.valSalProductoTarget.value = 0;
         }
+        else {
+            if (cantidadProducto != '' && valorProducto != '' && porcProducto != '' && this.valEntProductoTarget.value != '') {
+                let porcentaje = Number(porcProducto / 100);
+                let valEntProducto = parseFloat(this.valEntProductoTarget.value.replace(/\./g, '').replace(',', '.'));
 
-        if (cantidadProducto != '' && valorProducto != '' && porcProducto != '' && this.valEntProductoTarget.value != '') {
-            let porcentaje = Number(porcProducto / 100);
-            let valEntProducto = Number(this.valEntProductoTarget.value.replace(/\.|,/g, ''));
+                console.log(porcentaje)
+                console.log(valEntProducto)
 
-            let utilidad = (valEntProducto * porcentaje) * cantidadProducto;
-            let val = (valEntProducto * porcentaje) + valEntProducto;
+                let utilidad = (valEntProducto * porcentaje) * cantidadProducto;
+                let val = (valEntProducto * porcentaje) + valEntProducto;
 
-            this.valSalProductoTarget.value = val.toLocaleString('es-CO');
-            this.valVentaProductoTarget.value = val.toLocaleString('es-CO');
-            this.utilidadTarget.innerHTML = '$ ' + utilidad.toLocaleString('es-CO');
+                console.log(utilidad)
+                console.log(val)
 
+                this.valSalProductoTarget.value = (val - valEntProducto).toLocaleString('es-CO');
+                this.valVentaProductoTarget.value = val.toLocaleString('es-CO');
+                this.utilidadTarget.innerHTML = '$ ' + utilidad.toLocaleString('es-CO');
+
+            }
         }
     }
 
     calcularUtilidad() {
-        let valEntProducto = Number(this.valEntProductoTarget.value.replace(/\.|,/g, ''));
-        let valVentaProducto = Number(this.valVentaProductoTarget.value.replace(/\.|,/g, ''));
         let cantidadProducto = this.cantidadProductoTarget.value.replace(/\.|,/g, '');
+        let valEntProducto = (this.valEntProductoTarget.value != '') ? parseFloat(this.valEntProductoTarget.value.replace(/\./g, '').replace(',', '.')) : '';
+        let valVentaProducto = (this.valVentaProductoTarget.value != '') ? parseFloat(this.valVentaProductoTarget.value.replace(/\./g, '').replace(',', '.')) : '';
 
         if (valEntProducto != '') {
             let valor = valVentaProducto - valEntProducto;
 
-            valor = valor * cantidadProducto;
+            let porcentaje = ((valVentaProducto - valEntProducto) / valEntProducto) * 100;
 
-            this.utilidadTarget.innerHTML = '$ ' + valor.toLocaleString('es-CO');
+            this.porcProductoTarget.value = Number(porcentaje.toFixed(2));
+            this.valSalProductoTarget.value = valor.toLocaleString('es-CO');
+            let util = cantidadProducto * valor;
+            this.utilidadTarget.innerHTML = '$ ' + util.toLocaleString('es-CO');
         }
     }
 
@@ -3295,6 +3358,32 @@ export default class extends Controller {
             const respuesta = await fetch(rutaTabla);
             this.frameHabitacionesTarget.innerHTML = await respuesta.text();
         }
+    }
+
+    async mostrarInforme() {
+        $("#tablaInforme").empty();
+
+        let tabla = `<div>
+                        <div class="col">
+                            Informe de entradas consolidado<br>
+                            Desde: 01-10-2025<br>
+                            Hasta: 31-10-2025
+                        </div>
+                    </div>
+                    <div class="row">
+                        <table class="table table-striped table-hover align-middle mb-0 table-sm" style="min-width: 600px;">
+                            <thead class="table-dark" style="position: sticky; top: 0; z-index: 2;">
+                                <tr>
+                                    <th  colspan=2 style="background: #212529;">Servicio</th>
+                                    <th style="background: #212529;">Valor</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                            </tbody>
+                        </table>
+                    </div>`;
+
+        $("#tablaInforme").html(tabla);
     }
 
 

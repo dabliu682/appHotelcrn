@@ -144,6 +144,18 @@
                     <p align="center"><i class="fas fa-cog fa-spin mt-5"></i> Cargando bonos</p>
                 </turbo-frame>
             </div>
+        {% elseif pantalla == 13 %}
+            <div class="row w-100 gx-4" style="padding-top: 75px;">
+                <turbo-frame id="frame-Informes" data-sistema--app-target="frameInformes" src="{{ path('app_informes') }}" >
+                    <p align="center"><i class="fas fa-cog fa-spin mt-5"></i> Cargando informes</p>
+                </turbo-frame>
+            </div>
+        {% elseif pantalla == 14 %}
+            <div class="row w-100 gx-4" style="padding-top: 75px;">
+                <turbo-frame id="frame-usuarios" data-sistema--app-target="frameUsuarios" src="{{ path('app_usuarios') }}" >
+                    <p align="center"><i class="fas fa-cog fa-spin mt-5"></i> Cargando usuarios</p>
+                </turbo-frame>
+            </div>
         {% endif %}
         
 

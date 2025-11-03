@@ -1,0 +1,21 @@
+<turbo-frame id="frame-informes">
+    <div class="row justify-content-center">
+        <div class="col-md-12">
+            <div class="card shadow-sm border-0 rounded-4">
+                <div class="card-body">
+                    <turbo-frame id="frame-filtrosInformes" data-sistema--app-target="frameFiltrosInformes" src="{{ path('app_filtrosInformes') }}" >
+                        <p align="center"><i class="fas fa-cog fa-spin mt-5"></i> Cargando filtros</p>
+                    </turbo-frame>
+                    <div class="row mt-3">
+                        <div id="tablaInforme" class="col" style="text-align:center">
+                            <p style="font-weight: bold; color: grey;">Generar informe</p>
+                        </div>
+                    </div>                    
+                </div>
+                <div class="mt-3 d-flex justify-content-space-between" style="margin:20px">
+                    <a href="{{ path('app_inicio') }}" class="btn btn-danger btn-sm">Regresar</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</turbo-frame>
