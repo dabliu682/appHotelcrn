@@ -125,6 +125,26 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
      */
     private $gastos;
 
+    /**
+     * @ORM\Column(type="text", nullable=true)
+     */
+    private $celular;
+
+    /**
+     * @ORM\Column(type="integer", nullable=true)
+     */
+    private $tipo;
+
+    /**
+     * @ORM\Column(type="boolean", nullable=true)
+     */
+    private $cambioclave;
+
+    /**
+     * @ORM\Column(type="datetime", nullable=true)
+     */
+    private $ultimoaccesso;
+
     public function __construct()
     {
         $this->floors = new ArrayCollection();
@@ -681,6 +701,54 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
                 $gasto->setUsucrea(null);
             }
         }
+
+        return $this;
+    }
+
+    public function getCelular(): ?string
+    {
+        return $this->celular;
+    }
+
+    public function setCelular(?string $celular): self
+    {
+        $this->celular = $celular;
+
+        return $this;
+    }
+
+    public function getTipo(): ?int
+    {
+        return $this->tipo;
+    }
+
+    public function setTipo(?int $tipo): self
+    {
+        $this->tipo = $tipo;
+
+        return $this;
+    }
+
+    public function isCambioclave(): ?bool
+    {
+        return $this->cambioclave;
+    }
+
+    public function setCambioclave(?bool $cambioclave): self
+    {
+        $this->cambioclave = $cambioclave;
+
+        return $this;
+    }
+
+    public function getUltimoaccesso(): ?\DateTimeInterface
+    {
+        return $this->ultimoaccesso;
+    }
+
+    public function setUltimoaccesso(?\DateTimeInterface $ultimoaccesso): self
+    {
+        $this->ultimoaccesso = $ultimoaccesso;
 
         return $this;
     }

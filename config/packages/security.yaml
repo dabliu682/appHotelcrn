@@ -21,6 +21,8 @@ security:
             form_login:
                 login_path: app_login
                 check_path: app_login
+                default_target_path: '/inicio'               # <- aquí
+                always_use_default_target_path: false    
 
             logout:
                 path: app_logout

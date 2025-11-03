@@ -21,7 +21,7 @@ app_dashboard:
 app_pisos:
   path: /locacion/pisos
   defaults: {_controller: App\Controller\LocacionController::pisos}
-
+  
 app_nuevoPiso:
   path: /locacion/nuevoPiso
   defaults: {_controller: App\Controller\LocacionController::nuevoPiso}

@@ -22,6 +22,25 @@ class RegistrationController extends AbstractController
         $form = $this->createForm(RegistrationFormType::class, $user);
         $form->handleRequest($request);
 
+        $arrayUsers = [];
+
+        $usuarios = $entityManager->getRepository(User::class)->findBy([], ['name' => 'ASC']);
+
+        foreach ($usuarios as $usuario) 
+        {
+            $fechaIngreso = (!is_null($usuario->getUltimoaccesso())) ? $usuario->getUltimoaccesso()->format('Y-m-d H:i') : '';
+            $tipo = (!is_null($usuario->getTipo())) ? $usuario->getTipo() : '';
+
+            $arrayUsers[] = [
+                                'name' => $usuario->getName(), 
+                                'userName' => $usuario->getUserName(), 
+                                'celular' => $usuario->getCelular(), 
+                                'fechaUltimoAccesso' => $fechaIngreso,
+                                'tipo' => $tipo,
+                                'cambioClave' => ($usuario->isCambioclave()) ? 'Si' : 'No',
+                            ];
+        }
+
         if ($form->isSubmitted() && $form->isValid()) 
         {
             $user->setPassword($userPasswordHasher->hashPassword($user, $form->get('plainPassword')->getData()));
@@ -33,14 +52,12 @@ class RegistrationController extends AbstractController
             $entityManager->flush();
 
             // Autenticar usuario correctamente
-            return $userAuthenticator->authenticateUser($user, $formLoginAuthenticator, $request);
+            //return $userAuthenticator->authenticateUser($user, $formLoginAuthenticator, $request);
+
+            return $this->redirectToRoute('app_inicio');
         }
 
-        return $this->render('registration/register.html.twig', ['registrationForm' => $form->createView()]);
-    }
-
-    public function listarUsuarios()
-    {
-
+        //return $this->render('registration/register.html.twig', []);
+        return $this->render('registration/listaUsuarios.html.twig', ['registrationForm' => $form->createView(), 'arrayUsers' => $arrayUsers]);
     }
 }
