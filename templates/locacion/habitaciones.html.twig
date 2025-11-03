@@ -44,32 +44,41 @@
                                             Habitación doble ventilador
                                           {% endif %}
                                         </td>
-                                        <td>
+                                        <td style="text-align:center">
                                             {% if room.status == 1 %}
                                                 <span class="badge bg-success">Disponible</span>
                                             {% elseif room.status == 2 %}
                                                 <span class="badge bg-danger">Ocupada</span>
-                                            {% else %}
-                                                <span class="badge bg-warning">Mantenimiento</span>
+                                            {% elseif room.status == 3 %}
+                                                <span class="badge bg-warning">Aseo</span>
+                                            {% elseif room.status == 4 %}
+                                                <span class="badge bg-secondary">Mantenimiento</span>
                                             {% endif %}
                                         </td>
-                                        <td style="text-align:center; width: 20px;">
-                                          {% if room.status == 1 %}
-                                            {% if room.fan is null %}{% set fan = 0 %}{% else %}{% set fan = 0 %}{% endif %}
-                                            {% if room.airCond is null %}{% set airCond = 0 %}{% else %}{% set airCond = 0 %}{% endif %}
+                                        {% if room.status == 3 or room.status == 4 %}
+                                          <td colspan="4" style="text-align:center; width: 20px;">
+                                            <i class="fa-solid fa-lock-open text-success" data-action="click->sistema--app#cambiarEstadoHab" data-id = {{ room.id }} data-accion = "1"></i>
+                                          </td>
+                                        {% else %}
+                                          <td style="text-align:center; width: 75px;">
+                                            {% if room.status == 1 %}
+                                              {% if room.fan is null %}{% set fan = 0 %}{% else %}{% set fan = 0 %}{% endif %}
+                                              {% if room.airCond is null %}{% set airCond = 0 %}{% else %}{% set airCond = 0 %}{% endif %}
 
-                                            <i class="far fa-window-maximize text-primary" style="cursor:pointer" data-action="click->sistema--app#abrirModalNuevaHab" data-accion = '2'  data-id = {{ room.id }} data-name = "{{ room.name}}" data-piso = {{ room.floor.id }} data-bedmunber = {{ room.bedNumber }} data-aircond = {{ airCond }} data-fan = {{ fan }} data-tipo= {{ room.typeroom }} ></i>
-                                          {% else %}
-                                            <i class="far fa-window-maximize text-secondary" style="cursor:not-allowed"></i>
-                                          {% endif %}
-                                        </td>
-                                        <td style="text-align:center; width: 20px;">
-                                          {% if room.status == 1 %}
-                                            <i class="fas fa-trash-alt text-danger" style="cursor:pointer" data-action="click->sistema--app#eliminarHabitacion" data-id = {{ room.id }}></i>
-                                          {% else %}
-                                            <i class="fas fa-trash-alt text-secondary" style="cursor:not-allowed"></i>
-                                          {% endif %}
-                                        </td>
+                                              <i class="far fa-window-maximize text-primary" style="cursor:pointer" data-action="click->sistema--app#abrirModalNuevaHab" data-accion = '2'  data-id = {{ room.id }} data-name = "{{ room.name}}" data-piso = {{ room.floor.id }} data-bedmunber = {{ room.bedNumber }} data-aircond = {{ airCond }} data-fan = {{ fan }} data-tipo= {{ room.typeroom }} ></i>
+                                              <i class="fa-solid fa-screwdriver-wrench text-danger" style="margin-left:15px" data-action="click->sistema--app#cambiarEstadoHab" data-id = {{ room.id }} data-accion = "4"></i>
+                                            {% else %}
+                                              <i class="far fa-window-maximize text-secondary" style="cursor:not-allowed"></i>
+                                            {% endif %}
+                                          </td>
+                                          <td style="text-align:center; width: 20px;">
+                                            {% if room.status == 1 %}
+                                              <i class="fas fa-trash-alt text-danger" style="cursor:pointer" data-action="click->sistema--app#eliminarHabitacion" data-id = {{ room.id }}></i>
+                                            {% else %}
+                                              <i class="fas fa-trash-alt text-secondary" style="cursor:not-allowed"></i>
+                                            {% endif %}
+                                          </td>
+                                        {% endif %}
                                     </tr>
                                 {% else %}
                                     <tr>

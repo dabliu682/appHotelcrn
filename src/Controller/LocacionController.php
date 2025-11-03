@@ -148,5 +148,19 @@ class LocacionController extends AbstractController
         }
     }
 
+    public function cambiarEstadoHabitacion($id, $accion)
+    {
+        $bd = $this->getDoctrine()->getManager();
+
+        $habitacion = $bd->getRepository(Rooms::class)->find($id);
+
+        $habitacion->setStatus($accion);
+        $bd->persist($habitacion);
+
+        $bd->flush();
+
+        return new JsonResponse(['response' => 'Ok']);
+    }
+
     
 }

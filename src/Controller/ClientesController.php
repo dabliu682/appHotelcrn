@@ -18,7 +18,7 @@ class ClientesController extends AbstractController
 
         $documents = $bd->getRepository(Documents::class)->findBy([],['id' => 'ASC']);
         $companias = $bd->getRepository(Companys::class)->findBy([],['id' => 'ASC']);
-        $clientes = $bd->getRepository(Persons::class)->findBy([],['id' => 'ASC']);
+        $clientes = $bd->getRepository(Persons::class)->findBy(['tipo' => 1],['id' => 'ASC']);
 
         return $this->render('clientes/lista.html.twig', ['clientes' => $clientes, 'documents' => $documents, 'companias' => $companias]);
     } 
@@ -38,6 +38,7 @@ class ClientesController extends AbstractController
             $cliente->setCellphone($request->get('numeroCelCliente'));
             $cliente->setDocument($bd->getRepository(Documents::class)->find($request->get('tipoDoc')));
             $cliente->setDocumentNumber($request->get('numeroDocCliente'));
+             $cliente->setTipo(1);
            
             $cliente->setUsucrea($usuario);
             $cliente->setFechacrea(new \DateTime('now', new \DateTimeZone('America/Bogota'))); 
@@ -69,6 +70,7 @@ class ClientesController extends AbstractController
             $cliente->setDocumentNumber($request->get('numeroDocCliente'));
             $cliente->setUsucrea($usuario);
             $cliente->setFechacrea(new \DateTime('now', new \DateTimeZone('America/Bogota'))); 
+            $cliente->setTipo(1); 
 
             if($request->get('selectCompaniaCliente') != '')
             {
@@ -99,7 +101,7 @@ class ClientesController extends AbstractController
             'compania' => $cliente->getCompania(),
             'placa' => $cliente->getPlaca(),
             'numberBus' => $cliente->getNumberBus(),
-            'compania' => $cliente->getCompania()->getName(),
+            'compania' => (!is_null($cliente->getCompania())) ? $cliente->getCompania()->getName() : '',
             'cellphone' => $cliente->getCellphone(),
         ];
 

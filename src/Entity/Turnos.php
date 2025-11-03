@@ -65,12 +65,18 @@ class Turnos
      */
     private $movimientos;
 
+    /**
+     * @ORM\OneToMany(targetEntity=Bonos::class, mappedBy="turno")
+     */
+    private $bonos;
+
     public function __construct()
     {
         $this->bookings = new ArrayCollection();
         $this->checkins = new ArrayCollection();
         $this->detallesmovs = new ArrayCollection();
         $this->movimientos = new ArrayCollection();
+        $this->bonos = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -252,6 +258,36 @@ class Turnos
             // set the owning side to null (unless already changed)
             if ($movimiento->getTurno() === $this) {
                 $movimiento->setTurno(null);
+            }
+        }
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, Bonos>
+     */
+    public function getBonos(): Collection
+    {
+        return $this->bonos;
+    }
+
+    public function addBono(Bonos $bono): self
+    {
+        if (!$this->bonos->contains($bono)) {
+            $this->bonos[] = $bono;
+            $bono->setTurno($this);
+        }
+
+        return $this;
+    }
+
+    public function removeBono(Bonos $bono): self
+    {
+        if ($this->bonos->removeElement($bono)) {
+            // set the owning side to null (unless already changed)
+            if ($bono->getTurno() === $this) {
+                $bono->setTurno(null);
             }
         }
 

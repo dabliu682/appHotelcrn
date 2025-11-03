@@ -9,8 +9,10 @@
             'rutaRegistrarVenta' : path('app_registrarVenta', {'detalle' : 'var1', 'producto' : 'var2', 'cantidad' : 'var3', 'valor' : 'var4',}),
             'rutaCambiaEstadoServicio' : path('app_cambiaEstadoServicio', {'id' : 'var1', 'estado' : 'var2' }),
             'rutaUpdateCantProducto' : path('app_updateCantProducto', {'id' : 'var1', 'accion' : 'var2', 'cantidad' : 'var3' }),
+            'rutaCambiarEstadoHabitacion' : path('app_cambiarEstadoHabitacion', {'id' : 'var1', 'accion' : 'var2'}),
             'rutaObtenerDatosClienteReserva' : path('app_obtenerDatosClienteReserva', {'id' : 'var1' }),
             'rutaEliminarTiposServ' : path('app_eliminarTiposServ', {'id' : 'var1' }),
+            'rutaContabilizarGasto' : path('app_contabilizarGasto', {'id' : 'var1'}),
             'rutaEliminarCompania' : path('app_eliminarCompania', {'id' : 'var1' }),
             'rutaEliminarServicio' : path('app_eliminarServicio', {'id' : 'var1' }),
             'rutaEliminarClientes' : path('app_eliminarClientes', {'id' : 'var1' }),
@@ -24,10 +26,12 @@
             'rutaGenerarFactura' : path('app_generarFactura', {'id' : 'var1'}),
             'rutaAgregarProductoCheckin' : path('app_agregarProductoCheckin'),
             'rutaAgregarServicioCheckin' : path('app_agregarServicioCheckin'),
+            'rutaEliminarGasto' : path('app_eliminarGasto', {'id' : 'var1'}),
             'rutaEliminarPiso' : path('app_eliminarPiso', {'id' : 'var1' }),
             'rutaCrearCheckin' : path('app_crearCheckin', {'id' : 'var1' }),
             'rutaListaServ' : path('app_listaServ', {'filtro' : 'var1' }),
             'rutaCargarProductosPlano' : path('app_cargarProductosPlano'),
+            'rutaCobrarBono' : path('app_cobrarBono', {'id' : 'var1' }),
             'rutaCheckout' : path('app_checkout', {'id' : 'var1'}),
             'rutaGuardarTiposServ' : path('app_guardarTiposServ'),
             'rutaGuardarProducto' : path('app_guardarProducto'),
@@ -38,8 +42,11 @@
             'rutaGuardarTipodoc' : path('app_guardarTipodoc'),
             'rutaGuardarEntrada' : path('app_guardarEntrada'),
             'rutaNuevaCompania' : path('app_nuevaCompania'),
+            'rutaGuardarGasto' : path('app_guardarGasto'),
+            'rutaGuardarBonos' : path('app_guardarBonos'),
             'rutaHabitaciones' : path('app_habitaciones'),
             'rutaNuevaReserva' : path('app_nuevaReserva'),
+            'rutaMovimientos' : path('app_movimientos'),
             'rutaCerrarTurno' : path('app_cerrarTurno'),
             'rutaAbrirTurno' : path('app_abrirTurno'),
             'rutaInventario' : path('app_inventario'),
@@ -55,11 +62,7 @@
             'rutaInicio' : path('app_inicio'),
             'rutaDocs' : path('app_tipodoc'),
             'rutaPisos' : path('app_pisos'),
-            
-            
-
-
-
+            'rutaBonos' : path('app_bonos'),
         }
 
     )}}>
@@ -129,8 +132,25 @@
                     <p align="center"><i class="fas fa-cog fa-spin mt-5"></i> Cargando turnos</p>
                 </turbo-frame>
             </div>
+        {% elseif pantalla == 11 %}
+            <div class="row w-100 gx-4" style="padding-top: 75px;">
+                <turbo-frame id="frame-movimentos" data-sistema--app-target="frameMovimentos" src="{{ path('app_movimientos') }}" >
+                    <p align="center"><i class="fas fa-cog fa-spin mt-5"></i> Cargando movimientos</p>
+                </turbo-frame>
+            </div>
+        {% elseif pantalla == 12 %}
+            <div class="row w-100 gx-4" style="padding-top: 75px;">
+                <turbo-frame id="frame-bonos" data-sistema--app-target="frameBonos" src="{{ path('app_bonos') }}" >
+                    <p align="center"><i class="fas fa-cog fa-spin mt-5"></i> Cargando bonos</p>
+                </turbo-frame>
+            </div>
         {% endif %}
         
 
     </div>
+    <footer class="footer mt-auto fixed-bottom border-top" style="background: #1a237e; color: #fff; padding: 0.1rem 0; font-size: 0.85rem; opacity: 0.75; min-height: 28px;">
+    <div class="container text-center">
+        <span class="fs-6 ms-3"> Turno actual : {{ turnoActivo is defined ? turnoActivo : 'Sin turno' }}</span>
+    </div>
+</footer>
 {% endblock %}

@@ -36,8 +36,8 @@
           </a>
           <ul class="dropdown-menu" aria-labelledby="configuracionesDropdown">
             <li><a class="dropdown-item" href="#" data-action="sistema--app#cambiarVista" data-vista="10"><i class="fa-solid fa-arrow-right-to-bracket"></i> Turnos</a></li>
-            <li><a class="dropdown-item" href="#" data-action="sistema--app#cambiarVista" data-vista="11"><i class="fa-solid fa-arrow-right-to-bracket"></i> Entradas</a></li>
-            <li><a class="dropdown-item" href="#" data-action="sistema--app#cambiarVista" data-vista="12"><i class="fa-solid fa-arrow-right-from-bracket"></i></i> Salidas</a></li>
+            <li><a class="dropdown-item" href="#" data-action="sistema--app#cambiarVista" data-vista="12"><i class="fa-solid fa-money-check-dollar"></i> Bonos</a></li>
+            <li><a class="dropdown-item" href="#" data-action="sistema--app#cambiarVista" data-vista="11"><i class="fas fa-calculator"></i> Movimientos</a></li>
             <li><a class="dropdown-item" href="#" data-action="sistema--app#cambiarVista" data-vista="13"><i class="fas fa-paste"></i> Informes</a></li>
           </ul>
         </li>
@@ -60,11 +60,5 @@
     </div>
   </div>
 </nav>
-<footer class="footer mt-auto fixed-bottom border-top" style="background: #1a237e; color: #fff; padding: 0.1rem 0; font-size: 0.85rem; opacity: 0.75; min-height: 28px;">
-    <div class="container text-center">
-        <span class="fs-6">Bienvenido: {{ app.user ? app.user.name : 'Invitado' }}</span>
-        <span class="fs-6 ms-3"> Turno actual: {{ turnoActual is defined ? turnoActual : 'Sin turno' }}</span>
-    </div>
-</footer>
 {% endblock %}
 
