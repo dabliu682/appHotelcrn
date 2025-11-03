@@ -486,4 +486,19 @@ class ContabilidadController extends AbstractController
 
         return new JsonResponse(['response' => 'Ok']);
     }
+
+    public function informes()
+    {
+        return $this->render('contabilidad/informes.html.twig');
+    }
+
+    public function filtrosInformes()
+    {
+        $actual = new \DateTime('now', new \DateTimeZone('America/Bogota'));
+        $desde = new \DateTime($actual->format('Y').'-'.$actual->format('m').'-'.$actual->format('01'));
+        $hasta = new \DateTime($actual->format('Y-m-t'));
+
+
+        return $this->render('contabilidad/filtrosInformes.html.twig', ['desde' => $desde->format('Y-m-d'), 'hasta' => $hasta->format('Y-m-d')]);
+    }
 }

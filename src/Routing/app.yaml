@@ -254,6 +254,20 @@ app_eliminarGasto:
   path: /movimientos/eliminarGasto/{id}
   defaults: {_controller: App\Controller\ContabilidadController::eliminarGasto}
 
+app_informes:
+  path: /movimientos/informes
+  defaults: {_controller: App\Controller\ContabilidadController::informes}
+
+app_filtrosInformes:
+  path: /movimientos/filtrosInformes
+  defaults: {_controller: App\Controller\ContabilidadController::filtrosInformes}
+
+app_usuarios:
+  path: /usuarios
+  defaults: {_controller: App\Controller\LoginController::listarUsuarios}
+
+
+
 
 
 

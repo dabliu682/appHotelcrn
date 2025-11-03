@@ -270,7 +270,7 @@
                         <div class="row mb-3">
                             <div class="col-md-8">
                                 <label for="clienteSelect" class="form-label" style="font-weight: bold;">Cliente <i class="fas fa-exclamation-circle text-info" title="Crear cliente" style="" data-action="click->sistema--app#abrirModalNuevoCliente" data-accion="1"></i></label></label>
-                                <select class="selectpicker form-control" data-controller="sistema--selectpicker" data-live-search-normalize="true" data-live-search="true" data-live-search-placeholder="Filtro clientes" data-size="5" name="clienteRev" data-sistema--app-target="clienteRev" data-action="change->sistema--app#obtenerDatosClienteReserva change->sistema--app#validaBtnGuardarReserva">
+                                <select id="clienteSelectCustom" class="selectpicker form-control" data-controller="sistema--selectpicker" data-live-search-normalize="true" data-live-search="true" data-live-search-placeholder="Filtro clientes" data-size="5" name="clienteRev" data-sistema--app-target="clienteRev" data-action="change->sistema--app#obtenerDatosClienteReserva change->sistema--app#validaBtnGuardarReserva">
                                 |   <option value="">Seleccione cliente</option>
                                     {% for cliente in clientes %}
                                         <option value="{{ cliente.id }}">{{ cliente.documentNumber }} - {{ cliente.name }} {{ cliente.lastname }}</option>
@@ -492,7 +492,7 @@
                         </div>
                     </div>
                     <div class="modal-footer">
-                        <button type="button" class="btn btn-primary" data-sistema--app-target="btnGuardarCliente" data-action="sistema--app#guardarClienteCheckin" disabled>Guardar</button>
+                        <button type="button" class="btn btn-primary" data-sistema--app-target="btnGuardarCliente" data-action="sistema--app#guardarClienteReseva" disabled>Guardar</button>
                         <button type="button" class="btn btn-danger" data-bs-dismiss="modal">Cancelar</button>
                     </div>
                 </form>

@@ -38,14 +38,14 @@ class ClientesController extends AbstractController
             $cliente->setCellphone($request->get('numeroCelCliente'));
             $cliente->setDocument($bd->getRepository(Documents::class)->find($request->get('tipoDoc')));
             $cliente->setDocumentNumber($request->get('numeroDocCliente'));
-             $cliente->setTipo(1);
+            $cliente->setTipo(1);
            
             $cliente->setUsucrea($usuario);
             $cliente->setFechacrea(new \DateTime('now', new \DateTimeZone('America/Bogota'))); 
 
             if($request->get('selectCompaniaCliente') != '')
             {
-                 $cliente->setCompania($bd->getRepository(Companys::class)->find($request->get('selectCompaniaCliente')));
+                $cliente->setCompania($bd->getRepository(Companys::class)->find($request->get('selectCompaniaCliente')));
             }
 
             if($request->get('placaCliente') != '')
@@ -90,7 +90,16 @@ class ClientesController extends AbstractController
             $bd->persist($cliente);
         }
 
-        $bd->flush();  
+        $bd->flush(); 
+        
+        $clientes = $bd->getRepository(Persons::class)->findBy([],['name' => 'ASC']);
+
+        $arrayClientes = [];
+
+        foreach ($clientes as $c) 
+        {
+            $arrayClientes[] = ['id' => $c->getId(), 'nombre' => $c->getDocumentNumber().' - '.$c->getName().' - '.$c->getLastname()];
+        }
 
         $parametros = [
             'response' => 'Ok',
@@ -103,6 +112,7 @@ class ClientesController extends AbstractController
             'numberBus' => $cliente->getNumberBus(),
             'compania' => (!is_null($cliente->getCompania())) ? $cliente->getCompania()->getName() : '',
             'cellphone' => $cliente->getCellphone(),
+            'clientes' => $arrayClientes,
         ];
 
         return new JsonResponse($parametros);
