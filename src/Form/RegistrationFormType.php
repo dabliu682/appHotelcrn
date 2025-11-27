@@ -29,6 +29,12 @@ class RegistrationFormType extends AbstractType
                     new NotBlank(['message' => 'Por favor ingresa un usuario']),
                 ],
             ])
+            ->add('celular', \Symfony\Component\Form\Extension\Core\Type\TextType::class, [
+                'label' => 'Celular',
+                'constraints' => [
+                    new NotBlank(['message' => 'Por favor ingresa un numero de celular']),
+                ],
+            ])
             ->add('roles', \Symfony\Component\Form\Extension\Core\Type\ChoiceType::class, [
                 'label' => 'Rol',
                 'choices' => [
@@ -40,6 +46,18 @@ class RegistrationFormType extends AbstractType
                 'required' => true,
                 'attr' => ['class' => 'form-select'],
                 'mapped' => false, // No se mapea directamente al objeto User
+            ])
+            ->add('tipo', \Symfony\Component\Form\Extension\Core\Type\ChoiceType::class, [
+                'label' => 'Tipo',
+                'choices' => [
+                    'Empleado' => '1',
+                    'Administrador' => '2',
+                    'Asociado' => '3',
+                ],
+                'multiple' => false,
+                'expanded' => false,
+                'required' => true,
+                'attr' => ['class' => 'form-select'],
             ])
             ->add('plainPassword', PasswordType::class, [
                 // instead of being set onto the object directly,

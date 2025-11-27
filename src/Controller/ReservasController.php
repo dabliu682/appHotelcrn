@@ -31,9 +31,21 @@ class ReservasController extends AbstractController
         $productos = $bd->getRepository(Productos::class)->findProductos();
         $documents = $bd->getRepository(Documents::class)->findBy([],['id' => 'ASC']);
         $companias = $bd->getRepository(Companys::class)->findBy([],['id' => 'ASC']);
-        $serviciosCheck = $bd->getRepository(Services::class)->findBy(['tipo' => [3,4]],['name' => 'ASC']);        
+        $serviciosCheck = $bd->getRepository(Services::class)->findBy(['tipo' => [3,4]],['name' => 'ASC']); 
+        
+        $turno = $bd->getRepository(Turnos::class)->findOneBy(['status' => 1]);
 
-        return $this->render('reservas/index.html.twig', ['clientes' => $clientes, 'habitaciones' => $habitaciones, 'checkins' => $checkins, 'servicios' => $servicios, 'productos' => $productos, 'documents' => $documents, 'companias' => $companias, 'serviciosCheck' => $serviciosCheck]);
+        $existeTurno = 0;
+        
+        if(!is_null($turno))
+        {
+            if($this->getUser()->getId() == $turno->getUsuario()->getId())
+            {
+                $existeTurno = 1;
+            }
+        }
+
+        return $this->render('reservas/index.html.twig', ['clientes' => $clientes, 'habitaciones' => $habitaciones, 'checkins' => $checkins, 'servicios' => $servicios, 'productos' => $productos, 'documents' => $documents, 'companias' => $companias, 'serviciosCheck' => $serviciosCheck, 'existeTurno' => $existeTurno]);
     }
 
     public function nuevaReserva()
@@ -156,7 +168,15 @@ class ReservasController extends AbstractController
     {
         $bd = $this->getDoctrine()->getManager();
 
-        $checkin = $bd->getRepository(Checkin::class)->find($request->get('idCheckin'));
+        if($request->get('idCheckin') != '')
+        {
+            $checkin = $bd->getRepository(Checkin::class)->find($request->get('idCheckin'));
+        }
+        else
+        {
+            $checkin = new Checkin();
+        }
+
 
         $horaLlega = $request->get('horaLlegClienteRev');      
         $horaLlega = \DateTime::createFromFormat('H:i', $horaLlega);

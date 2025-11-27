@@ -13,12 +13,15 @@ export default class extends Controller {
         'rutaCambiaEstadoServicio': String,
         'rutaCargarProductosPlano': String,
         'rutaUpdateCantProducto': String,
+        'rutaDescargarInformes': String,
+        'rutaRegistrarUsuarios': String,
         'rutaEliminarTiposServ': String,
         'rutaContabilizarGasto': String,
         'rutaEliminarCompania': String,
         'rutaEliminarClientes': String,
         'rutaEliminarServicio': String,
         'rutaGuardarTiposServ': String,
+        'rutaGenerarInformes': String,
         'rutaEliminarCheckin': String,
         'rutaEliminarReserva': String,
         'rutaGuardarServicio': String,
@@ -33,6 +36,7 @@ export default class extends Controller {
         'rutaGuardarEntrada': String,
         'rutaRegistrarVenta': String,
         'rutaGenerarFactura': String,
+        'rutacambiaTurnoUser': String,
         'rutaObtenerCheckin': String,
         'rutaNuevaCompania': String,
         'rutaEliminarGasto': String,
@@ -53,6 +57,7 @@ export default class extends Controller {
         'rutaProductos': String,
         'rutaListaServ': String,
         'rutaCompanias': String,
+        'rutaUsuarios': String,
         'rutaReservas': String,
         'rutaClientes': String,
         'rutaEntradas': String,
@@ -95,6 +100,7 @@ export default class extends Controller {
         'botonesModalCheckin',
         'formCargarProductos',
         'cantProductoCheckin',
+        'formRegistroUsuario',
         'modalNuevaCompania',
         'modalCompaniaLabel',
         'btnGuardarCompania',
@@ -131,6 +137,7 @@ export default class extends Controller {
         'modalEntradaLabel',
         'modalReservaLabel',
         'cantHabClienteRev',
+        'modalNuevoUsuario',
         'btnGuardarReserva',
         'formNuevoTipoDoc',
         'nombreHabitacion',
@@ -146,10 +153,12 @@ export default class extends Controller {
         'valorServCheckin',
         'saldoServCheckin',
         'numeroCelCliente',
+        'tipoGastoInforme',
         'modalcobrarBono',
         'frameInventario',
         'modalNuevoGasto',
         'frameMovimentos',
+        'servicioInforme',
         'btnGuardarGasto',
         'btnGuardarPiso',
         'modalNuevoPiso',
@@ -165,6 +174,7 @@ export default class extends Controller {
         'planoProductos',
         'frameProductos',
         'codigoProducto',
+        'empresaInforme',
         'frameDashboard',
         'modalNuevoBono',
         'formNuevoGasto',
@@ -177,6 +187,7 @@ export default class extends Controller {
         'modalCheckout',
         'cellCienteRev',
         'selectAireRev',
+        'frameUsuarios',
         'frameEntradas',
         'valorProducto',
         'frameReservas',
@@ -188,7 +199,11 @@ export default class extends Controller {
         'modalFactura',
         'tipoProducto',
         'porcProducto',
+        'formInformes',
+        'desdeInforme',
+        'hastaInforme',
         'selectPisos',
+        'tipoInforme',
         'formCheckin',
         'nitCompania',
         'btnServicio',
@@ -3361,30 +3376,361 @@ export default class extends Controller {
     }
 
     async mostrarInforme() {
+
+        let desde = this.desdeInformeTarget.value;
+        let hasta = this.hastaInformeTarget.value;
+
+        let rutaGenerar = this.rutaGenerarInformesValue;
+
+        let formulario = '';
+
+        formulario = this.formInformesTarget;
+
+        var parametros = new FormData(formulario);
+
+        var consulta = await fetch(rutaGenerar, { 'method': 'POST', 'body': parametros });
+        var result = await consulta.json();
+
         $("#tablaInforme").empty();
 
-        let tabla = `<div>
-                        <div class="col">
-                            Informe de entradas consolidado<br>
-                            Desde: 01-10-2025<br>
-                            Hasta: 31-10-2025
-                        </div>
-                    </div>
-                    <div class="row">
-                        <table class="table table-striped table-hover align-middle mb-0 table-sm" style="min-width: 600px;">
-                            <thead class="table-dark" style="position: sticky; top: 0; z-index: 2;">
-                                <tr>
-                                    <th  colspan=2 style="background: #212529;">Servicio</th>
-                                    <th style="background: #212529;">Valor</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                            </tbody>
-                        </table>
-                    </div>`;
+        if (result.tipoInforme == 1) {
 
+            let datos = result.data;
+
+            datos = Object.values(datos);
+
+            let servicio = '';
+
+            if (this.servicioInformeTarget.value == '1') {
+                servicio = ' - Hospedaje';
+            }
+            else if (this.servicioInformeTarget.value == '3') {
+                servicio = ' - Tienda';
+            }
+            else if (this.servicioInformeTarget.value == '4') {
+                servicio = ' - Lavandería';
+            }
+
+            let body = ``;
+            let valorTotal = 0;
+
+            datos.forEach(d => {
+                body += `
+                            <tr>
+                                <td>${d.fecha}</td>
+                                <td style="text-align:right">$ ${Number(d.valor).toLocaleString('es-CO')}</td>
+                            </tr>
+                        `
+                valorTotal += Number(d.valor);
+            });
+
+            let tabla = `<div class="text-center mb-3">
+                            <h6 class="fw-bold text-uppercase text-secondary mb-1">Informe de entradas consolidado ${servicio}</h6>
+                            <p class="text-muted mb-0">Desde: <strong>01-10-2025</strong> &nbsp; | &nbsp; Hasta: <strong>31-10-2025</strong></p>
+                        </div>
+                        <div class="row justify-content-center">
+                            <table class="table table-striped table-hover align-middle mb-0 table-sm mt-3" style="width: 500px;">
+                                <thead class="table-dark" style="position: sticky; top: 0; z-index: 2;">
+                                    <tr>
+                                        <th style="background: #212529;">Fecha</th>
+                                        <th style="background: #212529;">Valor</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    ${body}
+                                    <tr>
+                                        <td style="font-weight:bold">TOTAL</td>
+                                        <td style="text-align:right; font-weight:bold">$ ${valorTotal.toLocaleString('es-CO')}</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>`;
+
+
+            $("#tablaInforme").html(tabla);
+
+        }
+        else if (result.tipoInforme == 2) {
+
+            let datos = result.data;
+
+            datos = Object.values(datos);
+
+            let body = ``;
+            let valorTotal = 0;
+
+            datos.forEach(d => {
+                body += `
+                            <tr>
+                                <td>${d.tipo}</td>
+                                <td style="text-align:right">$ ${Number(d.valor).toLocaleString('es-CO')}</td>
+                            </tr>
+                        `
+                valorTotal += Number(d.valor);
+            });
+
+            let tabla = `<div class="text-center mb-3">
+                            <h6 class="fw-bold text-uppercase text-secondary mb-1">Informe de entradas consolidado por servicio</h6>
+                            <p class="text-muted mb-0">Desde: <strong>01-10-2025</strong> &nbsp; | &nbsp; Hasta: <strong>31-10-2025</strong></p>
+                        </div>
+                        <div class="row justify-content-center">
+                            <table class="table table-striped table-hover align-middle mb-0 table-sm mt-3" style="width: 500px;">
+                                <thead class="table-dark" style="position: sticky; top: 0; z-index: 2;">
+                                    <tr>
+                                        <th style="background: #212529;">tipo</th>
+                                        <th style="background: #212529;">Valor</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    ${body}
+                                    <tr>
+                                        <td style="font-weight:bold">TOTAL</td>
+                                        <td style="text-align:right; font-weight:bold">$ ${valorTotal.toLocaleString('es-CO')}</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>`;
+
+
+            $("#tablaInforme").html(tabla);
+
+        }
+        else if (result.tipoInforme == 3) {
+
+            let datos = result.data;
+
+            datos = Object.values(datos);
+
+            let body = ``;
+            let valorTotal = 0;
+
+            datos.forEach(d => {
+                body += `
+                            <tr>
+                                <td>${d.tipo}</td>
+                                <td style="text-align:right">$ ${Number(d.valor).toLocaleString('es-CO')}</td>
+                            </tr>
+                        `
+                valorTotal += Number(d.valor);
+            });
+
+            let tabla = `<div class="text-center mb-3">
+                            <h6 class="fw-bold text-uppercase text-secondary mb-1">Informe de gastos consolidado</h6>
+                            <p class="text-muted mb-0">Desde: <strong>01-10-2025</strong> &nbsp; | &nbsp; Hasta: <strong>31-10-2025</strong></p>
+                        </div>
+                        <div class="row justify-content-center">
+                            <table class="table table-striped table-hover align-middle mb-0 table-sm mt-3" style="width: 500px;">
+                                <thead class="table-dark" style="position: sticky; top: 0; z-index: 2;">
+                                    <tr>
+                                        <th style="background: #212529;">Tipo</th>
+                                        <th style="background: #212529;">Valor</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    ${body}
+                                    <tr>
+                                        <td style="font-weight:bold">TOTAL</td>
+                                        <td style="text-align:right; font-weight:bold">$ ${valorTotal.toLocaleString('es-CO')}</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>`;
+
+
+            $("#tablaInforme").html(tabla);
+
+        }
+        else if (result.tipoInforme == 4) {
+
+            let datos = result.data;
+
+            datos = Object.values(datos);
+
+            let body = ``;
+            let valorTotal = 0;
+
+            datos.forEach(d => {
+                const fecha = new Date(d.fechacrea);
+                const fechaFormateada = fecha.toLocaleDateString('es-CO', {
+                    year: 'numeric',
+                    month: '2-digit',
+                    day: '2-digit'
+                });
+                body += `
+                            <tr>
+                                <td style="text-align:left">${fechaFormateada}</td>
+                                <td style="text-align:left">${d.tipo}</td>
+                                <td style="text-align:left">${d.detalles}</td>
+                                <td style="text-align:right">$ ${Number(d.valor).toLocaleString('es-CO')}</td>
+                            </tr>
+                        `
+                valorTotal += Number(d.valor);
+            });
+
+            let tabla = `<div class="text-center mb-3">
+                            <h6 class="fw-bold text-uppercase text-secondary mb-1">Informe de gastos detallado</h6>
+                            <p class="text-muted mb-0">Desde: <strong>${desde}</strong> &nbsp; | &nbsp; Hasta: <strong>${hasta}</strong></p>
+                        </div>
+                        <div class="row justify-content-center">
+                            <table class="table table-striped table-hover align-middle mb-0 table-sm mt-3">
+                                <thead class="table-dark" style="position: sticky; top: 0; z-index: 2;">
+                                    <tr>
+                                        <th style="background: #212529;">Fecha</th>
+                                        <th style="background: #212529;">Tipo</th>
+                                        <th style="background: #212529;">Detalle</th>
+                                        <th style="background: #212529;">Valor</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    ${body}
+                                    <tr>
+                                        <td colspan="3" style="font-weight:bold; text-align:right">TOTAL</td>
+                                        <td style="text-align:right; font-weight:bold">$ ${valorTotal.toLocaleString('es-CO')}</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>`;
+
+
+            $("#tablaInforme").html(tabla);
+
+        }
+    }
+
+    async descargarInforme() {
+        let tipoInfo = this.tipoInformeTarget.value;
+        let rutaGenerar = this.rutaDescargarInformesValue;
+
+        let formulario = '';
+
+        formulario = this.formInformesTarget;
+
+        var parametros = new FormData(formulario);
+
+        var respuesta = await fetch(rutaGenerar, { 'method': 'POST', 'body': parametros });
+
+        // Recibir el archivo como BLOB
+        const blob = await respuesta.blob();
+
+        // Crear URL temporal
+        const url = window.URL.createObjectURL(blob);
+
+        // Crear link de descarga
+        const a = document.createElement('a');
+        a.href = url;
+
+        if (tipoInfo == 3) {
+            a.download = 'InfGastosCons.xlsx';
+        }
+        else if (tipoInfo == 4) {
+            a.download = 'InfGastosDet.xlsx';
+        }
+        else if (tipoInfo == 1) {
+            a.download = 'InfEntradasCons.xlsx';
+        }
+        else if (tipoInfo == 2) {
+            a.download = 'InfEntradasConsxserv.xlsx';
+        }
+        else {
+            a.download = 'Inf.xlsx';
+        }
+
+        document.body.appendChild(a);
+
+        // Simular click
+        a.click();
+
+        // Limpiar
+        a.remove();
+        window.URL.revokeObjectURL(url);
+
+
+
+    }
+
+    abrirModalNuevoUsuario() {
+        this.modal = new Modal(this.modalNuevoUsuarioTarget);
+        this.modal.show();
+    }
+
+    async registrarUsuario() {
+        let rutaTabla = this.rutaUsuariosValue;
+        let urlGuardar = this.rutaRegistrarUsuariosValue;
+
+        let formulario = '';
+
+        formulario = this.formRegistroUsuarioTarget;
+
+        var parametros = new FormData(formulario);
+
+        var consulta = await fetch(urlGuardar, { 'method': 'POST', 'body': parametros });
+        var result = await consulta.json();
+
+        if (result.response == 'Ok') {
+
+            const modalInstance = Modal.getInstance(this.modalNuevoUsuarioTarget);
+            if (modalInstance) { modalInstance.hide(); }
+
+            FlashMessage.show('Usuario creado correctamente', 'success');
+
+            const respuesta = await fetch(rutaTabla);
+            this.frameUsuariosTarget.innerHTML = await respuesta.text();
+        }
+
+    }
+
+    limpiarInforme() {
+        this.tipoInformeTarget.value = '';
+        this.servicioInformeTarget.value = '';
+        this.tipoGastoInformeTarget.value = '';
+        this.empresaInformeTarget.value = '';
+
+        const hoy = new Date();
+
+        const formato = (f) => f.toISOString().split('T')[0];
+
+        // Primer día del mes actual
+        const primerDia = new Date(hoy.getFullYear(), hoy.getMonth(), 1);
+        this.desdeInformeTarget.value = formato(primerDia);
+
+        // Último día del mes actual
+        const ultimoDia = new Date(hoy.getFullYear(), hoy.getMonth() + 1, 0);
+        this.hastaInformeTarget.value = formato(ultimoDia);
+
+        $("#tablaInforme").empty();
+        let tabla = `<p style="font-weight: bold; color: grey;">Generar informe</p>`;
         $("#tablaInforme").html(tabla);
     }
+
+    async cambiarTurnoUser(event) {
+        let rutaTabla = this.rutaUsuariosValue;
+        let id = event.currentTarget.dataset.id;
+        let ruta = this.rutacambiaTurnoUserValue;
+
+        let accion = 0;
+
+        if (event.currentTarget.checked) {
+            accion = 1;
+        }
+
+        ruta = ruta.replace('var1', id);
+        ruta = ruta.replace('var2', accion);
+
+        var consulta = await fetch(ruta);
+        var result = await consulta.json();
+
+        if (result.response == 'Ok') {
+
+            FlashMessage.show('Usuario editado correctamente', 'success');
+
+            const respuesta = await fetch(rutaTabla);
+            this.frameUsuariosTarget.innerHTML = await respuesta.text();
+        }
+
+
+
+    }
+
 
 
 

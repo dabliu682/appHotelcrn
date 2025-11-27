@@ -145,6 +145,16 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
      */
     private $ultimoaccesso;
 
+    /**
+     * @ORM\Column(type="boolean", nullable=true)
+     */
+    private $turno;
+
+    /**
+     * @ORM\OneToMany(targetEntity=Bonos::class, mappedBy="usuario")
+     */
+    private $beneficiario_bono;
+
     public function __construct()
     {
         $this->floors = new ArrayCollection();
@@ -162,6 +172,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
         $this->bonos = new ArrayCollection();
         $this->bonos_usucobro = new ArrayCollection();
         $this->gastos = new ArrayCollection();
+        $this->beneficiario_bono = new ArrayCollection();
     }
 
     /**
@@ -749,6 +760,48 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     public function setUltimoaccesso(?\DateTimeInterface $ultimoaccesso): self
     {
         $this->ultimoaccesso = $ultimoaccesso;
+
+        return $this;
+    }
+
+    public function isTurno(): ?bool
+    {
+        return $this->turno;
+    }
+
+    public function setTurno(?bool $turno): self
+    {
+        $this->turno = $turno;
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, Bonos>
+     */
+    public function getBeneficiarioBono(): Collection
+    {
+        return $this->beneficiario_bono;
+    }
+
+    public function addBeneficiarioBono(Bonos $beneficiarioBono): self
+    {
+        if (!$this->beneficiario_bono->contains($beneficiarioBono)) {
+            $this->beneficiario_bono[] = $beneficiarioBono;
+            $beneficiarioBono->setUsuario($this);
+        }
+
+        return $this;
+    }
+
+    public function removeBeneficiarioBono(Bonos $beneficiarioBono): self
+    {
+        if ($this->beneficiario_bono->removeElement($beneficiarioBono)) {
+            // set the owning side to null (unless already changed)
+            if ($beneficiarioBono->getUsuario() === $this) {
+                $beneficiarioBono->setUsuario(null);
+            }
+        }
 
         return $this;
     }

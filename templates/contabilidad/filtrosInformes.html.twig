@@ -1,46 +1,90 @@
 <turbo-frame id="frame-filtrosInformes">
-    <div class="row">
-        <div class="col-md-2">
-            <label for="codigo" class="form-label" style="font-weight: bold;">Informes</label> 
-            <select class="form-select" id="codigo"  name="codigo" data-sistema--app-target="codigoProducto" data-action="sistema--app#validaBtnGuardarEntrada" >
-                <option value="">Seleccione Informe</option>
-                <option value="1">Entradas consolidado</option>
-                <option value="">Entradas detallado</option>
-                <option value="">Gastos</option>
-                <option value="">Bonos Pendientes</option>
-                <option value="">Bonos Contabilizados</option>
-                <option value="">Turnos</option>
-            </select>
-        </div>
-        <div class="col-md-2">
-            <label for="codigo" class="form-label" style="font-weight: bold;">Desde</label> 
-            <input type="date" class="form-control" value="{{ desde }}" />
-        </div>
-        <div class="col-md-2">
-            <label for="codigo" class="form-label" style="font-weight: bold;">Hasta</label> 
-            <input type="date" class="form-control"  value="{{ hasta }}"/>
-        </div>
-        <div class="col-md-2">
-            <label for="codigo" class="form-label" style="font-weight: bold;">Servicio</label>
-            <div class="input-group">
-                <select class="form-select" id="codigo" name="codigo" data-sistema--app-target="codigoProducto" data-action="sistema--app#validaBtnGuardarEntrada">
-                    <option value="">Seleccione servicio</option>
-                    <option value="">Hospedaje</option>
-                    <option value="">Tienda</option>
-                    <option value="">Lavanderia</option>
-                </select>
+    <style>
+        .label{            
+            border-radius: 5px 0px 0px 5px;
+            font-weight: bold;
+            width: 90px;
+        }
+    </style>
+    <form data-sistema--app-target="formInformes">
+        <div class="row">        
+            <div class="col-md-6">
+                <div class="input-group">
+                    <div class="input-group-prepend">
+                        <label for="tipoInforme" class="input-group-text label">Informes</label> 
+                    </div>
+                    <select class="form-select" id="tipoInforme"  name="tipoInforme" data-sistema--app-target="tipoInforme">
+                        <option value="">Seleccione Informe</option>
+                        <option value="1">Entradas consolidado</option>
+                        <option value="2">Entradas consolidado por servicio</option>
+                        <option value="3">Gastos consolidado</option>
+                        <option value="4">Gastos detallado</option>
+                        {#<option value="">Bonos Pendientes</option>
+                        <option value="">Bonos Contabilizados</option>
+                        <option value="">Turnos</option>#}
+                    </select>
+                </div>                
+            </div>
+            <div class="col-md-3">
+                <div class="input-group">
+                    <div class="input-group-prepend">
+                        <label for="desdeInforme" class="input-group-text label">Desde</label> 
+                    </div>
+                    <input type="date" name="desdeInforme" class="form-control" value="{{ desde }}" data-sistema--app-target="desdeInforme" />
+                </div>
+            </div>            
+            <div class="col-md-3">                
+                <div class="input-group">
+                    <div class="input-group-prepend">
+                        <label for="username" class="input-group-text label" >Hasta</label>
+                    </div>
+                    <input type="date" class="form-control" id="hastaInforme" name="hastaInforme" value="{{ hasta }}" data-sistema--app-target="hastaInforme"/>
+                </div>
             </div>
         </div>
-        <div class="col-md-4">
-            <label for="codigo" class="form-label" style="font-weight: bold;">Empresa</label>
-            <div class="input-group">
-                <select class="form-select" id="codigo" name="codigo" data-sistema--app-target="codigoProducto" data-action="sistema--app#validaBtnGuardarEntrada">
-                    <option value="">Seleccione empresa</option>
-                </select>
-                <button type="button" class="btn btn-secondary" data-action="sistema--app#mostrarInforme">
-                    <i class="fa-solid fa-magnifying-glass"></i>
-                </button>
+        <div class="row mt-3">
+            <div class="col-md-3">
+                <div class="input-group">
+                    <div class="input-group-prepend">
+                        <label for="servicioInforme" class="input-group-text label" >Servicio</label>
+                    </div>
+                    <select class="form-control" id="servicioInforme" name="servicioInforme" data-sistema--app-target="servicioInforme">
+                        <option value="">Seleccione servicio</option>
+                        <option value="1">Hospedaje</option>
+                        <option value="3">Tienda</option>
+                        <option value="4">Lavanderia</option>
+                    </select>
+                </div>
             </div>
-        </div>                       
-    </div>
+            <div class="col-md-3">
+                <div class="input-group">
+                    <div class="input-group-prepend">
+                        <label for="tipoGastoInforme" class="input-group-text label" >Gasto</label>
+                    </div>
+                    <select class="form-control" id="tipoGastoInforme" name="tipoGastoInforme" data-sistema--app-target="tipoGastoInforme">
+                        <option value="">Seleccione tipo gasto</option>
+                        <option value="1">Bienes activos fijos</option>
+                        <option value="2">Bienes consumo</option>
+                        <option value="3">Nómina</option>
+                        <option value="4">Servicios públicos</option> 
+                    </select>
+                </div>
+            </div>    
+            <div class="col-md-3">
+                <div class="input-group">
+                    <div class="input-group-prepend">
+                        <label for="empresaInforme" class="input-group-text label" >Empresa</label>
+                    </div>
+                    <select class="form-control" id="empresaInforme" name="empresaInforme" data-sistema--app-target="empresaInforme">
+                        <option value="">Seleccione empresa</option>
+                    </select>
+                </div>
+            </div>  
+            <div class="col-md-3 d-flex gap-2">
+                <button type="button" class="btn btn-secondary btn-sm flex-fill" data-action="sistema--app#mostrarInforme">Generar</button>
+                <button type="button" class="btn btn-success btn-sm flex-fill" data-action="sistema--app#descargarInforme">Descargar</button>
+                <button type="button" class="btn btn-warning btn-sm flex-fill" data-action="sistema--app#limpiarInforme">Limpiar</button>
+            </div>               
+        </div>
+    </form>    
 </turbo-frame>

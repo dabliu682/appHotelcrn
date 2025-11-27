@@ -39,28 +39,70 @@ class MovimientosRepository extends ServiceEntityRepository
         }
     }
 
-//    /**
-//     * @return Movimientos[] Returns an array of Movimientos objects
-//     */
-//    public function findByExampleField($value): array
-//    {
-//        return $this->createQueryBuilder('m')
-//            ->andWhere('m.exampleField = :val')
-//            ->setParameter('val', $value)
-//            ->orderBy('m.id', 'ASC')
-//            ->setMaxResults(10)
-//            ->getQuery()
-//            ->getResult()
-//        ;
-//    }
+    public function dataInforme1($desde, $hasta, $query)
+    {        
+        $conexion = $this->getEntityManager()->getConnection();
+        $sql = "select m.fecha, sum(d.valor) valor
+                from public.movimientos m
+                left join public.detallesmov d ON d.mov_id = m.id
+                left join public.checkin ch ON ch.id = m.checkin_id
+                left join public.persons p ON p.id = ch.cliente_id
+                left join public.companys c ON c.id = p.compania_id
+                LEFT join public.services s ON s.id = d.servicio_id
+                left join public.servicetype st ON st.id = s.tipo_id
+                where m.fecha >= '$desde' and m.fecha <= '$hasta' $query
+                group by m.fecha";
+        $stm = $conexion->prepare($sql);                            
+        return $stm->executeQuery()->fetchAll();
+    }
 
-//    public function findOneBySomeField($value): ?Movimientos
-//    {
-//        return $this->createQueryBuilder('m')
-//            ->andWhere('m.exampleField = :val')
-//            ->setParameter('val', $value)
-//            ->getQuery()
-//            ->getOneOrNullResult()
-//        ;
-//    }
+    public function dataInforme2($desde, $hasta)
+    {        
+        $conexion = $this->getEntityManager()->getConnection();
+        $sql = "SELECT
+                    CASE
+                        WHEN st.name IN ('Hospedaje', 'Hospedaje motoristas') THEN 'Hospedaje'
+                        WHEN st.name IS NULL THEN 'Tienda'
+                        ELSE st.name
+                    END AS tipo,
+                    SUM(d.valor) AS valor
+                FROM public.movimientos m
+                LEFT JOIN public.detallesmov d ON d.mov_id = m.id
+                LEFT JOIN public.checkin ch ON ch.id = m.checkin_id
+                LEFT JOIN public.persons p ON p.id = ch.cliente_id
+                LEFT JOIN public.companys c ON c.id = p.compania_id
+                LEFT JOIN public.services s ON s.id = d.servicio_id
+                LEFT JOIN public.servicetype st ON st.id = s.tipo_id
+                WHERE m.fecha >= '$desde' AND m.fecha <= '$hasta'
+                GROUP BY
+                    CASE
+                        WHEN st.name IN ('Hospedaje', 'Hospedaje motoristas') THEN 'Hospedaje'
+                        WHEN st.name IS NULL THEN 'Tienda'
+                        ELSE st.name
+                    END
+                ORDER BY tipo;";
+        $stm = $conexion->prepare($sql);                            
+        return $stm->executeQuery()->fetchAll();
+    }
+
+    public function dataInforme3($desde, $hasta, $query)
+    {        
+        $conexion = $this->getEntityManager()->getConnection();
+        $sql = "SELECT tipo, sum(valor) valor
+                FROM public.gastos
+                where fechacrea >= '$desde' and fechacrea <= '$hasta' $query
+                group by tipo";
+        $stm = $conexion->prepare($sql);
+        return $stm->executeQuery()->fetchAll();
+    }
+
+    public function dataInforme4($desde, $hasta, $query)
+    {        
+        $conexion = $this->getEntityManager()->getConnection();
+        $sql = "SELECT fechacrea, tipo, detalles, valor
+                FROM public.gastos
+                where fechacrea >= '$desde' and fechacrea <= '$hasta' $query";
+        $stm = $conexion->prepare($sql);
+        return $stm->executeQuery()->fetchAll();
+    }
 }

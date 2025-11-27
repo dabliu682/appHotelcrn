@@ -10,6 +10,7 @@
             'rutaCambiaEstadoServicio' : path('app_cambiaEstadoServicio', {'id' : 'var1', 'estado' : 'var2' }),
             'rutaUpdateCantProducto' : path('app_updateCantProducto', {'id' : 'var1', 'accion' : 'var2', 'cantidad' : 'var3' }),
             'rutaCambiarEstadoHabitacion' : path('app_cambiarEstadoHabitacion', {'id' : 'var1', 'accion' : 'var2'}),
+            'rutacambiaTurnoUser' : path('app_cambiaTurnoUser', {'id' : 'var1', 'accion' : 'var2'}),
             'rutaObtenerDatosClienteReserva' : path('app_obtenerDatosClienteReserva', {'id' : 'var1' }),
             'rutaEliminarTiposServ' : path('app_eliminarTiposServ', {'id' : 'var1' }),
             'rutaContabilizarGasto' : path('app_contabilizarGasto', {'id' : 'var1'}),
@@ -32,8 +33,10 @@
             'rutaListaServ' : path('app_listaServ', {'filtro' : 'var1' }),
             'rutaCargarProductosPlano' : path('app_cargarProductosPlano'),
             'rutaCobrarBono' : path('app_cobrarBono', {'id' : 'var1' }),
+            'rutaDescargarInformes' : path('app_descargarInformes'),
             'rutaCheckout' : path('app_checkout', {'id' : 'var1'}),
             'rutaGuardarTiposServ' : path('app_guardarTiposServ'),
+            'rutaGenerarInformes' : path('app_generarInformes'),
             'rutaGuardarProducto' : path('app_guardarProducto'),
             'rutaNuevaHabitacion' : path('app_nuevaHabitacion'),
             'rutaGuardarClientes' : path('app_guardarClientes'),
@@ -42,6 +45,7 @@
             'rutaGuardarTipodoc' : path('app_guardarTipodoc'),
             'rutaGuardarEntrada' : path('app_guardarEntrada'),
             'rutaNuevaCompania' : path('app_nuevaCompania'),
+            'rutaRegistrarUsuarios' : path('app_register'),
             'rutaGuardarGasto' : path('app_guardarGasto'),
             'rutaGuardarBonos' : path('app_guardarBonos'),
             'rutaHabitaciones' : path('app_habitaciones'),
@@ -55,6 +59,7 @@
             'rutaDashboard' : path('app_dashboard'),
             'rutaTiposServ' : path('app_tiposServ'),
             'rutaProductos' : path('app_productos'),
+            'rutaUsuarios' : path('app_usuarios'),
             'rutaReservas' : path('app_reservas'),
             'rutaClientes' : path('app_clientes'),
             'rutaEntradas' : path('app_entradas'),
@@ -152,7 +157,7 @@
             </div>
         {% elseif pantalla == 14 %}
             <div class="row w-100 gx-4" style="padding-top: 75px;">
-                <turbo-frame id="frame-usuarios" data-sistema--app-target="frameUsuarios" src="{{ path('app_register') }}" >
+                <turbo-frame id="frame-usuarios" data-sistema--app-target="frameUsuarios" src="{{ path('app_usuarios') }}" >
                     <p align="center"><i class="fas fa-cog fa-spin mt-5"></i> Cargando usuarios</p>
                 </turbo-frame>
             </div>

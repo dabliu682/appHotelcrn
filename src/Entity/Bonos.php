@@ -18,12 +18,6 @@ class Bonos
     private $id;
 
     /**
-     * @ORM\ManyToOne(targetEntity=Persons::class, inversedBy="bonos")
-     * @ORM\JoinColumn(nullable=false)
-     */
-    private $beneficiario;
-
-    /**
      * @ORM\ManyToOne(targetEntity=Turnos::class, inversedBy="bonos")
      * @ORM\JoinColumn(nullable=false)
      */
@@ -65,21 +59,15 @@ class Bonos
      */
     private $usucobro;
 
+    /**
+     * @ORM\ManyToOne(targetEntity=User::class, inversedBy="beneficiario_bono")
+     * @ORM\JoinColumn(nullable=false)
+     */
+    private $usuario;
+
     public function getId(): ?int
     {
         return $this->id;
-    }
-
-    public function getBeneficiario(): ?Persons
-    {
-        return $this->beneficiario;
-    }
-
-    public function setBeneficiario(?Persons $beneficiario): self
-    {
-        $this->beneficiario = $beneficiario;
-
-        return $this;
     }
 
     public function getTurno(): ?Turnos
@@ -174,6 +162,18 @@ class Bonos
     public function setUsucobro(?User $usucobro): self
     {
         $this->usucobro = $usucobro;
+
+        return $this;
+    }
+
+    public function getUsuario(): ?User
+    {
+        return $this->usuario;
+    }
+
+    public function setUsuario(?User $usuario): self
+    {
+        $this->usuario = $usuario;
 
         return $this;
     }
