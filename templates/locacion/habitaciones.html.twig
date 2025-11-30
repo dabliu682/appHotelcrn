@@ -4,9 +4,6 @@
             <div class="card shadow-sm border-0 rounded-4">
                 <div class="card-body">
                     <h5 class="card-title mb-3">Listado de Habitaciones</h5>
-                    <div class="mb-3">
-                        <input type="text" class="form-control" placeholder="Filtrar Habitaciones..." id="filtroHabitaciones">
-                    </div>
                     <div class="table-responsive position-relative" style="overflow-x:auto; max-height: 50vh; overflow-y:auto;">
                         <table class="table table-striped table-hover align-middle mb-0">
                             <thead class="table-dark" style="position: sticky; top: 0; z-index: 2;">
@@ -129,8 +126,6 @@
                 <label for="tipoHabitacion" class="form-label fw-bold">Tipo</label>
                 <select class="form-select" id="tipoHabitacion" name="tipoHabitacion" data-sistema--app-target="selectTipoHabitacion"  data-action="change->sistema--app#validaBtnGuardarHab">
                   <option value="">Seleccione tipo de habitación</option>
-                  <option value="1">Habitación sencilla</option>
-                  <option value="2">Habitación doble</option>
                   <option value="3">Habitación sencilla con aire acondicionado</option>
                   <option value="4">Habitación doble con aire acondicionado</option>
                   <option value="5">Habitación sencilla ventilador</option>

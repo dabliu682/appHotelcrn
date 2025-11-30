@@ -39,7 +39,7 @@ class Entradas
     private $valundent;
 
     /**
-     * @ORM\Column(type="integer")
+     * @ORM\Column(type="float")
      */
     private $porcentaje;
 
@@ -127,12 +127,12 @@ class Entradas
         return $this;
     }
 
-    public function getPorcentaje(): ?int
+    public function getPorcentaje(): ?float
     {
         return $this->porcentaje;
     }
 
-    public function setPorcentaje(int $porcentaje): self
+    public function setPorcentaje(float $porcentaje): self
     {
         $this->porcentaje = $porcentaje;
 

@@ -14,7 +14,9 @@
                                     <th>Fecha/hora de llegada</th>
                                     <th>Fecha/hora de Salida</th>
                                     <th>Habitacion</th>
-                                    <th colspan=3 >Acciones</th>
+                                    {% if is_granted('ROLE_CAJA') %}
+                                        <th colspan=3 >Acciones</th>
+                                    {% endif %}
                                 </tr>
                                 </thead>
                                 <tbody>
@@ -39,7 +41,8 @@
                                                 {% if checkin.habitacion is not null  %}
                                                     {{ checkin.habitacion.name }}
                                                 {% endif %}
-                                            </td>    
+                                            </td>
+                                            {% if is_granted('ROLE_CAJA') %} 
                                                 {% if existeTurno == 1  %}                                        
                                                     {% if checkin.estado == 0 %}
                                                         <td colspan=2 style="text-align:center; width: 20px;">
@@ -71,11 +74,11 @@
                                                         </td>
                                                     {% endif %}
                                                 {% endif %}
-                                            
-                                            {% if checkin.estado == 0 %}
-                                                <td style="text-align:left; width: 20px;">
-                                                    <i class="fas fa-trash-restore-alt text-danger" style="cursor:pointer" data-action="click->sistema--app#eliminarCheckin" data-id = {{ checkin.id }} ></i>
-                                                </td>
+                                                {% if checkin.estado == 0 %}
+                                                    <td style="text-align:left; width: 20px;">
+                                                        <i class="fas fa-trash-restore-alt text-danger" style="cursor:pointer" data-action="click->sistema--app#eliminarCheckin" data-id = {{ checkin.id }} ></i>
+                                                    </td>
+                                                {% endif %}
                                             {% endif %}
                                         </tr>
                                     {% endfor %}
@@ -162,8 +165,11 @@
                                                     <th colspan="2" class="text-nowrap"><i class="fas fa-plus-circle text-success" style="cursor:pointer; font-weight: bold; margin-right:10px" data-action="click->sistema--app#abrirModalServicioCheckin"></i> Servicio</th>
                                                     <th class="text-nowrap">Habitación</th>
                                                     <th class="text-nowrap">Forma de pago</th>
-                                                    <th class="text-nowrap">Comprobante</th>
+                                                    <th class="text-nowrap">N°</th>
+                                                    <th class="text-nowrap">Valor servicio</th>
+                                                    <th class="text-nowrap">Descuento</th>
                                                     <th class="text-nowrap">Valor</th>
+                                                    <th class="text-nowrap">Saldo</th>
                                                     <th class="text-nowrap">Valor pagado</th>
                                                 </tr>
                                             </thead>
@@ -187,6 +193,7 @@
                                                     <th class="text-nowrap">Cantidad</th>
                                                     <th class="text-nowrap">Valor und</th>
                                                     <th class="text-nowrap">Total</th>
+                                                    <th class="text-nowrap">Saldo</th>
                                                     <th class="text-nowrap">Valor pagado</th>
                                                 </tr>
                                             </thead>
@@ -295,19 +302,23 @@
                         </div>
                         <div class="col-md-4">
                             <label for="inputCantidadServicio" class="form-label" style="font-weight: bold;">Cantidad</label> 
-                            <input type="text" id="inputCantidadServicio" name="inputCantidadServicio" class="form-control" data-sistema--app-target="inputCantidadServicio" value="1">
+                            <input type="text" id="inputCantidadServicio" name="inputCantidadServicio" class="form-control" data-sistema--app-target="inputCantidadServicio" value="1" data-action="blur->sistema--app#calcularNuevoValorServ">
                         </div>
                     </div>
                     <div class="row mb-3">
-                        <div class="col-md-4">
+                        <div class="col-md-3">
                             <label for="tipoDoc" class="form-label" style="font-weight: bold;">Valor</label> 
                             <input type="text" name="numeroDocCliente" class="form-control" data-sistema--app-target="valorServCheckin" disabled>
                         </div>
-                        <div class="col-md-4">
+                        <div class="col-md-3">
+                            <label for="tipoDoc" class="form-label" style="font-weight: bold;">Descuento</label> 
+                            <input type="text" name="numeroDocCliente" class="form-control" value='0' data-sistema--app-target="descuentoServCheckin" data-action="sistema--app#formatearCampo blur->sistema--app#aplicaDescuentoCheckin blur->sistema--app#actualizaSaldoCheckin blur->sistema--app#validaBtnGuardarServicioCheckin" >
+                        </div>
+                        <div class="col-md-3">
                             <label for="tipoDoc" class="form-label" style="font-weight: bold;">Valor pagado</label> 
                             <input type="text" name="numeroDocCliente" class="form-control" data-sistema--app-target="valorPagServCheckin" data-action="sistema--app#formatearCampo blur->sistema--app#actualizaSaldoCheckin blur->sistema--app#validaBtnGuardarServicioCheckin">
                         </div>
-                        <div class="col-md-4">
+                        <div class="col-md-3">
                             <label for="tipoDoc" class="form-label" style="font-weight: bold;">Saldo</label> 
                             <input type="text" name="numeroDocCliente" class="form-control" data-sistema--app-target="saldoServCheckin" disabled>
                         </div>
@@ -318,7 +329,7 @@
                             <select class="form-select" id="selectFormaPagoCheckin" name="selectFormaPagoCheckin" data-sistema--app-target="selectFormaPagoCheckin"  data-action="change->sistema--app#actualizarComprobante change->sistema--app#validaBtnGuardarServicioCheckin">
                                 <option value="">Seleccione forma de pago</option>                     
                                 <option value="1">Efectivo</option>                     
-                                <option value="2">Bono</option>                     
+                                <option value="2">Voucher</option>                     
                                 <option value="3">Transaccion</option>                     
                             </select>
                         </div>
@@ -382,7 +393,7 @@
                             <select class="form-select" id="selectFormaPagoProductoCheckin" name="selectFormaPagoProductoCheckin" data-sistema--app-target="selectFormaPagoProductoCheckin"  data-action="change->sistema--app#actualizarComprobanteProducto change->sistema--app#validaBtnGuardarProdeuctoCheckin">
                                 <option value="">Seleccione forma de pago</option>                     
                                 <option value="1">Efectivo</option>                     
-                                <option value="2">Bono</option>                     
+                                <option value="2">Voucher</option>                     
                                 <option value="3">Transaccion</option>                     
                             </select>
                         </div>
@@ -450,7 +461,10 @@
                                                     <th class="text-nowrap">Servicio</th>
                                                     <th class="text-nowrap">Habitación</th>
                                                     <th class="text-nowrap">Forma de pago</th>
-                                                    <th class="text-nowrap">Comprobante</th>
+                                                    <th class="text-nowrap">N°</th>
+                                                    <th class="text-nowrap">Valor servicio</th>
+                                                    <th class="text-nowrap">Cant</th>
+                                                    <th class="text-nowrap">Descuento</th>
                                                     <th class="text-nowrap">Valor</th>
                                                     <th class="text-nowrap">Valor pagado</th>
                                                     <th class="text-nowrap">Saldo</th>
@@ -581,7 +595,7 @@
                             <label for="selectServ" class="form-label" style="font-weight: bold;">Habitación</label> 
                             <input class="form-control" id="NumHabitacion" value="" readonly/>
                         </div>
-                        <div class="col-md-7">
+                        <div class="col-md-6">
                             <label for="selectServ" class="form-label" style="font-weight: bold;">Servicio</label> 
                             <select class="form-select" id="selectNewServ" name="selectServ"  data-action="change->sistema--app#cargarnewServicioCheckin change->sistema--app#validaBtnCargarNewServicio">
                                 <option value="">Seleccione servicio</option>    
@@ -590,9 +604,13 @@
                                 {% endfor %}
                             </select>
                         </div>
-                        <div class="col-md-3">
+                        <div class="col-md-2">
                             <label for="tipoDoc" class="form-label" style="font-weight: bold;">Valor</label> 
                             <input type="text" name="numeroDocCliente" class="form-control" id="valorNewService" disabled>
+                        </div>
+                        <div class="col-md-2">
+                            <label for="tipoDoc" class="form-label" style="font-weight: bold;">Cantidad</label> 
+                            <input type="text" name="numeroDocCliente" class="form-control" id="cantidadNewService" value="1" data-action="sistema--app#formatearCampo blur->sistema--app#actualizaValorNewService blur->sistema--app#validaBtnCargarNewServicio">
                         </div>
                     </div>
                     <div class="row mb-3">                        
@@ -609,7 +627,7 @@
                             <select class="form-select" id="selectFormaPagoNewService" name="selectFormaPagoCheckin" data-action="change->sistema--app#actualizarComprobanteNewService change->sistema--app#validaBtnCargarNewServicio">
                                 <option value="">Seleccione forma de pago</option>                     
                                 <option value="1">Efectivo</option>                     
-                                <option value="2">Bono</option>                     
+                                <option value="2">Voucher</option>                     
                                 <option value="3">Transaccion</option>                     
                             </select>
                         </div>
@@ -633,6 +651,7 @@
                                             <th class="text-nowrap">Forma de pago</th>
                                             <th class="text-nowrap">Comprobante</th>
                                             <th class="text-nowrap">Valor</th>
+                                            <th class="text-nowrap">Cantidad</th>
                                             <th class="text-nowrap">Valor pagado</th>
                                             <th class="text-nowrap">Saldo</th>
                                         </tr>
@@ -702,7 +721,7 @@
                             <select class="form-select" id="selectFormaPagoNewProductoCheckin" name="selectFormaPagoProductoCheckin" data-action="change->sistema--app#actualizarComprobanteNewProducto change->sistema--app#validaBtnCargarnewProductoCheckin">
                                 <option value="">Seleccione forma de pago</option>                     
                                 <option value="1">Efectivo</option>                     
-                                <option value="2">Bono</option>                     
+                                <option value="2">Voucher</option>                     
                                 <option value="3">Transaccion</option>                     
                             </select>
                         </div>

@@ -213,10 +213,9 @@ class ContabilidadController extends AbstractController
                 {
                     $servicios[$det->getServicio()->getId()][] =    [
                                                                         'concepto' => $det->getServicio()->getName().' / '.$det->getServicio()->getHours().' Horas',
-                                                                        'cantidad' => 1,
-                                                                        'valorUnd' =>  $det->getServicio()->getPrice(),
-                                                                        'subtotal' =>  $det->getValor(),
-                                                                        
+                                                                        'cantidad' => (!is_null($det->getCantidad())) ? $det->getCantidad() : 0,
+                                                                        'valorUnd' => $det->getServicio()->getPrice(),
+                                                                        'subtotal' => $det->getValor(),
                                                                     ]; 
                 }
 
@@ -237,15 +236,17 @@ class ContabilidadController extends AbstractController
         foreach ($servicios as $grupoServ) 
         {
             $subtotal = 0;
+            $cantidad = 0;
 
             foreach ($grupoServ as $servicio)
             {
                 $subtotal += $servicio['subtotal'];
+                $cantidad += $servicio['cantidad'];
             }
 
             $tabla[] =  [
                             'concepto' => $grupoServ[0]['concepto'],
-                            'cantidad' => 1,
+                            'cantidad' => $cantidad,
                             'valorUnd' => $grupoServ[0]['valorUnd'],
                             'subtotal' => $subtotal,
                                 

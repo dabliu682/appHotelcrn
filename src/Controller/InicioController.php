@@ -294,7 +294,7 @@ class InicioController extends AbstractController
             $nomActual = '';
         }
 
-        $beneficiarios = $bd->getRepository(User::class)->findBy(['tipo' => '3' ],['id' => 'ASC']);
+        $beneficiarios = $bd->getRepository(User::class)->findBy(['tipo' => [1,3] ],['id' => 'ASC']);
 
         $beneficiariosSelector = [];
 
