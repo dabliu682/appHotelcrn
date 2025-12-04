@@ -27,13 +27,25 @@ class ReservasController extends AbstractController
         $checkins = $bd->getRepository(checkin::class)->findBy([],['id' => 'DESC']);
         $clientes = $bd->getRepository(Persons::class)->findBy([],['id' => 'ASC']);
         $habitaciones = $bd->getRepository(Rooms::class)->findBy([],['id' => 'ASC']);
-        $servicios = $bd->getRepository(Services::class)->findBy(['tipo' => [1,3,4]],['tipo' => 'ASC']);
+        $servicios = $bd->getRepository(Services::class)->findBy(['tipo' => [1,2,3,4]],['tipo' => 'ASC']);
         $productos = $bd->getRepository(Productos::class)->findProductos();
         $documents = $bd->getRepository(Documents::class)->findBy([],['id' => 'ASC']);
         $companias = $bd->getRepository(Companys::class)->findBy([],['id' => 'ASC']);
-        $serviciosCheck = $bd->getRepository(Services::class)->findBy(['tipo' => [3,4]],['name' => 'ASC']);        
+        $serviciosCheck = $bd->getRepository(Services::class)->findBy(['tipo' => [3,4]],['name' => 'ASC']); 
+        
+        $turno = $bd->getRepository(Turnos::class)->findOneBy(['status' => 1]);
 
-        return $this->render('reservas/index.html.twig', ['clientes' => $clientes, 'habitaciones' => $habitaciones, 'checkins' => $checkins, 'servicios' => $servicios, 'productos' => $productos, 'documents' => $documents, 'companias' => $companias, 'serviciosCheck' => $serviciosCheck]);
+        $existeTurno = 0;
+        
+        if(!is_null($turno))
+        {
+            if($this->getUser()->getId() == $turno->getUsuario()->getId())
+            {
+                $existeTurno = 1;
+            }
+        }
+
+        return $this->render('reservas/index.html.twig', ['clientes' => $clientes, 'habitaciones' => $habitaciones, 'checkins' => $checkins, 'servicios' => $servicios, 'productos' => $productos, 'documents' => $documents, 'companias' => $companias, 'serviciosCheck' => $serviciosCheck, 'existeTurno' => $existeTurno]);
     }
 
     public function nuevaReserva()
@@ -156,7 +168,15 @@ class ReservasController extends AbstractController
     {
         $bd = $this->getDoctrine()->getManager();
 
-        $checkin = $bd->getRepository(Checkin::class)->find($request->get('idCheckin'));
+        if($request->get('idCheckin') != '')
+        {
+            $checkin = $bd->getRepository(Checkin::class)->find($request->get('idCheckin'));
+        }
+        else
+        {
+            $checkin = new Checkin();
+        }
+
 
         $horaLlega = $request->get('horaLlegClienteRev');      
         $horaLlega = \DateTime::createFromFormat('H:i', $horaLlega);
@@ -236,17 +256,24 @@ class ReservasController extends AbstractController
 
         foreach ($servicios as $servicio) 
         {
-            $serv = $bd->getRepository(Services::class)->find($servicio[7]); 
-            $valorPag = floatval(str_replace(',', '.', str_replace('.', '', $servicio[5])));
-            $saldo = floatval(str_replace(',', '.', str_replace('.', '', $servicio[6])));
+            $serv = $bd->getRepository(Services::class)->find($servicio['selectServ']); 
+            $valorPag = floatval(str_replace(',', '.', str_replace('.', '', $servicio['valorPagServCheckin'])));
+            $saldo = floatval(str_replace(',', '.', str_replace('.', '', $servicio['saldoServCheckin'])));
+            $valorServ = floatval(str_replace(',', '.', str_replace('.', '', $servicio['valorServCheckin'])));
+            $descuento = floatval(str_replace(',', '.', str_replace('.', '', $servicio['descuentoServCheckin'])));
+            $cantidad = $servicio['inputCantidadServicio'];
 
             $detalle = new Detallesmov();
             $detalle->setMov($mov);
             $detalle->setServicio($serv);
             $detalle->setValor($valorPag);
+            $detalle->setDescuento($descuento);
+            $detalle->setValorservicio($valorServ);
+            $detalle->setCantidad($cantidad);
             $detalle->setSaldo($saldo);
-            $detalle->setFormapago($servicio[9]);
+            $detalle->setFormapago($servicio['selectFormaPagoCheckin']);
             $detalle->setEstado(1);
+            $detalle->setNumComprobante($servicio['comprobanteCheckin']);            
             $detalle->setTurno($turno);            
 
             $bd->persist($detalle);
@@ -307,18 +334,25 @@ class ReservasController extends AbstractController
 
         foreach ($servicios as $servicio) 
         {
-            $serv = $bd->getRepository(Services::class)->find($servicio[6]); 
-            $valorPag = floatval(str_replace(',', '.', str_replace('.', '', $servicio[4])));
-            $saldo = floatval(str_replace(',', '.', str_replace('.', '', $servicio[5])));
+            $serv = $bd->getRepository(Services::class)->find($servicio['selectServ']); 
+            $valorPag = floatval(str_replace(',', '.', str_replace('.', '', $servicio['valorPagServCheckin'])));
+            $saldo = floatval(str_replace(',', '.', str_replace('.', '', $servicio['saldoServCheckin'])));
+            $valorServicio = floatval(str_replace(',', '.', str_replace('.', '', $servicio['valorServCheckin'])));
+            $cantidad = $servicio['cantidadCheckin'];
 
             $detalle = new Detallesmov();
             $detalle->setMov($checkin->getMovimientos()[0]);
             $detalle->setServicio($serv);
             $detalle->setValor($valorPag);
             $detalle->setSaldo($saldo);
-            $detalle->setFormapago($servicio[7]);
+            $detalle->setFormapago($servicio['selectFormaPagoCheckin']);
             $detalle->setEstado(1);
             $detalle->setTurno($turno);            
+            $detalle->setDescuento(0);            
+            $detalle->setCantidad($cantidad);            
+            $detalle->setValorservicio($valorServicio);            
+            $detalle->setValorservicio($valorPag+$saldo);            
+            $detalle->setNumComprobante($servicio['comprobanteCheckin']);            
 
             $bd->persist($detalle);
         }
@@ -409,7 +443,7 @@ class ReservasController extends AbstractController
         {
             if(!is_null($detalle->getProducto()))
             {
-                $formasPago = ['1' => 'Efectivo', '2' => 'Bono', '3' => 'Transacción'];
+                $formasPago = ['1' => 'Efectivo', '2' => 'Voucher', '3' => 'Transacción'];
 
                 $productos[] =  [
                                     'producto' => $detalle->getProducto()->getCodigo().' - '.$detalle->getProducto()->getNombre(),
@@ -443,15 +477,19 @@ class ReservasController extends AbstractController
                     $habitacion = $checkin->getHabitacion()->getName();
                 }
 
-                $formasPago = ['1' => 'Efectivo', '2' => 'Bono', '3' => 'Transacción'];
+                $formasPago = ['1' => 'Efectivo', '2' => 'Voucher', '3' => 'Transacción'];
 
                 $servicios[] = [
                                     'servicio' => $detalle->getServicio()->getName().' / '.$detalle->getServicio()->getHours().' Horas', 
                                     'habitacion' => $habitacion, 
                                     'formaPago' => $formasPago[$detalle->getFormapago()], 
-                                    'valor' => $detalle->getValor()+$detalle->getSaldo(), 
+                                    'valor' => (!is_null($detalle->getValorservicio())) ? $detalle->getValorservicio()-$detalle->getDescuento() : $detalle->getValor() , 
                                     'valorPag' => $detalle->getValor(), 
-                                    'saldo' => $detalle->getSaldo(), 
+                                    'saldo' => $detalle->getSaldo(),
+                                    'valorServ' => (!is_null($detalle->getValorservicio())) ? $detalle->getValorservicio() : $detalle->getValor(),
+                                    'descuento' => (!is_null($detalle->getDescuento())) ? $detalle->getDescuento() : 0,
+                                    'comprobante' => (!is_null($detalle->getNumComprobante())) ? $detalle->getNumComprobante() : '', 
+                                    'cantidad' => $detalle->getCantidad(),
                                 ];
 
                 $saldo += $detalle->getSaldo();

@@ -125,6 +125,36 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
      */
     private $gastos;
 
+    /**
+     * @ORM\Column(type="text", nullable=true)
+     */
+    private $celular;
+
+    /**
+     * @ORM\Column(type="integer", nullable=true)
+     */
+    private $tipo;
+
+    /**
+     * @ORM\Column(type="boolean", nullable=true)
+     */
+    private $cambioclave;
+
+    /**
+     * @ORM\Column(type="datetime", nullable=true)
+     */
+    private $ultimoaccesso;
+
+    /**
+     * @ORM\Column(type="boolean", nullable=true)
+     */
+    private $turno;
+
+    /**
+     * @ORM\OneToMany(targetEntity=Bonos::class, mappedBy="usuario")
+     */
+    private $beneficiario_bono;
+
     public function __construct()
     {
         $this->floors = new ArrayCollection();
@@ -142,6 +172,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
         $this->bonos = new ArrayCollection();
         $this->bonos_usucobro = new ArrayCollection();
         $this->gastos = new ArrayCollection();
+        $this->beneficiario_bono = new ArrayCollection();
     }
 
     /**
@@ -679,6 +710,96 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
             // set the owning side to null (unless already changed)
             if ($gasto->getUsucrea() === $this) {
                 $gasto->setUsucrea(null);
+            }
+        }
+
+        return $this;
+    }
+
+    public function getCelular(): ?string
+    {
+        return $this->celular;
+    }
+
+    public function setCelular(?string $celular): self
+    {
+        $this->celular = $celular;
+
+        return $this;
+    }
+
+    public function getTipo(): ?int
+    {
+        return $this->tipo;
+    }
+
+    public function setTipo(?int $tipo): self
+    {
+        $this->tipo = $tipo;
+
+        return $this;
+    }
+
+    public function isCambioclave(): ?bool
+    {
+        return $this->cambioclave;
+    }
+
+    public function setCambioclave(?bool $cambioclave): self
+    {
+        $this->cambioclave = $cambioclave;
+
+        return $this;
+    }
+
+    public function getUltimoaccesso(): ?\DateTimeInterface
+    {
+        return $this->ultimoaccesso;
+    }
+
+    public function setUltimoaccesso(?\DateTimeInterface $ultimoaccesso): self
+    {
+        $this->ultimoaccesso = $ultimoaccesso;
+
+        return $this;
+    }
+
+    public function isTurno(): ?bool
+    {
+        return $this->turno;
+    }
+
+    public function setTurno(?bool $turno): self
+    {
+        $this->turno = $turno;
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, Bonos>
+     */
+    public function getBeneficiarioBono(): Collection
+    {
+        return $this->beneficiario_bono;
+    }
+
+    public function addBeneficiarioBono(Bonos $beneficiarioBono): self
+    {
+        if (!$this->beneficiario_bono->contains($beneficiarioBono)) {
+            $this->beneficiario_bono[] = $beneficiarioBono;
+            $beneficiarioBono->setUsuario($this);
+        }
+
+        return $this;
+    }
+
+    public function removeBeneficiarioBono(Bonos $beneficiarioBono): self
+    {
+        if ($this->beneficiario_bono->removeElement($beneficiarioBono)) {
+            // set the owning side to null (unless already changed)
+            if ($beneficiarioBono->getUsuario() === $this) {
+                $beneficiarioBono->setUsuario(null);
             }
         }
 

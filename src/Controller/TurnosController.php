@@ -32,6 +32,7 @@ class TurnosController extends AbstractController
         $movimiento->setFecha(new \DateTime('now', new \DateTimeZone('America/Bogota')));
         $movimiento->setTipo(1);
         $movimiento->setEstado(1);
+        $movimiento->setTurno($turno);
 
         $bd->persist($movimiento);
 

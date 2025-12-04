@@ -64,6 +64,21 @@ class Detallesmov
      */
     private $formapago;
 
+    /**
+     * @ORM\Column(type="float", nullable=true)
+     */
+    private $descuento;
+
+    /**
+     * @ORM\Column(type="float", nullable=true)
+     */
+    private $valorservicio;
+
+    /**
+     * @ORM\Column(type="text", nullable=true)
+     */
+    private $numComprobante;
+
     public function getId(): ?int
     {
         return $this->id;
@@ -173,6 +188,42 @@ class Detallesmov
     public function setFormapago(?int $formapago): self
     {
         $this->formapago = $formapago;
+
+        return $this;
+    }
+
+    public function getDescuento(): ?float
+    {
+        return $this->descuento;
+    }
+
+    public function setDescuento(?float $descuento): self
+    {
+        $this->descuento = $descuento;
+
+        return $this;
+    }
+
+    public function getValorservicio(): ?float
+    {
+        return $this->valorservicio;
+    }
+
+    public function setValorservicio(?float $valorservicio): self
+    {
+        $this->valorservicio = $valorservicio;
+
+        return $this;
+    }
+
+    public function getNumComprobante(): ?string
+    {
+        return $this->numComprobante;
+    }
+
+    public function setNumComprobante(?string $numComprobante): self
+    {
+        $this->numComprobante = $numComprobante;
 
         return $this;
     }

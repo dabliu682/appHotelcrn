@@ -51,12 +51,12 @@
                             <div class="me-3 d-flex align-items-center justify-content-center" title="Registrar movimiento" data-action="click->sistema--app#registrarMov" style="height: 60px; width: 60px; background: rgba(255,255,255,0.12); border-radius: 50%;">
                             <i class="fas fa-user-clock fa-2x"></i>
                         {% else %}
-                            <div class="me-3 d-flex align-items-center justify-content-center" title="Abrir turno" data-action="click->sistema--app#abrirTurno" style="height: 60px; width: 60px; background: #ffc7c7; border-radius: 50%; cursor:pointer">
+                            <div class="me-3 d-flex align-items-center justify-content-center" {% if app.user.turno %} title="Abrir turno" data-action="click->sistema--app#abrirTurno" {% else %} title="No tiene permiso para abrir turno" {% endif %} style="height: 60px; width: 60px; background: #ffc7c7; border-radius: 50%; cursor:pointer">
                             <i class="fas fa-user-clock fa-2x text-danger"></i>
                         {% endif %}
                     </div>
                     <div class="flex-grow-1">
-                        <div class="h6 fw-bold mb-1">{{ app.user.name }}</div>
+                        <div class="h6 fw-bold mb-1">{{ nomActual }}</div>
                         <div class="card-title mb-1 fs-6">Turno actual - {{ turnoActual }}</div>                            
                     </div>
                 </div>
@@ -121,7 +121,7 @@
                                                                 {% if habitacion.disponible == '1' %}
                                                                     Disponible
                                                                 {% elseif habitacion.disponible == '2' %}
-                                                                    Ocupada
+                                                                    {{ habitacion.fechaSalida }}
                                                                 {% elseif habitacion.disponible == '3' %}
                                                                     Aseo
                                                                 {% else %}
@@ -330,105 +330,6 @@
         </div>
     </div>
 
-    <!-- Modal para hacer check-in -->
-    {#<div class="modal fade" id="modalCheckin" data-turbo="false" data-sistema--app-target="modalCheckin" tabindex="-1" aria-labelledby="modalCheckinLabel" aria-hidden="true">
-        <div class="modal-dialog modal-xl">
-            <div class="modal-content">
-                <input type="hidden" name="idCheckin" id="numCheckin"  value="1">
-                <div class="modal-header">
-                    <h5 class="modal-title"><span data-sistema--app-target="modalCheckinLabel">Check-in</span></h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                </div>
-                <div class="modal-body" data-sistema--app-target="modalBodyCheckin">
-                </div>  
-                <div class="modal-footer">
-                    <div class="w-100 d-flex flex-wrap justify-content-start" data-sistema--app-target="botonesModalCheckin">
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>#}
-
-    {#<div class="modal fade" id="modalBuscarClienteCheckin" data-turbo="false" data-sistema--app-target="modalBuscarClienteCheckin" tabindex="-1" aria-labelledby="modalCheckinLabel" aria-hidden="true">
-        <div class="modal-dialog modal-dialog-centered modal-sm">
-            <div class="modal-content shadow-lg" style="box-shadow: 0 0.5rem 2rem rgba(33, 37, 41, 0.95) !important;">
-                <div class="modal-header">
-                    <h5 class="modal-title">Buscar cliente</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
-                </div>
-                <div class="modal-body">
-                    <input type="text" id="inputBuscar" class="form-control" data-action="change->sistema--app#buscarCliente" placeholder="Nombres, Apellidos, Numero...">
-                </div>
-            </div>
-        </div>
-    </div>#}
-    
-    <!-- Modal para registrar servicios -->
-    {#<div class="modal fade" id="modalNuevoServicioCheckin" data-sistema--app-target="modalNuevoServicioCheckin" tabindex="-1" aria-labelledby="modalNuevoServicioCheckinLabel" aria-hidden="true" style="margin-top:25px !important;">
-        <div class="modal-dialog modal-lg">
-            <div class="modal-content shadow-lg" style="box-shadow: 0 1.5rem 3.5rem 1rem rgba(33,37,41,0.98) !important;">
-                <div class="modal-header">
-                    <h5 class="modal-title">Registro de servicios</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                </div>            
-                <div class="modal-body">
-                    <div class="row mb-3">
-                        <div class="col-md-12">
-                            <label for="selectServ" class="form-label" style="font-weight: bold;">Servicio</label> 
-                            <select class="form-select" id="selectServ" name="selectServ" data-sistema--app-target="selectServ"  data-action="change->sistema--app#cargarServicioCheckin change->sistema--app#validaBtnGuardarServicioCheckin">
-                                <option value="">Seleccione servicio</option>    
-                                {% for servicio in serviciosSelector %}
-                                    <option value="{{ servicio.id }}">{{ servicio.name }}</option>
-                                {% endfor %}
-                            </select>
-                        </div>
-                    </div>
-                    <div class="row mb-3">
-                        <div class="col-md-12">
-                            <label for="selectHabitacionServ" class="form-label" style="font-weight: bold;">Habitación</label> 
-                            <select class="form-select" id="selectHabitacionServ" name="selectHabitacionServ" data-sistema--app-target="selectHabitacionServ"  data-action="change->sistema--app#validaBtnGuardarServicioCheckin">
-                                <option value="">Seleccione habitación</option>                                
-                            </select>
-                        </div>
-                    </div>
-                    <div class="row mb-3">
-                        <div class="col-md-4">
-                            <label for="tipoDoc" class="form-label" style="font-weight: bold;">Valor</label> 
-                            <input type="text" name="numeroDocCliente" class="form-control" data-sistema--app-target="valorServCheckin" disabled>
-                        </div>
-                        <div class="col-md-4">
-                            <label for="tipoDoc" class="form-label" style="font-weight: bold;">Valor pagado</label> 
-                            <input type="text" name="numeroDocCliente" class="form-control" data-sistema--app-target="valorPagServCheckin" data-action="blur->sistema--app#actualizaSaldoCheckin blur->sistema--app#validaBtnGuardarServicioCheckin">
-                        </div>
-                        <div class="col-md-4">
-                            <label for="tipoDoc" class="form-label" style="font-weight: bold;">Saldo</label> 
-                            <input type="text" name="numeroDocCliente" class="form-control" data-sistema--app-target="saldoServCheckin" disabled>
-                        </div>
-                    </div>
-                    <div class="row mb-3">                        
-                        <div class="col-md-6">
-                            <label for="selectFormaPagoCheckin" class="form-label" style="font-weight: bold;">Forma de pago</label> 
-                            <select class="form-select" id="selectFormaPagoCheckin" name="selectFormaPagoCheckin" data-sistema--app-target="selectFormaPagoCheckin"  data-action="change->sistema--app#actualizarComprobante change->sistema--app#validaBtnGuardarServicioCheckin">
-                                <option value="">Seleccione forma de pago</option>                     
-                                <option value="1">Efectivo</option>                     
-                                <option value="2">Bono</option>                     
-                                <option value="3">Transaccion</option>                     
-                            </select>
-                        </div>
-                        <div class="col-md-6">
-                            <label for="tipoDoc" class="form-label" style="font-weight: bold;">N° comprobante</label> 
-                            <input type="text" name="numeroDocCliente" class="form-control" data-sistema--app-target="comprobanteCheckin" disabled data-action="blur->sistema--app#validaBtnGuardarServicioCheckin">
-                        </div>
-                    </div>
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-primary" data-sistema--app-target="btnGuardarServicioCheckin" data-action="sistema--app#guardarServicioCheckin" disabled>Guardar</button>
-                    <button type="button" class="btn btn-danger" data-bs-dismiss="modal">Cancelar</button>
-                </div>
-            </div>
-        </div>
-    </div>#}
-
     <!-- Modal para registrar clientes -->
     <div class="modal fade" id="modalNuevoCliente" style="margin-top:23px" data-sistema--app-target="modalNuevoCliente" tabindex="-1" aria-labelledby="modalNuevoClienteLabel" aria-hidden="true">
         <div class="modal-dialog modal-lg">
@@ -513,14 +414,14 @@
                     <div class="row mb-3">
                         <div class="col-md-2">
                             <label for="selectServ" class="form-label" style="font-weight: bold;">Detalle</label> 
-                            <select class="form-select" id="detalleVenta" name="selectServ" data-sistema--app-target="selectServ"  data-action="change->sistema--app#cargarSelectProductosMov change->sistema--app#validaBtnRegistroVenta">
+                            <select class="form-select" id="detalleVenta" name="selectServ" data-sistema--app-target="selectServ"  data-action="change->sistema--app#cargarSelectProductosMov {% if app.user.name == nomActual %}{% if app.user.turno %} {% if app.user.name == nomActual %}{% if app.user.turno %} change->sistema--app#validaBtnRegistroVenta{% endif %}{% endif %}{% endif %}{% endif %}">
                                 <option value="1">Producto</option>    
                                 <option value="2">Servicio</option>    
                             </select>
                         </div>
                         <div class="col-md-4" id="divProductos">
                             <label for="selectServ" class="form-label" style="font-weight: bold;">Productos</label> 
-                            <select class="form-select" id="productoVenta" name="selectServ" data-sistema--app-target="selectServ" data-action="change->sistema--app#cargarproductoVenta change->sistema--app#validaBtnRegistroVenta">
+                            <select class="form-select" id="productoVenta" name="selectServ" data-sistema--app-target="selectServ" data-action="change->sistema--app#cargarproductoVenta {% if app.user.name == nomActual %}{% if app.user.turno %} change->sistema--app#validaBtnRegistroVenta{% endif %}{% endif %}">
                                 <option value="">Seleccione producto</option>    
                                 {% for producto in productos %}
                                     <option value="{{ producto.id }}">{{ producto.codigo}} - {{ producto.nombre}}</option>    
@@ -529,7 +430,7 @@
                         </div>
                         <div class="col-md-4" id="divServicios" style="display:none">
                             <label for="selectServ" class="form-label" style="font-weight: bold;">Servicios</label> 
-                            <select class="form-select" id="servicioVenta" name="selectServ" data-sistema--app-target="selectServ" data-action="change->sistema--app#cargarproductoVenta change->sistema--app#validaBtnRegistroVenta">
+                            <select class="form-select" id="servicioVenta" name="selectServ" data-sistema--app-target="selectServ" data-action="change->sistema--app#cargarproductoVenta {% if app.user.name == nomActual %}{% if app.user.turno %} change->sistema--app#validaBtnRegistroVenta{% endif %}{% endif %}">
                                 <option value="">Seleccione servicio</option>    
                                 {% for servicio in selectServicios %}
                                     <option value="{{ servicio.id }}">{{ servicio.name }}</option>    
@@ -544,7 +445,7 @@
                         </div>
                         <div class="col-md-2">
                             <label for="tipoDoc" class="form-label" style="font-weight: bold;">Cantidad</label> 
-                            <input type="text" id="cantVenta" name="numeroDocCliente" class="form-control" data-action="blur->sistema--app#calculoValProdVenta blur->sistema--app#validaBtnRegistroVenta">
+                            <input type="text" id="cantVenta" name="numeroDocCliente" class="form-control" data-action="blur->sistema--app#calculoValProdVenta {% if app.user.name == nomActual %}{% if app.user.turno %} change->sistema--app#validaBtnRegistroVenta{% endif %}{% endif %}">
                         </div>
                         <div class="col-md-2">
                             <label for="tipoDoc" class="form-label" style="font-weight: bold;">Valor</label> 
@@ -623,7 +524,7 @@
                                             </tr>
                                         {% else %}
                                             <tr class="table-light">
-                                                <td colspan= 3 style="text-align:center" >No se han registrado movimientos</td>
+                                                <td colspan= 4 style="text-align:center" >No se han registrado movimientos</td>
                                             </tr>  
                                         {% endif %}                                                  
                                     </tbody>
@@ -633,8 +534,24 @@
                     </div>
                 </div>
                 <div class="modal-footer">
-                    <button type="button" class="btn btn-success" data-sistema--app-target="" data-action="sistema--app#abrirModalBono">Registrar bono</button>
-                    <button type="button" class="btn btn-danger" data-sistema--app-target="" data-action="sistema--app#cerrarPeriodo">Cerrar turno</button>
+                    <button type="button" class="btn btn-success" data-sistema--app-target=""   {% if app.user.name == nomActual %} 
+                                                                                                    {% if app.user.turno %} 
+                                                                                                        data-action="sistema--app#abrirModalBono" 
+                                                                                                    {% else %} 
+                                                                                                        title="No tiene permisos para esta acción" 
+                                                                                                    {% endif %}
+                                                                                                {% else %} 
+                                                                                                    disabled
+                                                                                                {% endif %}> Registrar bono</button>
+                    <button type="button" class="btn btn-danger" data-sistema--app-target=""    {% if app.user.name == nomActual %} 
+                                                                                                    {% if app.user.turno %} 
+                                                                                                        data-action="sistema--app#cerrarPeriodo" 
+                                                                                                    {% else %} 
+                                                                                                        title="No tiene permisos para esta acción" 
+                                                                                                    {% endif %}
+                                                                                                {% else %} 
+                                                                                                    disabled
+                                                                                                {% endif %}>Cerrar turno</button>
                 </div>
             </div>
         </div>
@@ -655,7 +572,7 @@
                                 <label for="selectServ" class="form-label" style="font-weight: bold;">A nombre de </label> 
                                 <select id="beneficiarioBono" name="beneficiarioBono" class="form-control selectpicker"  data-live-search="true" data-live-search-placeholder="Filtro beneficiarios" data-size="5" title="Seleccione beneficiario" name="clienteRev" data-action="sistema--app#validaBtnGuardarBono">
                                     {% for cliente in beneficiariosSelector %}
-                                        <option value="{{ cliente.id }}">{{ cliente.documentNumber }} - {{ cliente.name }} {{ cliente.lastname }}</option>
+                                        <option value="{{ cliente.id }}">{{ cliente.name }}</option>
                                     {% endfor %}
                                 </select>
                             </div>

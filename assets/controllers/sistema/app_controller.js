@@ -13,12 +13,15 @@ export default class extends Controller {
         'rutaCambiaEstadoServicio': String,
         'rutaCargarProductosPlano': String,
         'rutaUpdateCantProducto': String,
+        'rutaDescargarInformes': String,
+        'rutaRegistrarUsuarios': String,
         'rutaEliminarTiposServ': String,
         'rutaContabilizarGasto': String,
         'rutaEliminarCompania': String,
         'rutaEliminarClientes': String,
         'rutaEliminarServicio': String,
         'rutaGuardarTiposServ': String,
+        'rutaGenerarInformes': String,
         'rutaEliminarCheckin': String,
         'rutaEliminarReserva': String,
         'rutaGuardarServicio': String,
@@ -33,6 +36,7 @@ export default class extends Controller {
         'rutaGuardarEntrada': String,
         'rutaRegistrarVenta': String,
         'rutaGenerarFactura': String,
+        'rutacambiaTurnoUser': String,
         'rutaObtenerCheckin': String,
         'rutaNuevaCompania': String,
         'rutaEliminarGasto': String,
@@ -53,6 +57,7 @@ export default class extends Controller {
         'rutaProductos': String,
         'rutaListaServ': String,
         'rutaCompanias': String,
+        'rutaUsuarios': String,
         'rutaReservas': String,
         'rutaClientes': String,
         'rutaEntradas': String,
@@ -79,6 +84,7 @@ export default class extends Controller {
         'numeroVehiculoCliente',
         'selectCompaniaCliente',
         'modalContabilizaGasto',
+        'inputCantidadServicio',
         'selectTipoHabitacion',
         'nuevoServicioCheckin',
         'selectHabitacionServ',
@@ -87,6 +93,7 @@ export default class extends Controller {
         'saldoProductoCheckin',
         'modalCargarProductos',
         'modalNuevaHabitacion',
+        'descuentoServCheckin',
         'selectTipoDocCliente',
         'nuevoProductoCheckin',
         'fechaLlegClienteRev',
@@ -95,6 +102,7 @@ export default class extends Controller {
         'botonesModalCheckin',
         'formCargarProductos',
         'cantProductoCheckin',
+        'formRegistroUsuario',
         'modalNuevaCompania',
         'modalCompaniaLabel',
         'btnGuardarCompania',
@@ -131,6 +139,7 @@ export default class extends Controller {
         'modalEntradaLabel',
         'modalReservaLabel',
         'cantHabClienteRev',
+        'modalNuevoUsuario',
         'btnGuardarReserva',
         'formNuevoTipoDoc',
         'nombreHabitacion',
@@ -146,10 +155,12 @@ export default class extends Controller {
         'valorServCheckin',
         'saldoServCheckin',
         'numeroCelCliente',
+        'tipoGastoInforme',
         'modalcobrarBono',
         'frameInventario',
         'modalNuevoGasto',
         'frameMovimentos',
+        'servicioInforme',
         'btnGuardarGasto',
         'btnGuardarPiso',
         'modalNuevoPiso',
@@ -165,6 +176,7 @@ export default class extends Controller {
         'planoProductos',
         'frameProductos',
         'codigoProducto',
+        'empresaInforme',
         'frameDashboard',
         'modalNuevoBono',
         'formNuevoGasto',
@@ -177,6 +189,7 @@ export default class extends Controller {
         'modalCheckout',
         'cellCienteRev',
         'selectAireRev',
+        'frameUsuarios',
         'frameEntradas',
         'valorProducto',
         'frameReservas',
@@ -188,7 +201,11 @@ export default class extends Controller {
         'modalFactura',
         'tipoProducto',
         'porcProducto',
+        'formInformes',
+        'desdeInforme',
+        'hastaInforme',
         'selectPisos',
+        'tipoInforme',
         'formCheckin',
         'nitCompania',
         'btnServicio',
@@ -319,10 +336,6 @@ export default class extends Controller {
             let aircond = (event.currentTarget.dataset.aircon == 0) ? 'si' : 'no';
             let fan = (event.currentTarget.dataset.fan == 0) ? 'si' : 'no';
             let tipo = event.currentTarget.dataset.tipo;
-
-            console.log('aircond ' + aircond);
-            console.log('fan ' + fan);
-            console.log('tipo ' + tipo);
 
             this.idHabitacionTarget.value = id;
 
@@ -746,8 +759,6 @@ export default class extends Controller {
         let cantHab = this.cantHabClienteRevTarget.value;
         let cliente = this.clienteRevTarget.value;
 
-        console.log('selectAire: ' + selectAire);
-
         if (fechaLlegada != '' && horaLlegada != '' && selectAire != '' && cantHab != '' && cliente != '') {
             this.btnGuardarReservaTarget.disabled = false;
         } else {
@@ -854,7 +865,6 @@ export default class extends Controller {
         $("#fechaLlegada").val(fechaActual);
         $("#horallegada").val(horaActual24);
         $("#idCheckin").val(event.currentTarget.dataset.id);
-        console.log(event.currentTarget.dataset.cliente);
         $("#clienteSelectCustom-1").val(event.currentTarget.dataset.cliente);
 
         $("#clienteSelectCustom-1").selectpicker('render')
@@ -910,8 +920,6 @@ export default class extends Controller {
             });
 
             select.val(matches[0]);
-
-            console.log('matches: ' + matches);
 
             let clienteId = matches[0];
 
@@ -1106,8 +1114,11 @@ export default class extends Controller {
         let fecha = $("#fechaLlegada").val();
         let hora = $("#horallegada").val();
         let cant = $("#inputCantidadServicio").val();
+        console.log('cant ' + cant)
         let horas = $("#valHorasServ").val();
         let diferencia = horas * cant;
+
+        console.log('diferencia ' + diferencia)
 
         if (diferencia != null || diferencia > 0) {
             this.calcularFechaSalida(fecha, hora, diferencia);
@@ -1118,17 +1129,22 @@ export default class extends Controller {
 
         let fechaHora = new Date(`${fecha}T${hora}:00`);
 
-        console.log(diferencia)
+        console.log(diferencia);
 
         fechaHora.setHours(fechaHora.getHours() + diferencia);
 
-        let fechasalida = fechaHora.toLocaleDateString('es-CO'); // YYYY-MM-DD
+        let fechasalida = fechaHora.toLocaleDateString('es-CO');
         let arrayFecha = fechasalida.split('/');
-        let horasalida = fechaHora.toTimeString().slice(0, 5);             // HH:mm
+        let horasalida = fechaHora.toTimeString().slice(0, 5);
 
-        console.log(arrayFecha);
+        let mes = (arrayFecha[1] < 10) ? '0' + arrayFecha[1] : arrayFecha[1];
+        let dia = (arrayFecha[0] < 10) ? '0' + arrayFecha[0] : arrayFecha[0];
 
-        $("#fechaSalida").val(arrayFecha[2] + '-' + arrayFecha[1] + '-' + arrayFecha[0]);
+        console.log(arrayFecha)
+        console.log(arrayFecha[2] + '-' + mes + '-' + dia)
+        console.log(horasalida)
+
+        $("#fechaSalida").val(arrayFecha[2] + '-' + mes + '-' + dia);
         $("#horaSalida").val(horasalida);
     }
 
@@ -1362,10 +1378,21 @@ export default class extends Controller {
                     <td class="text-nowrap"  style="text-align:right;">${producto[4]}</td>
                     <td class="text-nowrap"  style="text-align:right;">$ ${producto[3]}</td>
                     <td class="text-nowrap" style="text-align:right;">$ ${valorServicio}</td>
+                    <td class="text-nowrap" style="text-align:right;">$ ${producto[6]}</td>
                     <td class="text-nowrap" style="text-align:right;">$ ${valorPagado}</td>
                 `;
                 tbody.appendChild(tr);
             });
+
+            let trPíe = document.createElement('tr');
+
+            trPíe.innerHTML = `
+                                <td colspan=6 class="text-nowrap"  style="text-align:right; font-weight:bold">SUBTOTALES</td>
+                                <td class="text-nowrap"  style="text-align:right; font-weight:bold; color:red">$ ${totalSaldo.toLocaleString('es-CO')}</td>
+                                <td class="text-nowrap" style="text-align:right; font-weight:bold">$ ${totalPagado.toLocaleString('es-CO')}</td>
+                            `;
+
+            tbody.appendChild(trPíe);
 
         } else {
             tbody.innerHTML = '<tr><td colspan="7" style="text-align:center">No se han registrado servicios</td></tr>';
@@ -1394,7 +1421,7 @@ export default class extends Controller {
 
         if (serviciosArray.length > 0) {
             serviciosArray.forEach((producto, i) => {
-                totalPagado += Number(producto[5].replace(/[.,]/g, ''));
+                totalPagado += Number(producto['valorPagServCheckin'].replace(/[.,]/g, ''));
             });
         }
 
@@ -1427,6 +1454,30 @@ export default class extends Controller {
         }
     }
 
+    aplicaDescuentoCheckin() {
+
+        let valorServCheckin = this.valorServCheckinTarget.value;
+        let valorPagServCheckin = this.valorPagServCheckinTarget;
+        let descuentoServCheckin = this.descuentoServCheckinTarget.value;
+
+        if (valorServCheckin != '' && descuentoServCheckin != '') {
+            valorServCheckin = Number(valorServCheckin.replace(/[.,]/g, ''));
+            descuentoServCheckin = Number(descuentoServCheckin.replace(/[.,]/g, ''));
+
+            let desc = valorServCheckin - descuentoServCheckin;
+
+            valorPagServCheckin.value = desc.toLocaleString();
+        }
+        else {
+            if (descuentoServCheckin == '' && valorServCheckin != '') {
+                valorPagServCheckin.value = valorServCheckin;
+            }
+            else {
+                valorPagServCheckin.value = 0;
+            }
+        }
+    }
+
     marcarElemento(event) {
         let index = event.currentTarget.dataset.index;
 
@@ -1453,10 +1504,11 @@ export default class extends Controller {
     }
 
     actualizaSaldoCheckin(event) {
-        let valor = this.valorServCheckinTarget.value;
-        let valorPagado = this.valorPagServCheckinTarget.value;
-
-        let saldo = Number(valor.replace(/[.,]/g, '')) - Number(valorPagado.replace(/[.,]/g, ''));
+        let valor = Number(this.valorServCheckinTarget.value.replace(/[.,]/g, ''));
+        let descuento = Number(this.descuentoServCheckinTarget.value.replace(/[.,]/g, ''));
+        valor = valor - descuento;
+        let valorPagado = Number(this.valorPagServCheckinTarget.value.replace(/[.,]/g, ''));
+        let saldo = valor - valorPagado;
         this.saldoServCheckinTarget.value = saldo.toLocaleString('es-CO');
     }
 
@@ -1535,9 +1587,11 @@ export default class extends Controller {
         let saldoServCheckin = this.saldoServCheckinTarget.value;
         let selectFormaPagoCheckin = this.selectFormaPagoCheckinTarget.value;
         let comprobanteCheckin = this.comprobanteCheckinTarget.value;
+        let descuentoServCheckin = this.descuentoServCheckinTarget.value;
+        let inputCantidadServicio = this.inputCantidadServicioTarget.value;
 
         // Crear un array con los datos del servicio actual
-        let nuevoServicio = [
+        let nuevoServicio = {
             selectServText,
             selectHabText,
             selectFomaPagoText,
@@ -1548,12 +1602,16 @@ export default class extends Controller {
             selectServ,
             selectHabitacionServ,
             selectFormaPagoCheckin,
-        ];
+            descuentoServCheckin,
+            inputCantidadServicio
+        };
 
         // Acumular servicios en el array, agregando el nuevo al inicio
         let key = 'servicioCheckin' + index;
         let serviciosArray = [];
+
         let serviciosGuardados = localStorage.getItem(key);
+
         if (serviciosGuardados) {
             try {
                 serviciosArray = JSON.parse(serviciosGuardados);
@@ -1564,8 +1622,14 @@ export default class extends Controller {
                 serviciosArray = [];
             }
         }
+
+        // Agregar el nuevo servicio al inicio
         serviciosArray.unshift(nuevoServicio);
+
+        // Guardar en localStorage
         localStorage.setItem(key, JSON.stringify(serviciosArray));
+
+        this.recalcularFechaSalida();
 
         // Limpiar los campos del formulario
         this.selectServTarget.value = '';
@@ -1575,6 +1639,8 @@ export default class extends Controller {
         this.saldoServCheckinTarget.value = '';
         this.selectFormaPagoCheckinTarget.value = '';
         this.comprobanteCheckinTarget.value = '';
+        this.inputCantidadServicioTarget.value = '1';
+        this.descuentoServCheckinTarget.value = '';
         this.comprobanteCheckinTarget.disabled = true;
         this.btnGuardarServicioCheckinTarget.disabled = true;
 
@@ -1582,8 +1648,6 @@ export default class extends Controller {
 
         // Actualizar la tabla de servicios en el modal
         this.actualizarTablaServiciosCheckin();
-        this.recalcularFechaSalida();
-
 
     }
 
@@ -1605,30 +1669,44 @@ export default class extends Controller {
         tbody.innerHTML = ''; // Limpiar el contenido actual
         let totalPagado = 0;
         let totalSaldo = 0;
+
         if (serviciosArray.length > 0) {
             serviciosArray.forEach((servicio, i) => {
-                totalPagado += Number(servicio[5].replace(/[.,]/g, ''));
-                totalSaldo += Number(servicio[6].replace(/[.,]/g, ''));
+                totalPagado += Number(servicio['valorPagServCheckin'].replace(/[.,]/g, ''));
+                totalSaldo += Number(servicio['saldoServCheckin'].replace(/[.,]/g, ''));
                 let tr = document.createElement('tr');
-                const valorServicio = Number(servicio[4].replace(/[.,]/g, '')).toLocaleString('es-CO');
-                const valorPagado = Number(servicio[5].replace(/[.,]/g, '')).toLocaleString('es-CO');
+                let valorServicio = Number(servicio['valorServCheckin'].replace(/[.,]/g, ''));
+                let descuento = Number(servicio['descuentoServCheckin'].replace(/[.,]/g, ''));
+                let valorPagado = servicio['valorPagServCheckin'];
+                let valor = valorServicio - descuento;
+
                 tr.innerHTML = `
                     <td>
-                        <i class="fas fa-trash-alt text-danger" title="Eliminar" data-servicio-index="${i}" data-habitacion = "${servicio[1]}" data-action="click->sistema--app#eliminarServicioCheckin"></i>
+                        <i class="fas fa-trash-alt text-danger" title="Eliminar" data-servicio-index="${i}" data-habitacion = "${servicio['selectHabitacionServ']}" data-action="click->sistema--app#eliminarServicioCheckin"></i>
                     </td>
-                    <td class="text-nowrap">
-                        ${servicio[0]}
-                    </td>
-                    <td class="text-nowrap">${servicio[1]}</td>
-                    <td class="text-nowrap">${servicio[2]}</td>
-                    <td class="text-nowrap">${servicio[3]}</td>
-                    <td class="text-nowrap" style="text-align:right;">$ ${valorServicio}</td>
-                    <td class="text-nowrap" style="text-align:right;">
-                        $ ${valorPagado}
-                    </td>
+                    <td class="text-nowrap">${servicio['selectServText']}</td>
+                    <td class="text-nowrap">${servicio['selectHabText']}</td>
+                    <td class="text-nowrap">${servicio['selectFomaPagoText']}</td>
+                    <td class="text-nowrap">${servicio['comprobanteCheckin']}</td>
+                    <td class="text-nowrap" style="text-align:right;">$ ${valorServicio.toLocaleString('es-CO')}</td>
+                    <td class="text-nowrap" style="text-align:right;">$ ${servicio['descuentoServCheckin']}</td>
+                    <td class="text-nowrap" style="text-align:right;">$ ${valor.toLocaleString('es-CO')}</td>
+                    <td class="text-nowrap" style="text-align:right;">$ ${servicio['saldoServCheckin']}</td>
+                    <td class="text-nowrap" style="text-align:right;">$ ${valorPagado}</td>
                 `;
                 tbody.appendChild(tr);
             });
+
+            let trPie = document.createElement('tr');
+
+            trPie.innerHTML = `
+                <td colspan = 8 style="text-align:right; font-weight:bold">SUBTOTALES</td>
+                <td class="text-nowrap" style="text-align:right; font-weight:bold; color:red">$ ${totalSaldo.toLocaleString('es-CO')}</td>
+                <td class="text-nowrap" style="text-align:right; font-weight:bold">$ ${totalPagado.toLocaleString('es-CO')}</td>
+            `;
+            tbody.appendChild(trPie);
+
+
 
         } else {
             tbody.innerHTML = '<tr><td colspan="7" style="text-align:center">No se han registrado servicios</td></tr>';
@@ -1968,14 +2046,8 @@ export default class extends Controller {
                 let porcentaje = Number(porcProducto / 100);
                 let valEntProducto = parseFloat(this.valEntProductoTarget.value.replace(/\./g, '').replace(',', '.'));
 
-                console.log(porcentaje)
-                console.log(valEntProducto)
-
                 let utilidad = (valEntProducto * porcentaje) * cantidadProducto;
                 let val = (valEntProducto * porcentaje) + valEntProducto;
-
-                console.log(utilidad)
-                console.log(val)
 
                 this.valSalProductoTarget.value = (val - valEntProducto).toLocaleString('es-CO');
                 this.valVentaProductoTarget.value = val.toLocaleString('es-CO');
@@ -2010,8 +2082,6 @@ export default class extends Controller {
         let valEntProducto = this.valEntProductoTarget.value;
         let valSalProducto = this.valSalProductoTarget.value;
         let valVentaProducto = this.valVentaProductoTarget.value;
-
-        console.log(codigoProducto + ' != && ' + cantidadProducto + ' != && ' + valorProducto + ' != && ' + porcProducto + ' != && ' + valEntProducto + ' != && ' + valSalProducto + ' != && ' + valVentaProducto + ' != ');
 
         if (codigoProducto != '' && cantidadProducto != '' && valorProducto != '' && porcProducto != '' && valEntProducto != '' && valSalProducto != '' && valVentaProducto != '') {
             this.btnGuardarEntradaTarget.disabled = false;
@@ -2353,18 +2423,30 @@ export default class extends Controller {
         let tbody = this.modalCheckoutTarget.querySelector(`#serviciosCheckout`);
         tbody.innerHTML = ''; // Limpiar el contenido actual
 
+        let totalPag = 0;
+        let totalSaldo = 0;
+
         servicios.forEach((servicio) => {
+
+            totalPag += servicio.valorPag;
+            totalSaldo += servicio.saldo;
+
             let tr = document.createElement('tr');
-            const valorServicio = servicio.valor.toLocaleString('es-CO');
+            const valorServicio = servicio.valorServ.toLocaleString('es-CO');
             const valorPagado = servicio.valorPag.toLocaleString('es-CO');
+            const descuento = servicio.descuento.toLocaleString('es-CO');
             const saldo = servicio.saldo.toLocaleString('es-CO');
+            const valor = servicio.valor.toLocaleString('es-CO');
 
             tr.innerHTML = `
                 <td class="text-nowrap">${servicio.servicio}</td>
                 <td class="text-nowrap">${servicio.habitacion}</td>
                 <td class="text-nowrap">${servicio.formaPago}</td>
-                <td class="text-nowrap">comprobante</td>
+                <td class="text-nowrap">${servicio.comprobante}</td>
                 <td class="text-nowrap" style="text-align:right;">$ ${valorServicio}</td>
+                <td class="text-nowrap">${servicio.cantidad}</td>
+                <td class="text-nowrap" style="text-align:right;">$ ${descuento}</td>
+                <td class="text-nowrap" style="text-align:right;">$ ${valor}</td>
                 <td class="text-nowrap" style="text-align:right;">$ ${valorPagado}</td>
                 <td class="text-nowrap" style="text-align:right;">$ ${saldo}</td>
             `;
@@ -2372,13 +2454,28 @@ export default class extends Controller {
             tbody.appendChild(tr);
         });
 
+        let trPie = document.createElement('tr');
+
+        trPie.innerHTML = `
+                            <td colspan=8 class="text-nowrap" style="text-align:right; font-weight:bold">SUBTOTALES</td>
+                            <td class="text-nowrap" style="text-align:right; font-weight:bold">$ ${totalPag.toLocaleString('es-CO')}</td>
+                            <td class="text-nowrap" style="text-align:right; font-weight:bold">$ ${totalSaldo.toLocaleString('es-CO')}</td>
+                        `;
+
+        tbody.appendChild(trPie);
+
         let productos = result.productos;
 
         let tbodyProductos = this.modalCheckoutTarget.querySelector(`#productosCheckout`);
         tbodyProductos.innerHTML = ''; // Limpiar el contenido actual
 
+        let totalPaga = 0;
+        let totalSald = 0;
+
         if (productos.length > 0) {
             productos.forEach((producto) => {
+                totalPaga += producto.valorPag;
+                totalSald += producto.saldo;
                 let tr = document.createElement('tr');
                 const valorServicio = producto.valor.toLocaleString('es-CO');
                 const valorPagado = producto.valorPag.toLocaleString('es-CO');
@@ -2397,6 +2494,17 @@ export default class extends Controller {
 
                 tbodyProductos.appendChild(tr);
             });
+
+            trPie = document.createElement('tr');
+
+            trPie.innerHTML = `                  
+                                <td colspan=5 class="text-nowrap" style="text-align:right; font-weight:bold">SUBTOTALES</td>                   
+                                <td class="text-nowrap" style="text-align:right; font-weight:bold">$ ${totalPaga.toLocaleString('es-CO')}</td>                   
+                                <td class="text-nowrap" style="text-align:right; font-weight:bold">$ ${totalSald.toLocaleString('es-CO')}</td>
+                            `;
+
+            tbodyProductos.appendChild(trPie);
+
         }
         else {
             let tr = document.createElement('tr');
@@ -2447,6 +2555,18 @@ export default class extends Controller {
 
             const respuesta = await fetch(rutaCheckin);
             this.frameReservasTarget.innerHTML = await respuesta.text();
+        }
+    }
+
+    calcularNuevoValorServ() {
+        if (this.valorServCheckinTarget.value != '' && this.inputCantidadServicioTarget.value != '') {
+            let valor = Number(this.valorServCheckinTarget.value.replace(/[.,]/g, ''));
+            let cant = Number(this.inputCantidadServicioTarget.value.replace(/[.,]/g, ''));
+
+            let newValor = valor * cant;
+
+            this.valorServCheckinTarget.value = newValor.toLocaleString('es-CO');
+            this.valorPagServCheckinTarget.value = newValor.toLocaleString('es-CO');
         }
     }
 
@@ -2504,17 +2624,39 @@ export default class extends Controller {
 
         if ($("#valorPagNewService") != '') {
             let valor = $("#valorNewService").val().replace(/[.,]/g, '');
-            let pago = $("#valorPagNewService").val().replace(/[.,]/g, '');
+            let pago = $("#valorNewService").val().replace(/[.,]/g, '');
+            let cantidad = $("#cantidadNewService").val().replace(/[.,]/g, '');
+            let newPago = pago * cantidad;
+            console.log(pago);
+            console.log(cantidad);
             let saldo = (Number(valor) - Number(pago)).toLocaleString('es-CO');
             $("#saldoNewService").val(saldo);
+            $("#valorPagNewService").val(newPago.toLocaleString('es-CO'));
         }
     }
 
     actualizaSaldoNewService() {
         let valor = $("#valorNewService").val().replace(/[.,]/g, '');
+        let cantidad = $("#cantidadNewService").val().replace(/[.,]/g, '');
         let pago = $("#valorPagNewService").val().replace(/[.,]/g, '');
+        valor = Number(valor) * Number(cantidad);
         let saldo = (Number(valor) - Number(pago)).toLocaleString('es-CO');
         $("#saldoNewService").val(saldo);
+    }
+
+    actualizaValorNewService() {
+        let valor = $("#valorNewService").val();
+        let cantidad = $("#cantidadNewService").val();
+
+        if (valor != '' && cantidad != '') {
+            valor = valor.replace(/[.,]/g, '');
+            cantidad = cantidad.replace(/[.,]/g, '');
+
+            let newValor = valor * cantidad;
+
+            $("#valorPagNewService").val(newValor.toLocaleString('es-CO'));
+            $("#saldoNewService").val(0);
+        }
     }
 
     actualizarComprobanteNewService(event) {
@@ -2567,9 +2709,10 @@ export default class extends Controller {
         let saldoServCheckin = $("#saldoNewService").val();
         let selectFormaPagoCheckin = selectFormaPagoNewService;
         let comprobanteCheckin = $("#comprobanteNewService").val();
+        let cantidadCheckin = $("#cantidadNewService").val();
 
         // Crear un array con los datos del servicio actual
-        let nuevoServicio = [
+        let nuevoServicio = {
             selectServText,
             selectFomaPagoText,
             comprobanteCheckin,
@@ -2578,7 +2721,8 @@ export default class extends Controller {
             saldoServCheckin,
             selectServ,
             selectFormaPagoCheckin,
-        ];
+            cantidadCheckin
+        };
 
         // Acumular servicios en el array, agregando el nuevo al inicio
         let key = 'newServicioCheckin';
@@ -2605,6 +2749,7 @@ export default class extends Controller {
         $("#valorPagNewService").val('');
         $("#saldoNewService").val('');
         $("#comprobanteNewService").val('')
+        $("#cantidadNewService").val('1')
         $("#btnCaragarNewService1").css("display", "inline");
         $("#btnCaragarNewService2").css("display", "none");
 
@@ -2637,19 +2782,20 @@ export default class extends Controller {
         if (serviciosArray.length > 0) {
             serviciosArray.forEach((servicio, i) => {
                 let tr = document.createElement('tr');
-                const valorServicio = Number(servicio[3].replace(/[.,]/g, '')).toLocaleString('es-CO');
-                const valorPagado = Number(servicio[4].replace(/[.,]/g, '')).toLocaleString('es-CO');
-                const saldo = Number(servicio[5].replace(/[.,]/g, '')).toLocaleString('es-CO');
+                const valorServicio = Number(servicio['valorServCheckin'].replace(/[.,]/g, '')).toLocaleString('es-CO');
+                const valorPagado = Number(servicio['valorPagServCheckin'].replace(/[.,]/g, '')).toLocaleString('es-CO');
+                const saldo = Number(servicio['saldoServCheckin'].replace(/[.,]/g, '')).toLocaleString('es-CO');
                 tr.innerHTML = `
                      <td>
                          <i class="fas fa-trash-alt text-danger" title="Eliminar" data-servicio-index="${i}" data-action="click->sistema--app#eliminarNewServicio"></i>
                      </td>
                      <td class="text-nowrap">
-                         ${servicio[0]}
+                         ${servicio['selectServText']}
                      </td>
-                     <td class="text-nowrap">${servicio[1]}</td>
-                     <td class="text-nowrap">${servicio[2]}</td>
+                     <td class="text-nowrap">${servicio['selectFomaPagoText']}</td>
+                     <td class="text-nowrap">${servicio['comprobanteCheckin']}</td>
                      <td class="text-nowrap" style="text-align:right;">$ ${valorServicio}</td>
+                     <td class="text-nowrap" style="text-align:right;">${servicio['cantidadCheckin']}</td>
                      <td class="text-nowrap" style="text-align:right;">$ ${valorPagado}</td>
                      <td class="text-nowrap" style="text-align:right;">$ ${saldo}</td>
                  `;
@@ -3361,30 +3507,361 @@ export default class extends Controller {
     }
 
     async mostrarInforme() {
+
+        let desde = this.desdeInformeTarget.value;
+        let hasta = this.hastaInformeTarget.value;
+
+        let rutaGenerar = this.rutaGenerarInformesValue;
+
+        let formulario = '';
+
+        formulario = this.formInformesTarget;
+
+        var parametros = new FormData(formulario);
+
+        var consulta = await fetch(rutaGenerar, { 'method': 'POST', 'body': parametros });
+        var result = await consulta.json();
+
         $("#tablaInforme").empty();
 
-        let tabla = `<div>
-                        <div class="col">
-                            Informe de entradas consolidado<br>
-                            Desde: 01-10-2025<br>
-                            Hasta: 31-10-2025
-                        </div>
-                    </div>
-                    <div class="row">
-                        <table class="table table-striped table-hover align-middle mb-0 table-sm" style="min-width: 600px;">
-                            <thead class="table-dark" style="position: sticky; top: 0; z-index: 2;">
-                                <tr>
-                                    <th  colspan=2 style="background: #212529;">Servicio</th>
-                                    <th style="background: #212529;">Valor</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                            </tbody>
-                        </table>
-                    </div>`;
+        if (result.tipoInforme == 1) {
 
+            let datos = result.data;
+
+            datos = Object.values(datos);
+
+            let servicio = '';
+
+            if (this.servicioInformeTarget.value == '1') {
+                servicio = ' - Hospedaje';
+            }
+            else if (this.servicioInformeTarget.value == '3') {
+                servicio = ' - Tienda';
+            }
+            else if (this.servicioInformeTarget.value == '4') {
+                servicio = ' - Lavandería';
+            }
+
+            let body = ``;
+            let valorTotal = 0;
+
+            datos.forEach(d => {
+                body += `
+                            <tr>
+                                <td>${d.fecha}</td>
+                                <td style="text-align:right">$ ${Number(d.valor).toLocaleString('es-CO')}</td>
+                            </tr>
+                        `
+                valorTotal += Number(d.valor);
+            });
+
+            let tabla = `<div class="text-center mb-3">
+                            <h6 class="fw-bold text-uppercase text-secondary mb-1">Informe de entradas consolidado ${servicio}</h6>
+                            <p class="text-muted mb-0">Desde: <strong>01-10-2025</strong> &nbsp; | &nbsp; Hasta: <strong>31-10-2025</strong></p>
+                        </div>
+                        <div class="row justify-content-center">
+                            <table class="table table-striped table-hover align-middle mb-0 table-sm mt-3" style="width: 500px;">
+                                <thead class="table-dark" style="position: sticky; top: 0; z-index: 2;">
+                                    <tr>
+                                        <th style="background: #212529;">Fecha</th>
+                                        <th style="background: #212529;">Valor</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    ${body}
+                                    <tr>
+                                        <td style="font-weight:bold">TOTAL</td>
+                                        <td style="text-align:right; font-weight:bold">$ ${valorTotal.toLocaleString('es-CO')}</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>`;
+
+
+            $("#tablaInforme").html(tabla);
+
+        }
+        else if (result.tipoInforme == 2) {
+
+            let datos = result.data;
+
+            datos = Object.values(datos);
+
+            let body = ``;
+            let valorTotal = 0;
+
+            datos.forEach(d => {
+                body += `
+                            <tr>
+                                <td>${d.tipo}</td>
+                                <td style="text-align:right">$ ${Number(d.valor).toLocaleString('es-CO')}</td>
+                            </tr>
+                        `
+                valorTotal += Number(d.valor);
+            });
+
+            let tabla = `<div class="text-center mb-3">
+                            <h6 class="fw-bold text-uppercase text-secondary mb-1">Informe de entradas consolidado por servicio</h6>
+                            <p class="text-muted mb-0">Desde: <strong>01-10-2025</strong> &nbsp; | &nbsp; Hasta: <strong>31-10-2025</strong></p>
+                        </div>
+                        <div class="row justify-content-center">
+                            <table class="table table-striped table-hover align-middle mb-0 table-sm mt-3" style="width: 500px;">
+                                <thead class="table-dark" style="position: sticky; top: 0; z-index: 2;">
+                                    <tr>
+                                        <th style="background: #212529;">tipo</th>
+                                        <th style="background: #212529;">Valor</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    ${body}
+                                    <tr>
+                                        <td style="font-weight:bold">TOTAL</td>
+                                        <td style="text-align:right; font-weight:bold">$ ${valorTotal.toLocaleString('es-CO')}</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>`;
+
+
+            $("#tablaInforme").html(tabla);
+
+        }
+        else if (result.tipoInforme == 3) {
+
+            let datos = result.data;
+
+            datos = Object.values(datos);
+
+            let body = ``;
+            let valorTotal = 0;
+
+            datos.forEach(d => {
+                body += `
+                            <tr>
+                                <td>${d.tipo}</td>
+                                <td style="text-align:right">$ ${Number(d.valor).toLocaleString('es-CO')}</td>
+                            </tr>
+                        `
+                valorTotal += Number(d.valor);
+            });
+
+            let tabla = `<div class="text-center mb-3">
+                            <h6 class="fw-bold text-uppercase text-secondary mb-1">Informe de gastos consolidado</h6>
+                            <p class="text-muted mb-0">Desde: <strong>01-10-2025</strong> &nbsp; | &nbsp; Hasta: <strong>31-10-2025</strong></p>
+                        </div>
+                        <div class="row justify-content-center">
+                            <table class="table table-striped table-hover align-middle mb-0 table-sm mt-3" style="width: 500px;">
+                                <thead class="table-dark" style="position: sticky; top: 0; z-index: 2;">
+                                    <tr>
+                                        <th style="background: #212529;">Tipo</th>
+                                        <th style="background: #212529;">Valor</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    ${body}
+                                    <tr>
+                                        <td style="font-weight:bold">TOTAL</td>
+                                        <td style="text-align:right; font-weight:bold">$ ${valorTotal.toLocaleString('es-CO')}</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>`;
+
+
+            $("#tablaInforme").html(tabla);
+
+        }
+        else if (result.tipoInforme == 4) {
+
+            let datos = result.data;
+
+            datos = Object.values(datos);
+
+            let body = ``;
+            let valorTotal = 0;
+
+            datos.forEach(d => {
+                const fecha = new Date(d.fechacrea);
+                const fechaFormateada = fecha.toLocaleDateString('es-CO', {
+                    year: 'numeric',
+                    month: '2-digit',
+                    day: '2-digit'
+                });
+                body += `
+                            <tr>
+                                <td style="text-align:left">${fechaFormateada}</td>
+                                <td style="text-align:left">${d.tipo}</td>
+                                <td style="text-align:left">${d.detalles}</td>
+                                <td style="text-align:right">$ ${Number(d.valor).toLocaleString('es-CO')}</td>
+                            </tr>
+                        `
+                valorTotal += Number(d.valor);
+            });
+
+            let tabla = `<div class="text-center mb-3">
+                            <h6 class="fw-bold text-uppercase text-secondary mb-1">Informe de gastos detallado</h6>
+                            <p class="text-muted mb-0">Desde: <strong>${desde}</strong> &nbsp; | &nbsp; Hasta: <strong>${hasta}</strong></p>
+                        </div>
+                        <div class="row justify-content-center">
+                            <table class="table table-striped table-hover align-middle mb-0 table-sm mt-3">
+                                <thead class="table-dark" style="position: sticky; top: 0; z-index: 2;">
+                                    <tr>
+                                        <th style="background: #212529;">Fecha</th>
+                                        <th style="background: #212529;">Tipo</th>
+                                        <th style="background: #212529;">Detalle</th>
+                                        <th style="background: #212529;">Valor</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    ${body}
+                                    <tr>
+                                        <td colspan="3" style="font-weight:bold; text-align:right">TOTAL</td>
+                                        <td style="text-align:right; font-weight:bold">$ ${valorTotal.toLocaleString('es-CO')}</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>`;
+
+
+            $("#tablaInforme").html(tabla);
+
+        }
+    }
+
+    async descargarInforme() {
+        let tipoInfo = this.tipoInformeTarget.value;
+        let rutaGenerar = this.rutaDescargarInformesValue;
+
+        let formulario = '';
+
+        formulario = this.formInformesTarget;
+
+        var parametros = new FormData(formulario);
+
+        var respuesta = await fetch(rutaGenerar, { 'method': 'POST', 'body': parametros });
+
+        // Recibir el archivo como BLOB
+        const blob = await respuesta.blob();
+
+        // Crear URL temporal
+        const url = window.URL.createObjectURL(blob);
+
+        // Crear link de descarga
+        const a = document.createElement('a');
+        a.href = url;
+
+        if (tipoInfo == 3) {
+            a.download = 'InfGastosCons.xlsx';
+        }
+        else if (tipoInfo == 4) {
+            a.download = 'InfGastosDet.xlsx';
+        }
+        else if (tipoInfo == 1) {
+            a.download = 'InfEntradasCons.xlsx';
+        }
+        else if (tipoInfo == 2) {
+            a.download = 'InfEntradasConsxserv.xlsx';
+        }
+        else {
+            a.download = 'Inf.xlsx';
+        }
+
+        document.body.appendChild(a);
+
+        // Simular click
+        a.click();
+
+        // Limpiar
+        a.remove();
+        window.URL.revokeObjectURL(url);
+
+
+
+    }
+
+    abrirModalNuevoUsuario() {
+        this.modal = new Modal(this.modalNuevoUsuarioTarget);
+        this.modal.show();
+    }
+
+    async registrarUsuario() {
+        let rutaTabla = this.rutaUsuariosValue;
+        let urlGuardar = this.rutaRegistrarUsuariosValue;
+
+        let formulario = '';
+
+        formulario = this.formRegistroUsuarioTarget;
+
+        var parametros = new FormData(formulario);
+
+        var consulta = await fetch(urlGuardar, { 'method': 'POST', 'body': parametros });
+        var result = await consulta.json();
+
+        if (result.response == 'Ok') {
+
+            const modalInstance = Modal.getInstance(this.modalNuevoUsuarioTarget);
+            if (modalInstance) { modalInstance.hide(); }
+
+            FlashMessage.show('Usuario creado correctamente', 'success');
+
+            const respuesta = await fetch(rutaTabla);
+            this.frameUsuariosTarget.innerHTML = await respuesta.text();
+        }
+
+    }
+
+    limpiarInforme() {
+        this.tipoInformeTarget.value = '';
+        this.servicioInformeTarget.value = '';
+        this.tipoGastoInformeTarget.value = '';
+        this.empresaInformeTarget.value = '';
+
+        const hoy = new Date();
+
+        const formato = (f) => f.toISOString().split('T')[0];
+
+        // Primer día del mes actual
+        const primerDia = new Date(hoy.getFullYear(), hoy.getMonth(), 1);
+        this.desdeInformeTarget.value = formato(primerDia);
+
+        // Último día del mes actual
+        const ultimoDia = new Date(hoy.getFullYear(), hoy.getMonth() + 1, 0);
+        this.hastaInformeTarget.value = formato(ultimoDia);
+
+        $("#tablaInforme").empty();
+        let tabla = `<p style="font-weight: bold; color: grey;">Generar informe</p>`;
         $("#tablaInforme").html(tabla);
     }
+
+    async cambiarTurnoUser(event) {
+        let rutaTabla = this.rutaUsuariosValue;
+        let id = event.currentTarget.dataset.id;
+        let ruta = this.rutacambiaTurnoUserValue;
+
+        let accion = 0;
+
+        if (event.currentTarget.checked) {
+            accion = 1;
+        }
+
+        ruta = ruta.replace('var1', id);
+        ruta = ruta.replace('var2', accion);
+
+        var consulta = await fetch(ruta);
+        var result = await consulta.json();
+
+        if (result.response == 'Ok') {
+
+            FlashMessage.show('Usuario editado correctamente', 'success');
+
+            const respuesta = await fetch(rutaTabla);
+            this.frameUsuariosTarget.innerHTML = await respuesta.text();
+        }
+
+
+
+    }
+
 
 
 

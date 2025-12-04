@@ -15,6 +15,7 @@ use App\Entity\Bonos;
 use App\Entity\Detallesmov;
 use App\Entity\Movimientos;
 use App\Entity\Productos;
+use App\Entity\User;
 
 class InicioController extends AbstractController
 {
@@ -128,7 +129,21 @@ class InicioController extends AbstractController
 
         $habitacionesPorPiso = [];
         
-        foreach ($habitaciones as $habitacion) {
+        foreach ($habitaciones as $habitacion) 
+        {
+            $fechaSalida = '';
+
+            if($habitacion->getStatus() == 2)
+            {
+                foreach ($habitacion->getCheckins() as $checkin) 
+                {
+                    if($checkin->getEstado() == 1)
+                    {
+                        $fechaSalida = $checkin->getfechasalida()->format('Y-m-d').' '.$checkin->getHorasalida()->format('h:i');                       
+                    }
+                }
+            }
+            
             $piso = $habitacion->getFloor() ? $habitacion->getFloor()->getName() : 'Sin piso';
             // Traduce el tipo de habitación a texto legible
 
@@ -146,11 +161,7 @@ class InicioController extends AbstractController
         
             $disponible = $habitacion->getStatus();
 
-            $habitacionesPorPiso[$piso][] = [
-                'nombre' => $habitacion->getName(),
-                'tipo' => $tipo,
-                'disponible' => $disponible,
-            ];
+            $habitacionesPorPiso[$piso][] = [ 'nombre' => $habitacion->getName(),'tipo' => $tipo, 'disponible' => $disponible, 'fechaSalida' => $fechaSalida];
         }
 
         $productos = $bd->getRepository(Productos::class)->findBy([],['id' => 'ASC']);
@@ -275,46 +286,47 @@ class InicioController extends AbstractController
         {
             $numero = str_pad($turno->getNumero(), 5, "0", STR_PAD_LEFT);
             $turnoActual = $numero;
+            $nomActual = $turno->getUsuario()->getName();
         }
         else
         {
             $turnoActual = 'Sin turno';
+            $nomActual = '';
         }
 
-        $beneficiarios = $bd->getRepository(Persons::class)->findBy(['tipo' => '2' ],['id' => 'ASC']);
+        $beneficiarios = $bd->getRepository(User::class)->findBy(['tipo' => [1,3] ],['id' => 'ASC']);
 
         $beneficiariosSelector = [];
 
         foreach ($beneficiarios as $cliente) {
             $beneficiariosSelector[] = [
                 'id' => $cliente->getId(),
-                'documentNumber' => $cliente->getDocumentNumber(),
                 'name' => $cliente->getName(),
-                'lastname' => $cliente->getLastname()
             ];
         }
 
 
         $parametros = [
-                        'habTot' => $habTot, 
-                        'habDis' => $habDis, 
-                        'porcentaje' => $porcentaje, 
-                        'numClientes' => $numClientes, 
-                        'turno' => $turno, 
-                        'reservas' => $reservas, 
-                        'clientes' => $clientes, 
-                        'clientesSelector' => $clientesSelector, 
-                        'documents' => $documents, 
-                        'companias' => $companias,
+                        'beneficiariosSelector' => $beneficiariosSelector,
                         'habitacionesSelector' => $habitacionesSelector,
                         'habitacionesPorPiso' => $habitacionesPorPiso,
                         'serviciosSelector' => $serviciosSelector,
+                        'clientesSelector' => $clientesSelector, 
+                        'selectServicios' => $selectServicios,
                         'productos' => $selectPrtoductos,
-                        'tablaMov' => $tablaMov,
+                        'numClientes' => $numClientes, 
                         'tablaVentas' => $tablaVentas,
                         'turnoActual' => $turnoActual,
-                        'beneficiariosSelector' => $beneficiariosSelector,
-                        'selectServicios' => $selectServicios
+                        'porcentaje' => $porcentaje, 
+                        'nomActual' => $nomActual,
+                        'documents' => $documents, 
+                        'companias' => $companias,
+                        'reservas' => $reservas, 
+                        'clientes' => $clientes, 
+                        'tablaMov' => $tablaMov,
+                        'habTot' => $habTot, 
+                        'habDis' => $habDis, 
+                        'turno' => $turno, 
                     ];
 
 

@@ -21,7 +21,7 @@ app_dashboard:
 app_pisos:
   path: /locacion/pisos
   defaults: {_controller: App\Controller\LocacionController::pisos}
-
+  
 app_nuevoPiso:
   path: /locacion/nuevoPiso
   defaults: {_controller: App\Controller\LocacionController::nuevoPiso}
@@ -262,9 +262,21 @@ app_filtrosInformes:
   path: /movimientos/filtrosInformes
   defaults: {_controller: App\Controller\ContabilidadController::filtrosInformes}
 
+app_generarInformes:
+  path: /movimientos/generarInformes
+  defaults: {_controller: App\Controller\ContabilidadController::generarInformes}
+
+app_descargarInformes:
+  path: /movimientos/descargarInformes
+  defaults: {_controller: App\Controller\ContabilidadController::descargarInformes}
+
 app_usuarios:
   path: /usuarios
-  defaults: {_controller: App\Controller\LoginController::listarUsuarios}
+  defaults: {_controller: App\Controller\RegistrationController::listarUsuarios}
+
+app_cambiaTurnoUser:
+  path: /usuarios/cambiaTurno/{id},{accion}
+  defaults: {_controller: App\Controller\RegistrationController::cambiaTurno}
 
 
 

@@ -1,28 +1,73 @@
-
-###> symfony/framework-bundle ###
-/.env.local
-.env
-/.env.local.php
-/.env.*.local
-/config/secrets/prod/prod.decrypt.private.php
-/public/bundles/
+# =========================================
+#   SYMFONY
+# =========================================
 /var/
 /vendor/
-###< symfony/framework-bundle ###
-
-###> phpunit/phpunit ###
-/phpunit.xml
-.phpunit.result.cache
-###< phpunit/phpunit ###
-
-###> symfony/phpunit-bridge ###
-.phpunit.result.cache
-/phpunit.xml
-###< symfony/phpunit-bridge ###
-
-###> symfony/webpack-encore-bundle ###
-/node_modules/
 /public/build/
-npm-debug.log
-yarn-error.log
-###< symfony/webpack-encore-bundle ###
+/translations/*.mo
+.env.local
+.env.*.local
+.env.local.php
+
+# =========================================
+#   CACHE Y LOGS
+# =========================================
+/var/*
+!/var/.gitkeep
+
+# =========================================
+#   WEBPACK / NODE
+# =========================================
+/node_modules/
+/npm-debug.log
+/yarn-error.log
+.pnp.*
+.pnp.js
+
+# =========================================
+#   ARCHIVOS DE IDEs
+# =========================================
+# JetBrains / PHPStorm
+.idea/
+*.iml
+
+# VSCode
+.vscode/
+.history/
+
+# =========================================
+#   SISTEMA OPERATIVO (Windows / Linux / Mac)
+# =========================================
+.DS_Store
+Thumbs.db
+Desktop.ini
+
+# =========================================
+#   DOCKER
+# =========================================
+/docker/pgadmin
+/docker/*/Dockerfile~ 
+docker-compose.override.yml
+
+# =========================================
+#   BACKUPS
+# =========================================
+*.sql
+*.sqlite
+*.bak
+*.dump
+
+# =========================================
+#   ARCHIVOS SENSIBLES
+# =========================================
+/certs/
+/keys/
+/secrets/
+
+# =========================================
+#   OTRAS EXCLUSIONES
+# =========================================
+/coverage/
+phpunit.xml
+phpunit.xml~
+composer.phar

@@ -168,7 +168,7 @@ class StockController extends AbstractController
         $codigo = $request->get('codigo');
         $cantidad = intval(str_replace('.', '', $request->get('cantidad')));
         $valor = floatval(str_replace('.', '', $request->get('valor')));
-        $porcentaje = floatval(str_replace('.', '', $request->get('porcentaje')));
+        $porcentaje = $request->get('porcentaje');
         $valEntProducto = floatval(str_replace('.', '', $request->get('valEntProducto')));
         $valSalProducto = floatval(str_replace('.', '', $request->get('valSalProducto')));
         $valVentaProducto = floatval(str_replace('.', '', $request->get('valVentaProducto')));

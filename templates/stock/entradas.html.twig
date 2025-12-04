@@ -9,7 +9,7 @@
                     <th>Valor</th>
                     <th>Valor und entrada</th>
                     <th>Porcentaje</th>
-                    <th>Valor und salida</th>
+                    <th>Utilidad und</th>
                     <th>Valor venta</th>
                     <th>Utilidad</th>
                     <th>Descripción</th>
@@ -20,7 +20,7 @@
                 {% if entradas is not empty %}
                     {% for item in entradas %}
                         <tr>
-                            <td title="{{item.codigo.nombre}}">{{ item.codigo.codigo }}</td>
+                            <td title="{{item.codigo.nombre}}">{{ item.codigo.codigo }} - {{ item.codigo.nombre }}</td>
                             <td style="text-align:right">{{ item.cantidad|number_format(0, ',', '.') }}</td>
                             <td style="text-align:right">$ {{ item.valor|number_format(0, ',', '.') }}</td>
                             <td style="text-align:right">$ {{ item.valundent|number_format(0, ',', '.') }}</td>
@@ -108,7 +108,7 @@
                 </div>
             </div>
             <div class="modal-footer">
-                <button type="button" class="btn btn-primary" data-sistema--app-target="btnGuardarEntrada" data-action="click->sistema--app#guardarEntrada" disabled>Guardar</button>
+                <button type="button" class="btn btn-primary" data-sistema--app-target="btnGuardarEntrada" data-action="click->sistema--app#guardarEntrada" data-pantalla="1" disabled>Guardar</button>
                 <button type="button" class="btn btn-danger" data-bs-dismiss="modal">Cancelar</button>
             </div>
             </form>
