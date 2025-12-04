@@ -1,0 +1,58 @@
+services:
+  php:
+    build:
+      context: ./php
+    container_name: hotelcrn-php
+    volumes:
+      - ../:/var/www/html
+    networks:
+      - hotel-network
+
+  nginx:
+    image: nginx:alpine
+    container_name: hotelcrn-nginx
+    ports:
+      - "80:80"
+    volumes:
+      - ../:/var/www/html
+      - ./nginx/default.conf:/etc/nginx/conf.d/default.conf
+    depends_on:
+      - php
+    networks:
+      - hotel-network
+
+  postgres:
+    image: postgres:17
+    container_name: hotelcrn-db
+    environment:
+      POSTGRES_DB: apphotelcrn
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: Cc1085248999*7890
+    ports:
+      - "5432:5432"
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    networks:
+      - hotel-network
+
+  pgadmin:
+    image: dpage/pgadmin4:latest
+    container_name: hotelcrn-pgadmin
+    environment:
+      PGADMIN_DEFAULT_EMAIL: admin@admin.com
+      PGADMIN_DEFAULT_PASSWORD: admin123
+    ports:
+      - "5050:80"
+    volumes:
+      - ./pgadmin:/var/lib/pgadmin
+    depends_on:
+      - postgres
+    networks:
+      - hotel-network
+
+volumes:
+  pgdata:
+
+
+networks:
+  hotel-network:

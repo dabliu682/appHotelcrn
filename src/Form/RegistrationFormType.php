@@ -39,7 +39,7 @@ class RegistrationFormType extends AbstractType
                 'label' => 'Rol',
                 'choices' => [
                     'Administrador' => 'ROLE_ADMINISTRADOR',
-                    'Caja' => 'ROLE_CAJA',
+                    'Recepción' => 'ROLE_CAJA',
                 ],
                 'multiple' => false,
                 'expanded' => false,
