@@ -8,6 +8,7 @@
 .env.local
 .env.*.local
 .env.local.php
+.env
 
 # =========================================
 #   CACHE Y LOGS
