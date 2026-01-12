@@ -274,6 +274,10 @@ app_usuarios:
   path: /usuarios
   defaults: {_controller: App\Controller\RegistrationController::listarUsuarios}
 
+app_eliminarUsuarios:
+  path: /eliminarUsuarios/{id}
+  defaults: {_controller: App\Controller\RegistrationController::eliminarUsuarios}
+
 app_cambiaTurnoUser:
   path: /usuarios/cambiaTurno/{id},{accion}
   defaults: {_controller: App\Controller\RegistrationController::cambiaTurno}

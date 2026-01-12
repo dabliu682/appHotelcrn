@@ -71,6 +71,10 @@ class RegistrationController extends AbstractController
                     $tipo = 'Asociado';
                 }
             }
+            else
+            {
+                $tipo = 'elimina';
+            }
 
             $arrayUsers[] = [
                                 'cambioClave' => ($usuario->isCambioclave()) ? 'Si' : 'No',
@@ -80,7 +84,7 @@ class RegistrationController extends AbstractController
                                 'isTurno' => $usuario->isTurno(),
                                 'name' => $usuario->getName(), 
                                 'id' => $usuario->getId(), 
-                                'tipo' => $tipo,
+                                'tipo' => $tipo
                             ];
         }
 
@@ -89,6 +93,25 @@ class RegistrationController extends AbstractController
 
         return $this->render('registration/listaUsuarios.html.twig', ['registrationForm' => $form->createView(), 'arrayUsers' => $arrayUsers]);
     }
+
+    public function eliminarUsuarios($id)
+    {
+        $bd = $this->getDoctrine()->getManager();
+        
+        $user = $bd->getRepository(User::class)->find($id);
+        
+        try 
+        {
+            $bd->remove($user);
+            $bd->flush();
+            return new JsonResponse(['response' => 'Ok']);
+        } 
+        catch (\Exception $e) 
+        {
+            return new JsonResponse(['response' => 'Error', 'message' => $e->getMessage()]);
+        }
+    }
+
 
     public function cambiaTurno($id, $accion)
     {

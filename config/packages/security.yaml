@@ -38,6 +38,20 @@ security:
     # Easy way to control access for large sections of your site
     # Note: Only the *first* access control that matches will be used
     access_control:
+        
+        
+        - { path: ^/inicio/3, roles: [ROLE_SUPERUSER, ROLE_ADMINISTRADOR]}
+        - { path: ^/inicio/5, roles: [ROLE_SUPERUSER, ROLE_ADMINISTRADOR]}
+        - { path: ^/inicio/6, roles: [ROLE_SUPERUSER, ROLE_ADMINISTRADOR]}
+        - { path: ^/inicio/7, roles: [ROLE_SUPERUSER, ROLE_ADMINISTRADOR]}
+        - { path: ^/inicio/8, roles: [ROLE_SUPERUSER, ROLE_ADMINISTRADOR]}
+        - { path: ^/inicio/9, roles: [ROLE_SUPERUSER, ROLE_ADMINISTRADOR]}
+        - { path: ^/inicio/10, roles: [ROLE_SUPERUSER, ROLE_ADMINISTRADOR]}
+        - { path: ^/inicio/11, roles: [ROLE_SUPERUSER, ROLE_ADMINISTRADOR]}
+        - { path: ^/inicio/12, roles: [ROLE_SUPERUSER, ROLE_ADMINISTRADOR]}
+        - { path: ^/inicio/13, roles: [ROLE_SUPERUSER, ROLE_ADMINISTRADOR]}
+        - { path: ^/inicio/14, roles: [ROLE_SUPERUSER, ROLE_ADMINISTRADOR]}
+
         - { path: ^/inicio, roles: ROLE_USER }
         # - { path: ^/profile, roles: ROLE_USER }
 
