@@ -14,7 +14,7 @@
                                     <th style="background: #212529;">Celular</th>
                                     <th style="background: #212529;">Turno</th>
                                     <th style="background: #212529;">Cambio clave</th>
-                                    <th style="background: #212529;">Ultimo accesso</th>
+                                    <th colspan="2" style="background: #212529;">Ultimo accesso</th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -22,7 +22,11 @@
                                     <tr>
                                         <td>{{ usuario.name }}</td>
                                         <td>{{ usuario.userName }}</td>
-                                        <td>{{ usuario.tipo }}</td>
+                                        <td>
+                                            {% if usuario.tipo != 'elimina' %}
+                                                {{ usuario.tipo }}
+                                            {% endif %}
+                                        </td>
                                         <td>{{ usuario.celular }}</td>
                                         <td>
                                             <div class="form-check form-switch d-flex justify-content-center align-items-center m-0" style="height:100%;">
@@ -31,6 +35,13 @@
                                         </td>
                                         <td>{{ usuario.cambioClave }}</td>
                                         <td>{{ usuario.fechaUltimoAccesso }}</td>
+                                        <td>
+                                            {% if usuario.tipo == 'elimina' %}
+                                                <i class="fas fa-trash-alt text-secondary" style="cursor:pointer" data-action="click->sistema--app#eliminarUsuario" data-id="{{ usuario.id }}" ></i>
+                                            {% else %}
+                                                <i class="fas fa-trash-alt text-danger" style="cursor:pointer" data-action="click->sistema--app#eliminarUsuario" data-id="{{ usuario.id }}" ></i>
+                                            {% endif %}
+                                        </td>
                                     </tr>
                                 {% endfor %}                        
                             </tbody>
@@ -39,7 +50,7 @@
                 </div>
                 <div class="mt-3 d-flex justify-content-space-between" style="margin:20px">
                     <button type="button" class="btn btn-primary" style="margin-right:10px" data-action="sistema--app#abrirModalNuevoUsuario" data-accion = '1' data-id = '0'>Nuevo</button>
-                    <a href="{{ path('app_inicio') }}" class="btn btn-danger">Regresar</a>
+                    <button type="button" class="btn btn-danger" data-action="sistema--app#cambiarVista" >Regresar</button>
                 </div>
             </div>
         </div>

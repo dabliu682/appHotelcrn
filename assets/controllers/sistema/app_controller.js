@@ -20,6 +20,7 @@ export default class extends Controller {
         'rutaEliminarCompania': String,
         'rutaEliminarClientes': String,
         'rutaEliminarServicio': String,
+        'rutaEliminarUsuarios': String,
         'rutaGuardarTiposServ': String,
         'rutaGenerarInformes': String,
         'rutaEliminarCheckin': String,
@@ -31,12 +32,12 @@ export default class extends Controller {
         'rutaNuevaHabitacion': String,
         'rutaEliminarTipodoc': String,
         'rutaGuardarClientes': String,
+        'rutacambiaTurnoUser': String,
         'rutaGuardarReserva': String,
         'rutaGuardarTipodoc': String,
         'rutaGuardarEntrada': String,
         'rutaRegistrarVenta': String,
         'rutaGenerarFactura': String,
-        'rutacambiaTurnoUser': String,
         'rutaObtenerCheckin': String,
         'rutaNuevaCompania': String,
         'rutaEliminarGasto': String,
@@ -243,7 +244,16 @@ export default class extends Controller {
     cambiarVista(event) {
         event.preventDefault();
         let vista = event.currentTarget.dataset.vista;
+
         let url = this.rutaVistasValue.replace('var1', vista);
+
+        if (url != '') {
+            url = url.replace('var1', vista);
+        }
+        else {
+            url = "/inicio/0";
+        }
+
         window.location.href = url;
     }
 
@@ -278,6 +288,13 @@ export default class extends Controller {
         else {
             this.btnGuardarPisoTarget.disabled = true;
         }
+    }
+
+    async btnRegresar() {
+        let ruta = this.rutaInicioValue;
+
+        const respuesta = await fetch(ruta);
+        this.framePisosTarget.innerHTML = await respuesta.text();
     }
 
     async guardarPiso(event) {
@@ -3808,6 +3825,36 @@ export default class extends Controller {
             this.frameUsuariosTarget.innerHTML = await respuesta.text();
         }
 
+    }
+
+    async eliminarUsuario(event) {
+        let id = event.currentTarget.dataset.id;
+        let rutaTabla = this.rutaUsuariosValue;
+        let urlEliminarliminar = this.rutaEliminarUsuariosValue;
+        urlEliminarliminar = urlEliminarliminar.replace('var1', id)
+
+        var consulta = await fetch(urlEliminarliminar);
+        var result = await consulta.json();
+
+        if (result.response == 'Ok') {
+
+            const modalInstance = Modal.getInstance(this.modalNuevoUsuarioTarget);
+            if (modalInstance) { modalInstance.hide(); }
+
+            FlashMessage.show('Usuario eliminado correctamente', 'success');
+
+            const respuesta = await fetch(rutaTabla);
+            this.frameUsuariosTarget.innerHTML = await respuesta.text();
+        }
+        else {
+            const modalInstance = Modal.getInstance(this.modalNuevoUsuarioTarget);
+            if (modalInstance) { modalInstance.hide(); }
+
+            FlashMessage.show('No se puede eliminar el usuario ya tiene acciones realizadas', 'danger');
+
+            const respuesta = await fetch(rutaTabla);
+            this.frameUsuariosTarget.innerHTML = await respuesta.text();
+        }
     }
 
     limpiarInforme() {

@@ -61,8 +61,11 @@
                                             {% if room.status == 1 %}
                                               {% if room.fan is null %}{% set fan = 0 %}{% else %}{% set fan = 0 %}{% endif %}
                                               {% if room.airCond is null %}{% set airCond = 0 %}{% else %}{% set airCond = 0 %}{% endif %}
-
-                                              <i class="far fa-window-maximize text-primary" style="cursor:pointer" data-action="click->sistema--app#abrirModalNuevaHab" data-accion = '2'  data-id = {{ room.id }} data-name = "{{ room.name}}" data-piso = {{ room.floor.id }} data-bedmunber = {{ room.bedNumber }} data-aircond = {{ airCond }} data-fan = {{ fan }} data-tipo= {{ room.typeroom }} ></i>
+                                              {% if is_granted('ROLE_SUPERUSER') or is_granted('ROLE_ADMINISTRADOR') %}
+                                                <i class="far fa-window-maximize text-primary" style="cursor:pointer" data-action="click->sistema--app#abrirModalNuevaHab" data-accion = '2'  data-id = {{ room.id }} data-name = "{{ room.name}}" data-piso = {{ room.floor.id }} data-bedmunber = {{ room.bedNumber }} data-aircond = {{ airCond }} data-fan = {{ fan }} data-tipo= {{ room.typeroom }} ></i>
+                                              {% else %}
+                                                <i class="far fa-window-maximize text-secondary" style="cursor:pointer"></i>
+                                              {% endif %}
                                               <i class="fa-solid fa-screwdriver-wrench text-danger" style="margin-left:15px" data-action="click->sistema--app#cambiarEstadoHab" data-id = {{ room.id }} data-accion = "4"></i>
                                             {% else %}
                                               <i class="far fa-window-maximize text-secondary" style="cursor:not-allowed"></i>
@@ -70,7 +73,11 @@
                                           </td>
                                           <td style="text-align:center; width: 20px;">
                                             {% if room.status == 1 %}
-                                              <i class="fas fa-trash-alt text-danger" style="cursor:pointer" data-action="click->sistema--app#eliminarHabitacion" data-id = {{ room.id }}></i>
+                                              {% if is_granted('ROLE_SUPERUSER') or is_granted('ROLE_ADMINISTRADOR') %}
+                                                <i class="fas fa-trash-alt text-danger" style="cursor:pointer" data-action="click->sistema--app#eliminarHabitacion" data-id = {{ room.id }}></i>
+                                              {% else %}
+                                                <i class="fas fa-trash-alt text-secondary" style="cursor:pointer"></i>
+                                              {% endif %}
                                             {% else %}
                                               <i class="fas fa-trash-alt text-secondary" style="cursor:not-allowed"></i>
                                             {% endif %}
@@ -87,8 +94,12 @@
                     </div>
                 </div>
                 <div class="mt-3 d-flex justify-content-space-between" style="margin:20px">
+                  {% if is_granted('ROLE_SUPERUSER') or is_granted('ROLE_ADMINISTRADOR') %}
                     <button type="button" class="btn btn-primary" style="margin-right:10px" data-action="sistema--app#abrirModalNuevaHab" data-accion = '1' data-id = '0'>Nuevo</button>
-                    <a href="{{ path('app_inicio') }}" class="btn btn-danger">Regresar</a>
+                  {% else %}
+                    <button type="button" class="btn btn-secondary" style="margin-right:10px" title="No tiene permisos para esta acción">Nuevo</button>
+                  {% endif %}
+                    <button type="button" class="btn btn-danger" data-action="sistema--app#cambiarVista" >Regresar</button>
                 </div>
             </div>
         </div>
